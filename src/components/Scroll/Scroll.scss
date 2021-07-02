@@ -1,0 +1,66 @@
+@import "src/styles/colors";
+
+
+.scroll {
+  position: relative;
+  top: 30vh;
+  width: 120px;
+  height: auto;
+  //letter-spacing: 0.3rem;
+  text-align: center;
+  font-size: 2rem;
+  color: $navy;
+  margin: auto;
+
+}
+
+
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+}
+
+.fill-1 {
+  fill: $navy;
+}
+
+.fill-2 {
+  fill: $gold;
+}
+
+.fullscreen {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  bottom: 20px;
+  right: 20px;
+}
+
+@keyframes ball-bounce {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-25px); }
+  100% { transform: translateY(0); }
+}
+
+.pointer{
+    animation-name: ball-bounce;
+    animation-duration: 3s;
+    animation-iteration-count: 3;
+    animation-delay: 1s;
+}
+
+.title {
+  margin-bottom: 40px;
+}
+
+.link-icon{
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.anchors{
+  color: black;
+
+}

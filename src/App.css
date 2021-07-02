@@ -1,0 +1,31 @@
+.App {
+  text-align: center;
+  /*margin: auto 50% auto 50%;*/
+}
+
+.section-title{
+  font-size: 5em;
+  margin-bottom: 60px;
+}
+
+.projects{
+  position: relative;
+  top: 75vh;
+}
+
+.about{
+  position: relative;
+  top: 75vh;
+}
+
+.work{
+  position: relative;
+  top: 75vh;
+
+}
+
+.publications{
+  position: relative;
+  top: 75vh;
+
+}
