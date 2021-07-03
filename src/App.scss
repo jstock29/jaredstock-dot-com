@@ -1,0 +1,61 @@
+@import "styles/colors";
+
+.App {
+  text-align: center;
+}
+
+.section-title {
+  margin-bottom: 60px;
+}
+
+.projects {
+  position: relative;
+  margin-bottom: 300px;
+}
+
+.about {
+  position: relative;
+  margin-bottom: 300px;
+}
+
+.work {
+  position: relative;
+  margin-bottom: 300px;
+
+}
+
+.publications {
+  position: relative;
+  margin-bottom: 300px;
+}
+
+.anchors {
+  position: fixed;
+  top: 16px;
+  margin-left: 16px;
+  z-index: 999;
+}
+
+a > h5 {
+  color: $neutral;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a > h5:hover {
+  color: $gold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $navy;
+}
+
+p {
+  color: $neutral-dark;
+}
+
+.footer {
+
+  color: $neutral;
+  margin: auto auto 8px auto;
+}

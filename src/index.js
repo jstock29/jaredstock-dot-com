@@ -3,22 +3,26 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import {createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
 
 
-const theme = createMuiTheme({
+let theme = createMuiTheme({
     palette: {
         primary: {
             main: '#0B3B85',
         },
         secondary: {
-            main: '#F0E47A',
+            main: '#CCB22F',
         },
-        warning:{
-            main:'#DE946A',
+        warning: {
+            main: '#DE946A',
         },
-        info:{
-            main:'#78685F'
+        info: {
+            main: '#05199C'
+        },
+        neutral: {
+            main: '#9e9e9e',
+            dark: 'rgba(0, 0, 0, 0.81)'
         }
     },
     typography: {
@@ -37,6 +41,8 @@ const theme = createMuiTheme({
         ].join(','),
     }
 });
+
+theme = responsiveFontSizes(theme);
 
 ReactDOM.render(
     <React.StrictMode>

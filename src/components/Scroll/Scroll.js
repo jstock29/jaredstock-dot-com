@@ -15,24 +15,19 @@ export const Scroll = () => (
             justify="space-evenly"
             alignItems="center"
         >
-            <a href="mailto:jstock529@gmail.com" target="_blank" className="link-icon">
-                <EmailOutlined style={{fontSize: 20}}/>
-            </a>
-            <a href="https://github.com/jstock29" target="_blank" className="link-icon">
+            <a href="https://github.com/jstock29" target="_blank"  rel="noreferrer" className="link-icon">
                 <GitHub style={{fontSize: 20}}/>
             </a>
-            <a href="https://twitter.com/jaredstock" target="_blank" className="link-icon">
+            <a href="https://twitter.com/jaredstock" target="_blank"  rel="noreferrer" className="link-icon">
                 <Twitter style={{fontSize: 20}}/>
             </a>
-            <a href="https://www.linkedin.com/in/jaredstock/" target="_blank" className="link-icon">
+            <a href="https://www.linkedin.com/in/jaredstock/" target="_blank"  rel="noreferrer" className="link-icon">
                 <LinkedIn style={{fontSize: 20}}/>
             </a>
+            <a href="mailto:jstock529@gmail.com" target="_blank"  rel="noreferrer" className="link-icon">
+                <EmailOutlined style={{fontSize: 20}}/>
+            </a>
         </Grid>
-        {/*<div className="anchors">*/}
-        {/*    <h4>PROJECTS</h4>*/}
-        {/*    <h4>PROJECTS</h4>*/}
-        {/*    <h4>PROJECTS</h4>*/}
-        {/*</div>*/}
     </div>
 
 );
