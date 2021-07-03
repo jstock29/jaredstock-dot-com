@@ -8,32 +8,33 @@ import {Publication} from "./components/Publication/Publication";
 import {About} from "./components/About/About";
 import {Skill} from "./components/Skill/Skill";
 import {Grid} from "@material-ui/core";
+import {Description} from "@material-ui/icons";
 
 const projects = [
     {
         title: 'Social Data',
-        text: 'This is a project providing open source social data.',
+        text: "I'm leading the development of an open source app and open data for a variety of social datasets in the US.",
         image: 'https://jareds-file-sharing.s3.amazonaws.com/social-data.png',
         link: 'https://share.streamlit.io/arup-group/social-data/run.py',
         github: 'https://github.com/arup-group/social-data'
     },
     {
         title: 'Deal or No Deal',
-        text: 'Analysis of the greatest game show of all time.',
+        text: "I watched over 100 episodes of Deal or No Deal to conduct this analysis of the greatest game show of all time.",
         image: 'https://jareds-file-sharing.s3.amazonaws.com/tds.png',
         link: 'https://share.streamlit.io/jstock29/dealnodeal/main/app.py',
         github: 'https://github.com/jstock29/dealnodeal'
     },
     {
         title: 'Teetum.com',
-        text: "This is a joke website I made for my friend's birthday",
+        text: "I made a website for my friend's birthday as joke. You won't get the jokes.",
         image: 'https://jareds-file-sharing.s3.amazonaws.com/teetum.png',
         link: 'https://teetum.com/',
         github: 'https://github.com/jstock29/teetum-dot-com'
     },
     {
         title: 'Bigballsannie.com',
-        text: "This is another joke website I made for my friend's birthday, only with games",
+        text: "Another joke website I made for my friend's birthday, only even weirder somehow.",
         image: 'https://jareds-file-sharing.s3.amazonaws.com/bba.png',
         link: 'https://bigballsannie.com/',
         github: 'https://github.com/jstock29/bigballsannie-dot-com'
@@ -115,8 +116,10 @@ const skills = [
     {label: 'JSON', color: 'secondary'},
     {label: 'Amazon Web Services', color: 'primary'},
     {label: 'Google Cloud Platform', color: 'primary'},
+    {label: 'Websockets', color: 'secondary'},
     {label: 'Linux', color: 'secondary'},
     {label: 'Agile', color: 'primary'},
+    {label: 'Solution Architecture', color: 'primary'},
 ]
 
 function App() {
@@ -176,6 +179,9 @@ function App() {
                     <div className="work" id="work">
                         <Parallax y={[-20, 20]} tagOuter="figure">
                             <h1 className="section-title">WORK</h1>
+                            <a href='https://jareds-file-sharing.s3.amazonaws.com/Jared+Stock+Resume.pdf' target="_blank" rel="noreferrer" className="link">
+                                <h4 className={'resume'}>Resume</h4>
+                            </a>
                             <WorkTimeline work={work}/>
                             <Grid
                                 container

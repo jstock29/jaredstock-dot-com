@@ -13,7 +13,7 @@ export const Publication = (props) => (
             alignItems="center"
             className={'publication'}
         >
-            <div>
+            <div className={'content'}>
                 <h2>{props.title}</h2>
                 <p>{props.text}</p>
                 <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">

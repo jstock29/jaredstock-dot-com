@@ -13,7 +13,7 @@ export const Project = (props) => (
             alignItems="center"
             className={'project'}
         >
-            <div>
+            <div className={'content'}>
                 <h2 className={'project-heading'}>{props.title}</h2>
                 <p className="project-desc">{props.text}</p>
                 <a href={props.github} target="_blank"  rel="noreferrer" className="link-icon">

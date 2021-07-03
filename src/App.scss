@@ -45,6 +45,9 @@ a > h5 {
 a > h5:hover {
   color: $gold;
 }
+a > h4:hover {
+  color: $gold;
+}
 
 h1, h2, h3, h4, h5, h6 {
   color: $navy;
@@ -58,4 +61,17 @@ p {
 
   color: $neutral;
   margin: auto auto 8px auto;
+}
+
+.link {
+  color: $navy;
+  padding: 0;
+}
+
+.link:hover{
+  color: $gold;
+}
+
+.resume{
+  margin-top: -36px;
 }
