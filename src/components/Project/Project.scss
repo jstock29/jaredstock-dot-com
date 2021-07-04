@@ -2,13 +2,20 @@
 
 .project{
   position: relative;
-  padding: 16px;
-  margin: 16px;
+  padding: 8px;
+  margin: 24px 0;
+}
+
+.responsive {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
 }
 
 .project-image{
-  display: block;
-  height: 280px;
+  margin-bottom: 24px;
+  //display: block;
+  //height: 280px;
   //width: auto;
 }
 

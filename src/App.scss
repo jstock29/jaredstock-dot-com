@@ -21,7 +21,6 @@
 .work {
   position: relative;
   margin-bottom: 300px;
-
 }
 
 .publications {
@@ -45,6 +44,7 @@ a > h5 {
 a > h5:hover {
   color: $gold;
 }
+
 a > h4:hover {
   color: $gold;
 }
@@ -58,7 +58,6 @@ p {
 }
 
 .footer {
-
   color: $neutral;
   margin: auto auto 8px auto;
 }
@@ -73,5 +72,28 @@ p {
 }
 
 .resume{
-  margin-top: -36px;
+  //margin-top: -36px;
+}
+
+.category-1{
+  margin-right:8px;
+}
+
+.category-2{
+  margin-right:8px;
+}
+
+.category-3{
+  margin-right:8px;
+}
+
+.skills-legend{
+  max-width: 400px;
+  margin: 16px auto;
+  justify-content: center;
+}
+
+.skills-grid{
+  max-width: 800px;
+  margin: auto;
 }

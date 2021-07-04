@@ -8,6 +8,9 @@ import {createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/c
 
 let theme = createMuiTheme({
     palette: {
+        default:{
+            main:'#9e9e9e'
+        },
         primary: {
             main: '#0B3B85',
         },
