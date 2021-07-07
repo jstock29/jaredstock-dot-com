@@ -2,6 +2,18 @@ import './Skill.scss'
 import {Chip} from "@material-ui/core";
 
 
-export const Skill = (props) => (
-    <Chip label={props.label} color={props.color} className={'skill-chip'}/>
-);
+export function Skill(props) {
+    if (props.color==='primary') {
+        return (
+            <Chip label={props.label} className={'skill-chip-primary'}/>
+        )
+    }else if (props.color==='secondary') {
+        return (
+            <Chip label={props.label} className={'skill-chip-secondary'}/>
+        )
+    }else{
+        return (
+            <Chip label={props.label} className={'skill-chip'}/>
+        )
+}
+}

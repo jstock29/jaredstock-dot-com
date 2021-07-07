@@ -75,16 +75,27 @@ p {
   //margin-top: -36px;
 }
 
+
 .category-1{
   margin-right:8px;
+  background-color: $navy !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .category-2{
   margin-right:8px;
+  background-color: $navy-light !important;
+
 }
 
 .category-3{
   margin-right:8px;
+  background-color: $navy-super-light !important;
+}
+
+.category-1:hover, .category-2:hover, .category-3:hover{
+  background-color: $gold !important;
+
 }
 
 .skills-legend{

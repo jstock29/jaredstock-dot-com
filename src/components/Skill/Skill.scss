@@ -1,3 +1,19 @@
+@import "src/styles/colors";
+
 .skill-chip{
   margin: 4px;
+  background-color: $navy-super-light !important;
+  //color: white !important;
+}
+
+.skill-chip-primary{
+  margin: 4px;
+  background-color: $navy !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.skill-chip-secondary{
+  margin: 4px;
+  background-color: $navy-light !important;
+  //color: white !important;
 }

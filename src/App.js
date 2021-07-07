@@ -33,7 +33,7 @@ const projects = [
     },
     {
         title: 'Bigballsannie.com',
-        text: "Another joke website I made for my friend's birthday, only even weirder somehow.",
+        text: "I made yet another joke website for my friend's birthday, only even weirder somehow.",
         image: 'https://jareds-file-sharing.s3.amazonaws.com/bba.png',
         link: 'https://bigballsannie.com/',
         github: 'https://github.com/jstock29/bigballsannie-dot-com'
@@ -48,27 +48,32 @@ const work = [
     },
     {
         date: '2016',
-        text: 'Start at Arup New York',
+        text: 'Started at Arup New York',
         color: 'primary'
     },
     {
         date: '2018',
-        text: 'Deliver genetic optimization of building energy models for NRDC',
-        color: 'secondary'
+        text: 'Delivered genetic optimization of energy models for NRDC',
+        color: 'primary'
     },
     {
         date: '2019',
-        text: 'Present at World Engineering Conference Melbourne',
-        color: 'secondary'
+        text: 'Presented at World Engineering Conference Melbourne',
+        color: 'primary'
     },
     {
         date: '2020',
-        text: 'Lead pro-bono open source eviction work',
-        color: 'secondary'
+        text: 'Led pro-bono open source eviction work',
+        color: 'primary'
     },
     {
-        date: 'April 2021',
+        date: '2021',
         text: 'Promoted to Lead Developer',
+        color: 'primary'
+    },
+    {
+        date: '2021',
+        text: 'Delivered district energy modeling platfrom on Google Cloud Platform',
         color: 'primary'
     },
 ]
@@ -105,13 +110,16 @@ const skills = [
     {label: 'Streamlit', color: 'secondary'},
     {label: 'Data Analysis', color: 'default'},
     {label: 'Data Science', color: 'default'},
+    {label: 'Machine Learning', color: 'default'},
     {label: 'Genetic Algorithms', color: 'default'},
     {label: 'Javascript', color: 'primary'},
-    {label: 'CSS', color: 'primary'},
-    {label: 'HTML', color: 'primary'},
     {label: 'Typescript', color: 'primary'},
+    {label: 'HTML', color: 'primary'},
+    {label: 'CSS', color: 'primary'},
     {label: 'Angular', color: 'secondary'},
+    {label: 'NGRX', color: 'secondary'},
     {label: 'React', color: 'secondary'},
+    {label: 'Node.js', color: 'primary'},
     {label: 'SQL', color: 'primary'},
     {label: 'PostgreSQL', color: 'secondary'},
     {label: 'Devops', color: 'primary'},
@@ -122,6 +130,7 @@ const skills = [
     {label: 'Amazon Web Services', color: 'secondary'},
     {label: 'Google Cloud Platform', color: 'secondary'},
     {label: 'Websockets', color: 'default'},
+    {label: 'Parallel Programming', color: 'default'},
     {label: 'Linux', color: 'secondary'},
     {label: 'Agile', color: 'default'},
     {label: 'Solution Architecture', color: 'default'},
@@ -152,7 +161,7 @@ function App() {
         }
     }
 
-    for (let skill of skills) {
+    for (let skill of skills.sort((a, b) => (a.label > b.label) ? 1 : -1)) {
         skillsList.push(<Skill label={skill.label} color={skill.color} key={skill.label}/>)
     }
 
@@ -192,10 +201,9 @@ function App() {
                         </Parallax>
                         <Parallax y={[-20, 20]} tagOuter="figure">
                             <Grid container direction="row" className={'skills-legend'}>
-                                <Chip size="small" color="primary" label={'Languages'} className={'category-1'}/>
-                                <Chip size="small" color="secondary" label={'Frameworks + Tools'}
-                                      className={'category-2'}/>
-                                <Chip size="small" color="default" label={'Skills'} className={'category-3'}/>
+                                <Chip size="small" label={'Languages'} className={'category-1'}/>
+                                <Chip size="small" label={'Frameworks + Tools'} className={'category-2'}/>
+                                <Chip size="small" label={'Skills'} className={'category-3'}/>
                             </Grid>
                             <Grid container direction="row" justify="space-evenly" alignItems="center" className={'skills-grid'}>
                                 {skillsList}
