@@ -135,6 +135,7 @@ const skills = [
     {label: 'Agile', color: 'default'},
     {label: 'Solution Architecture', color: 'default'},
     {label: 'Responsive Design', color: 'default'},
+    {label: 'Bash', color: 'primary'},
 ]
 
 function App() {
