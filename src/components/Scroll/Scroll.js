@@ -15,17 +15,17 @@ export const Scroll = () => (
             justify="space-evenly"
             alignItems="center"
         >
-            <a href="https://github.com/jstock29" target="_blank"  rel="noreferrer" className="link-icon">
-                <GitHub style={{fontSize: 20}}/>
+            <a href="https://github.com/jstock29" title="Github" target="_blank"  rel="noreferrer" className="link-icon">
+                <GitHub style={{fontSize: 26}}/>
             </a>
-            <a href="https://twitter.com/jaredstock" target="_blank"  rel="noreferrer" className="link-icon">
-                <Twitter style={{fontSize: 20}}/>
+            <a href="https://twitter.com/jaredstock" title="Twitter" target="_blank"  rel="noreferrer" className="link-icon">
+                <Twitter style={{fontSize: 26}}/>
             </a>
-            <a href="https://www.linkedin.com/in/jaredstock/" target="_blank"  rel="noreferrer" className="link-icon">
-                <LinkedIn style={{fontSize: 20}}/>
+            <a href="https://www.linkedin.com/in/jaredstock/" title="LinkedIn" target="_blank"  rel="noreferrer" className="link-icon">
+                <LinkedIn style={{fontSize: 26}}/>
             </a>
-            <a href="mailto:jstock529@gmail.com" target="_blank"  rel="noreferrer" className="link-icon">
-                <EmailOutlined style={{fontSize: 20}}/>
+            <a href="mailto:jstock529@gmail.com" title="Email" target="_blank"  rel="noreferrer" className="link-icon">
+                <EmailOutlined style={{fontSize: 26}}/>
             </a>
         </Grid>
     </div>

@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
     },
     TimelineContent: {
         textAlign: "initial",
-        color: theme.palette.neutral.dark
+        color: theme.palette.neutral.main,
+        minWidth:"100px",
     }
 }));
 

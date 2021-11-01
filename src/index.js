@@ -12,10 +12,10 @@ let theme = createMuiTheme({
             main:'#9e9e9e'
         },
         primary: {
-            main: '#0B3B85',
+            main: '#09306B',
         },
         secondary: {
-            main: '#CCB22F',
+            main: '#BAA22B',
         },
         warning: {
             main: '#DE946A',
@@ -24,8 +24,9 @@ let theme = createMuiTheme({
             main: '#05199C'
         },
         neutral: {
-            main: '#9e9e9e',
-            dark: 'rgba(0, 0, 0, 0.81)'
+            main: 'rgba(0, 0, 0, 0.55)',
+            dark: 'rgba(0, 0, 0, 0.81)',
+            light: 'rgba(0, 0, 0, 0.05)'
         }
     },
     typography: {

@@ -1,5 +1,17 @@
+@import "src/styles/colors";
+
+
 .about-desc{
   max-width: 600px;
   margin: 16px auto;
   justify-content: left;
+}
+
+.link {
+  color: $navy;
+  padding: 0;
+}
+
+.link:hover{
+  color: $gold;
 }

@@ -38,8 +38,8 @@ export class About extends React.Component {
                 >
                 </ParallaxBanner>
                 <h2>I'm Jared. I make things on the internet.</h2>
-                <p className="about-desc">I'm currently a Senior Consultant and Lead Developer at Arup, where I lead a small
-                    team of junior developers, deliver solutions across the development stack, and help drive the direction
+                <p className="about-desc">I'm currently a Senior Consultant and Lead Developer at <a href="https://arup.com/" target="_blank" rel="noreferrer" className="link">Arup</a>, where I lead a small
+                    team of developers, deliver solutions across the development stack, and help drive the direction
                     of digital in the Americas. I love podcasts, running in Central Park, reading too much sci-fi, and
                     hiking to stand on top of tall things.</p>
             </div>

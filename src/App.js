@@ -119,12 +119,12 @@ const skills = [
     {label: 'Angular', color: 'secondary'},
     {label: 'NGRX', color: 'secondary'},
     {label: 'React', color: 'secondary'},
-    {label: 'Node.js', color: 'primary'},
+    {label: 'Node.js', color: 'secondary'},
     {label: 'SQL', color: 'primary'},
     {label: 'PostgreSQL', color: 'secondary'},
-    {label: 'Devops', color: 'primary'},
+    {label: 'Devops', color: 'default'},
     {label: 'Git', color: 'secondary'},
-    {label: 'Docker', color: 'primary'},
+    {label: 'Docker', color: 'secondary'},
     {label: 'Serverless', color: 'secondary'},
     {label: 'JSON', color: 'secondary'},
     {label: 'Amazon Web Services', color: 'secondary'},
@@ -134,6 +134,7 @@ const skills = [
     {label: 'Linux', color: 'secondary'},
     {label: 'Agile', color: 'default'},
     {label: 'Solution Architecture', color: 'default'},
+    {label: 'Responsive Design', color: 'default'},
 ]
 
 function App() {
@@ -196,10 +197,10 @@ function App() {
                         <Parallax y={[-10, 10]} tagOuter="figure">
                             <h1 className="section-title">EXPERIENCE</h1>
                         </Parallax>
-                        <Parallax y={[-20, 20]} tagOuter="figure">
+                        <Parallax y={[-10, 10]} tagOuter="figure">
                             <WorkTimeline work={work}/>
                         </Parallax>
-                        <Parallax y={[-20, 20]} tagOuter="figure">
+                        <Parallax y={[-10, 10]} tagOuter="figure">
                             <Grid container direction="row" className={'skills-legend'}>
                                 <Chip size="small" label={'Languages'} className={'category-1'}/>
                                 <Chip size="small" label={'Frameworks + Tools'} className={'category-2'}/>
