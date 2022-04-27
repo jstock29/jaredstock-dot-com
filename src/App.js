@@ -136,6 +136,7 @@ const skills = [
     {label: 'Solution Architecture', color: 'default'},
     {label: 'Responsive Design', color: 'default'},
     {label: 'Bash', color: 'primary'},
+    {label: 'MongoDB', color: 'secondary'},
 ]
 
 function App() {
