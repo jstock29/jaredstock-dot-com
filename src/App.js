@@ -76,6 +76,11 @@ const work = [
         text: 'Delivered district energy modeling platfrom on Google Cloud Platform',
         color: 'primary'
     },
+    {
+        date: '2022',
+        text: 'Joined Thoughtworks as a Senior Developer',
+        color: 'primary'
+    },
 ]
 
 const publications = [
