@@ -1,6 +1,6 @@
 import React from "react";
 import './About.scss'
-import {ParallaxBanner} from "react-scroll-parallax";
+import { ParallaxBanner } from "react-scroll-parallax";
 
 const small = 'https://jareds-file-sharing.s3.amazonaws.com/jared_on_stuff_sq.jpg';
 const medium = 'https://jareds-file-sharing.s3.amazonaws.com/jared_on_stuff.jpeg';
@@ -38,8 +38,8 @@ export class About extends React.Component {
                 >
                 </ParallaxBanner>
                 <h2>I'm Jared. I make things on the internet.</h2>
-                <p className="about-desc">I'm currently between jobs, but will soon be starting at <a href="https://www.thoughtworks.com/" target="_blank" rel="noreferrer" className="link">Thoughtworks</a> as a Senior Developer. I love podcasts, running in Central Park, reading too much sci-fi, and
-                    hiking to stand on top of tall things. I can also tell you the best bagel in New York (for a price).</p>
+                <p className="about-desc">I'm a senior developer at <a href="https://www.thoughtworks.com/" target="_blank" rel="noreferrer" className="link">Thoughtworks</a> as a Senior Developer. I love podcasts, running in Central Park, reading too much sci-fi, and
+                    hiking to stand on top of tall things. I can also tell you where to find the best bagel in New York.</p>
             </div>
 
         )
