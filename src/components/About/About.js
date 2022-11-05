@@ -38,7 +38,7 @@ export class About extends React.Component {
                 >
                 </ParallaxBanner>
                 <h2>I'm Jared. I make things on the internet.</h2>
-                <p className="about-desc">I'm a senior developer at <a href="https://www.thoughtworks.com/" target="_blank" rel="noreferrer" className="link">Thoughtworks</a> as a Senior Developer. I love podcasts, running in Central Park, reading too much sci-fi, and
+                <p className="about-desc">I'm a technologist everywhere and senior developer at <a href="https://www.thoughtworks.com/" target="_blank" rel="noreferrer" className="link">Thoughtworks</a>. I love podcasts, running in Central Park, reading too much sci-fi, and
                     hiking to stand on top of tall things. I can also tell you where to find the best bagel in New York.</p>
             </div>
 
