@@ -1,5 +1,5 @@
 import './Skill.scss'
-import {Chip} from "@material-ui/core";
+import { Chip } from "@mui/material";
 
 
 export function Skill(props) {

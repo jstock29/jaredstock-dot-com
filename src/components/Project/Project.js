@@ -1,9 +1,10 @@
 import './Project.scss'
-import {Parallax} from "react-scroll-parallax";
-import {Box, Grid} from "@material-ui/core";
-import {GitHub, Link} from "@material-ui/icons";
+import { Parallax } from "react-scroll-parallax";
+import { Box, Grid } from "@mui/material";
+import { Link } from "@mui/material";
+import GitHubIcon from '@mui/icons-material/GitHub';
 
-function isMobile(){
+function isMobile() {
     let width = window.innerWidth;
     if (width <= 768) {
         return true;
@@ -13,7 +14,7 @@ function isMobile(){
 }
 
 export function Project(props) {
-    if(!isMobile()) {
+    if (!isMobile()) {
         if (!props.alternate) {
             return (
                 <Parallax className="project" y={[-20, 20]} tagOuter="figure">
@@ -28,10 +29,10 @@ export function Project(props) {
                             <h2 className={'project-heading'}>{props.title}</h2>
                             <p className="project-desc">{props.text}</p>
                             <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
-                                <GitHub style={{fontSize: 20}}/>
+                                <GitHubIcon style={{ fontSize: 20 }} />
                             </a>
                             <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                                <Link style={{fontSize: 20}}/>
+                                <Link style={{ fontSize: 20 }} />
                             </a>
                         </div>
                         <div>
@@ -50,7 +51,7 @@ export function Project(props) {
                     <Grid
                         container
                         direction="row"
-                        justify="space-evenly"
+                        justify="space-around"
                         alignItems="center"
                         className={'project'}
                     >
@@ -65,10 +66,10 @@ export function Project(props) {
                             <h2 className={'project-heading'}>{props.title}</h2>
                             <p className="project-desc">{props.text}</p>
                             <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
-                                <GitHub style={{fontSize: 20}}/>
+                                <GitHubIcon style={{ fontSize: 20 }} />
                             </a>
                             <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                                <Link style={{fontSize: 20}}/>
+                                <Link style={{ fontSize: 20 }} />
                             </a>
                         </div>
 
@@ -76,13 +77,13 @@ export function Project(props) {
                 </Parallax>
             )
         }
-    }else{
-        return(
+    } else {
+        return (
             <Parallax className="project" y={[-20, 20]} tagOuter="figure">
                 <Grid
                     container
                     direction="row"
-                    justify="space-evenly"
+                    justify="space-around"
                     alignItems="center"
                     className={'project'}
                 >
@@ -97,10 +98,10 @@ export function Project(props) {
                         <h2 className={'project-heading'}>{props.title}</h2>
                         <p className="project-desc">{props.text}</p>
                         <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
-                            <GitHub style={{fontSize: 20}}/>
+                            <GitHubIcon style={{ fontSize: 20 }} />
                         </a>
                         <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                            <Link style={{fontSize: 20}}/>
+                            <Link style={{ fontSize: 20 }} />
                         </a>
                     </div>
 

@@ -1,7 +1,7 @@
 import './Publication.scss'
 import {Parallax} from "react-scroll-parallax";
-import {Box, Grid} from "@material-ui/core";
-import {Link} from "@material-ui/icons";
+import { Box, Grid } from "@mui/material";
+import { Link } from "@mui/material";
 
 function isMobile() {
     let width = window.innerWidth;

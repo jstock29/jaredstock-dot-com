@@ -22,23 +22,23 @@
 
 .content {
   width: 400px;
+  margin: 8px;
 }
 
-a > h2 {
-  color:$navy ;
+a>h2 {
+  color: $navy ;
   text-decoration: none;
   cursor: pointer;
 }
 
-a > h2:hover {
+a>h2:hover {
   color: $gold;
 }
 
-.article-title{
+.article-title {
   margin-bottom: 0;
 }
 
-.publisher{
+.publisher {
   margin-top: 0;
 }
-

@@ -1,6 +1,6 @@
 @import "src/styles/colors";
 
-.project{
+.project {
   position: relative;
   padding: 8px;
   margin: 24px 0;
@@ -12,22 +12,23 @@
   height: auto;
 }
 
-.project-image{
+.project-image {
   margin-bottom: 24px;
   //display: block;
   //height: 280px;
   //width: auto;
 }
 
-.project-desc{
+.project-desc {
   //max-width: 360px;
   //width: 360px;
 }
 
-.project-heading{
+.project-heading {
   color: $navy;
 }
 
-.content{
+.content {
   width: 400px;
+  margin: 8px;
 }

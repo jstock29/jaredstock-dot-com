@@ -1,18 +1,18 @@
 import './App.scss';
-import {Parallax, ParallaxProvider} from 'react-scroll-parallax';
+import { Parallax, ParallaxProvider } from 'react-scroll-parallax';
 import React from "react";
-import {Scroll} from "./components/Scroll/Scroll";
-import {Project} from "./components/Project/Project";
-import {WorkTimeline} from "./components/WorkTimeline/WorkTimeline";
-import {Publication} from "./components/Publication/Publication";
-import {About} from "./components/About/About";
-import {Skill} from "./components/Skill/Skill";
-import {Chip, Grid, Hidden} from "@material-ui/core";
+import { Scroll } from "./components/Scroll/Scroll";
+import { Project } from "./components/Project/Project";
+import { WorkTimeline } from "./components/WorkTimeline/WorkTimeline";
+import { Publication } from "./components/Publication/Publication";
+import { About } from "./components/About/About";
+import { Skill } from "./components/Skill/Skill";
+import { Chip, Grid, Hidden } from "@mui/material";
 
 const projects = [
     {
         title: 'Social Data',
-        text: "I'm leading the development of an open source app and open data for a variety of social datasets in the US.",
+        text: "I led the development of an open source app and open data for a variety of social datasets in the US.",
         image: 'https://jareds-file-sharing.s3.amazonaws.com/social-data.png',
         link: 'https://share.streamlit.io/arup-group/social-data/run.py',
         github: 'https://github.com/arup-group/social-data'
@@ -111,37 +111,37 @@ const publications = [
 ]
 
 const skills = [
-    {label: 'Python', color: 'primary'},
-    {label: 'Streamlit', color: 'secondary'},
-    {label: 'Data Analysis', color: 'default'},
-    {label: 'Data Science', color: 'default'},
-    {label: 'Machine Learning', color: 'default'},
-    {label: 'Genetic Algorithms', color: 'default'},
-    {label: 'Javascript', color: 'primary'},
-    {label: 'Typescript', color: 'primary'},
-    {label: 'HTML', color: 'primary'},
-    {label: 'CSS', color: 'primary'},
-    {label: 'Angular', color: 'secondary'},
-    {label: 'NGRX', color: 'secondary'},
-    {label: 'React', color: 'secondary'},
-    {label: 'Node.js', color: 'secondary'},
-    {label: 'SQL', color: 'primary'},
-    {label: 'PostgreSQL', color: 'secondary'},
-    {label: 'Devops', color: 'default'},
-    {label: 'Git', color: 'secondary'},
-    {label: 'Docker', color: 'secondary'},
-    {label: 'Serverless', color: 'secondary'},
-    {label: 'JSON', color: 'secondary'},
-    {label: 'Amazon Web Services', color: 'secondary'},
-    {label: 'Google Cloud Platform', color: 'secondary'},
-    {label: 'Websockets', color: 'default'},
-    {label: 'Parallel Programming', color: 'default'},
-    {label: 'Linux', color: 'secondary'},
-    {label: 'Agile', color: 'default'},
-    {label: 'Solution Architecture', color: 'default'},
-    {label: 'Responsive Design', color: 'default'},
-    {label: 'Bash', color: 'primary'},
-    {label: 'MongoDB', color: 'secondary'},
+    { label: 'Python', color: 'primary' },
+    { label: 'Streamlit', color: 'secondary' },
+    { label: 'Data Analysis', color: 'default' },
+    { label: 'Data Science', color: 'default' },
+    { label: 'Machine Learning', color: 'default' },
+    { label: 'Genetic Algorithms', color: 'default' },
+    { label: 'Javascript', color: 'primary' },
+    { label: 'Typescript', color: 'primary' },
+    { label: 'HTML', color: 'primary' },
+    { label: 'CSS', color: 'primary' },
+    { label: 'Angular', color: 'secondary' },
+    { label: 'NGRX', color: 'secondary' },
+    { label: 'React', color: 'secondary' },
+    { label: 'Node.js', color: 'secondary' },
+    { label: 'SQL', color: 'primary' },
+    { label: 'PostgreSQL', color: 'secondary' },
+    { label: 'Devops', color: 'default' },
+    { label: 'Git', color: 'secondary' },
+    { label: 'Docker', color: 'secondary' },
+    { label: 'Serverless', color: 'secondary' },
+    { label: 'JSON', color: 'secondary' },
+    { label: 'Amazon Web Services', color: 'secondary' },
+    { label: 'Google Cloud Platform', color: 'secondary' },
+    { label: 'Websockets', color: 'default' },
+    { label: 'Parallel Programming', color: 'default' },
+    { label: 'Linux', color: 'secondary' },
+    { label: 'Agile', color: 'default' },
+    { label: 'Solution Architecture', color: 'default' },
+    { label: 'Responsive Design', color: 'default' },
+    { label: 'Bash', color: 'primary' },
+    { label: 'MongoDB', color: 'secondary' },
 ]
 
 function App() {
@@ -152,25 +152,25 @@ function App() {
     for (let [i, proj] of projects.entries()) {
         if (i % 2 === 0) {
             projectsList.push(<Project title={proj.title} text={proj.text} image={proj.image} link={proj.link}
-                                       key={proj.title} alternate={false}/>)
+                key={proj.title} alternate={false} />)
         } else {
             projectsList.push(<Project title={proj.title} text={proj.text} image={proj.image} link={proj.link}
-                                       key={proj.title} alternate={true}/>)
+                key={proj.title} alternate={true} />)
         }
     }
 
     for (let [i, pub] of publications.entries()) {
         if (i % 2 === 0) {
             publicationList.push(<Publication title={pub.title} text={pub.text} image={pub.image} link={pub.link}
-                                              key={pub.title} alternate={false}/>)
-        }else{
+                key={pub.title} alternate={false} />)
+        } else {
             publicationList.push(<Publication title={pub.title} text={pub.text} image={pub.image} link={pub.link}
-                                              key={pub.title} alternate={true}/>)
+                key={pub.title} alternate={true} />)
         }
     }
 
     for (let skill of skills.sort((a, b) => (a.label > b.label) ? 1 : -1)) {
-        skillsList.push(<Skill label={skill.label} color={skill.color} key={skill.label}/>)
+        skillsList.push(<Skill label={skill.label} color={skill.color} key={skill.label} />)
     }
 
     return (
@@ -193,7 +193,7 @@ function App() {
             </Hidden>
             <ParallaxProvider>
                 <div className="App">
-                    <Scroll/>
+                    <Scroll />
                     <div className="about" id="about">
                         {/*<Parallax y={[-20, 20]}>*/}
                         {/*<h1 className="section-title">ABOUT</h1>*/}
@@ -205,19 +205,19 @@ function App() {
                             <h1 className="section-title">EXPERIENCE</h1>
                         </Parallax>
                         <Parallax y={[-10, 10]} tagOuter="figure">
-                            <WorkTimeline work={work}/>
+                            <WorkTimeline work={work} />
                         </Parallax>
                         <Parallax y={[-10, 10]} tagOuter="figure">
                             <Grid container direction="row" className={'skills-legend'}>
-                                <Chip size="small" label={'Languages'} className={'category-1'}/>
-                                <Chip size="small" label={'Frameworks + Tools'} className={'category-2'}/>
-                                <Chip size="small" label={'Skills'} className={'category-3'}/>
+                                <Chip size="small" label={'Languages'} className={'category-1'} />
+                                <Chip size="small" label={'Frameworks + Tools'} className={'category-2'} />
+                                <Chip size="small" label={'Skills'} className={'category-3'} />
                             </Grid>
                             <Grid container direction="row" justify="space-evenly" alignItems="center" className={'skills-grid'}>
                                 {skillsList}
                             </Grid>
                             <a href='https://jareds-file-sharing.s3.amazonaws.com/Jared+Stock+Resume.pdf'
-                               target="_blank" rel="noreferrer" className="link">
+                                target="_blank" rel="noreferrer" className="link">
                                 <h4 className={'resume'}>Resume</h4>
                             </a>
                         </Parallax>
@@ -226,13 +226,17 @@ function App() {
                         <Parallax y={[-10, 10]} tagOuter="figure">
                             <h1 className="section-title">PROJECTS</h1>
                         </Parallax>
-                        {projectsList}
+                        <Grid container direction="column" justify="space-evenly" alignItems="center" >
+                            {projectsList}
+                        </Grid>
                     </div>
                     <div className="publications" id="publications">
                         <Parallax y={[-10, 10]} tagOuter="figure">
                             <h1 className="section-title">PUBLICATIONS</h1>
                         </Parallax>
-                        {publicationList}
+                        <Grid container direction="column" justify="space-evenly" alignItems="center" >
+                            {publicationList}
+                        </Grid>
                     </div>
                     <footer className={'footer'}>
                         Jared Stock | 2021 | NYC

@@ -1,12 +1,12 @@
 import React from 'react';
-import TimelineItem from '@material-ui/lab/TimelineItem';
-import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
-import TimelineConnector from '@material-ui/lab/TimelineConnector';
-import TimelineContent from '@material-ui/lab/TimelineContent';
-import {makeStyles} from "@material-ui/core/styles";
-import TimelineDot from '@material-ui/lab/TimelineDot';
-import {TimelineOppositeContent} from "@material-ui/lab";
-import {Typography} from "@material-ui/core";
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import { makeStyles } from '@mui/styles';
+import TimelineDot from '@mui/lab/TimelineDot';
+import { TimelineOppositeContent } from "@mui/lab";
+import { Typography } from "@mui/material";
 import './WorkTimelineItem.scss'
 
 const useStyles = makeStyles((theme) => ({
@@ -19,34 +19,34 @@ const useStyles = makeStyles((theme) => ({
     TimelineContent: {
         textAlign: "initial",
         color: theme.palette.neutral.main,
-        minWidth:"100px",
+        minWidth: "100px",
     }
 }));
 
 
 export function WorkTimelineItem(props) {
     const classes = useStyles();
-    if (!props.last){
+    if (!props.last) {
         return (
             <TimelineItem>
                 <TimelineOppositeContent>
                     <Typography color="textSecondary">{props.date}</Typography>
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                    <TimelineDot color={props.color}/>
-                    <TimelineConnector className={classes.MuiTimelineConnector}/>
+                    <TimelineDot color={props.color} />
+                    <TimelineConnector className={classes.MuiTimelineConnector} />
                 </TimelineSeparator>
                 <TimelineContent className={classes.TimelineContent}>{props.text}</TimelineContent>
             </TimelineItem>
         )
-    }else {
+    } else {
         return (
             <TimelineItem>
                 <TimelineOppositeContent>
                     <Typography color="textSecondary">{props.date}</Typography>
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                    <TimelineDot color={props.color}/>
+                    <TimelineDot color={props.color} />
                 </TimelineSeparator>
                 <TimelineContent className={classes.TimelineContent}>{props.text}</TimelineContent>
             </TimelineItem>

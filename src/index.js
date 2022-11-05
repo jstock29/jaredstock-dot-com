@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {createMuiTheme, responsiveFontSizes, ThemeProvider} from '@material-ui/core/styles';
+import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 
 
-let theme = createMuiTheme({
+let theme = createTheme({
     palette: {
         default:{
             main:'#9e9e9e'
