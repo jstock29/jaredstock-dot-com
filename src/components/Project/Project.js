@@ -1,7 +1,5 @@
 import './Project.scss'
-import { Parallax } from "react-scroll-parallax";
 import { Box, Grid } from "@mui/material";
-import { Link } from "@mui/material";
 import GitHubIcon from '@mui/icons-material/GitHub';
 
 function isMobile() {
@@ -17,7 +15,7 @@ export function Project(props) {
     if (!isMobile()) {
         if (!props.alternate) {
             return (
-                <Parallax className="project" y={[-20, 20]} tagOuter="figure">
+                <div className="project">
                     <Grid
                         container
                         direction="row"
@@ -28,12 +26,14 @@ export function Project(props) {
                         <div className={'content'}>
                             <h2 className={'project-heading'}>{props.title}</h2>
                             <p className="project-desc">{props.text}</p>
-                            <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
-                                <GitHubIcon style={{ fontSize: 20 }} />
-                            </a>
-                            <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                                <Link style={{ fontSize: 20 }} />
-                            </a>
+                            {props.github && (
+                                <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
+                                    <GitHubIcon style={{ fontSize: 20 }} />
+                                </a>
+                            )}
+                            {/*<a href={props.link} target="_blank" rel="noreferrer" className="link-icon">*/}
+                            {/*    <Link style={{ fontSize: 20 }} />*/}
+                            {/*</a>*/}
                         </div>
                         <div>
                             <Box>
@@ -43,11 +43,11 @@ export function Project(props) {
                             </Box>
                         </div>
                     </Grid>
-                </Parallax>
+                </div>
             )
         } else {
             return (
-                <Parallax className="project" y={[-20, 20]} tagOuter="figure">
+                <div className="project">
                     <Grid
                         container
                         direction="row"
@@ -65,21 +65,23 @@ export function Project(props) {
                         <div className={'content'}>
                             <h2 className={'project-heading'}>{props.title}</h2>
                             <p className="project-desc">{props.text}</p>
-                            <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
-                                <GitHubIcon style={{ fontSize: 20 }} />
-                            </a>
-                            <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                                <Link style={{ fontSize: 20 }} />
-                            </a>
+                            {props.github && (
+                                <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
+                                    <GitHubIcon style={{ fontSize: 20 }} />
+                                </a>
+                            )}
+                            {/*<a href={props.link} target="_blank" rel="noreferrer" className="link-icon">*/}
+                            {/*    <Link style={{ fontSize: 20 }} />*/}
+                            {/*</a>*/}
                         </div>
 
                     </Grid>
-                </Parallax>
+                </div>
             )
         }
     } else {
         return (
-            <Parallax className="project" y={[-20, 20]} tagOuter="figure">
+            <div className="project">
                 <Grid
                     container
                     direction="row"
@@ -94,19 +96,21 @@ export function Project(props) {
                             </a>
                         </Box>
                     </div>
-                    <div className={'content'}>
+                    <div className={'content'}>s
                         <h2 className={'project-heading'}>{props.title}</h2>
                         <p className="project-desc">{props.text}</p>
-                        <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
-                            <GitHubIcon style={{ fontSize: 20 }} />
-                        </a>
-                        <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                            <Link style={{ fontSize: 20 }} />
-                        </a>
+                        {props.github && (
+                            <a href={props.github} target="_blank" rel="noreferrer" className="link-icon">
+                                <GitHubIcon style={{ fontSize: 20 }} />
+                            </a>
+                        )}
+                        {/*<a href={props.link} target="_blank" rel="noreferrer" className="link-icon">*/}
+                        {/*    <Link style={{ fontSize: 20 }} />*/}
+                        {/*</a>*/}
                     </div>
 
                 </Grid>
-            </Parallax>
+            </div>
         )
     }
 

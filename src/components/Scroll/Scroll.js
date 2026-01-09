@@ -21,9 +21,9 @@ export const Scroll = () => (
             <a href="https://github.com/jstock29" title="Github" target="_blank" rel="noreferrer" className="link-icon">
                 <GitHubIcon style={{ fontSize: 26 }} />
             </a>
-            <a href="https://twitter.com/jaredstock" title="Twitter" target="_blank" rel="noreferrer" className="link-icon">
-                <TwitterIcon style={{ fontSize: 26 }} />
-            </a>
+            {/*<a href="https://twitter.com/jaredstock" title="Twitter" target="_blank" rel="noreferrer" className="link-icon">*/}
+            {/*    <TwitterIcon style={{ fontSize: 26 }} />*/}
+            {/*</a>*/}
             <a href="https://www.linkedin.com/in/jaredstock/" title="LinkedIn" target="_blank" rel="noreferrer" className="link-icon">
                 <LinkedInIcon style={{ fontSize: 26 }} />
             </a>

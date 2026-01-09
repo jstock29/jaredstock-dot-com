@@ -1,5 +1,4 @@
 import './Publication.scss'
-import {Parallax} from "react-scroll-parallax";
 import { Box, Grid } from "@mui/material";
 import { Link } from "@mui/material";
 
@@ -17,7 +16,7 @@ export function Publication(props) {
     if (!isMobile()) {
         if (props.alternate) {
             return (
-                <Parallax className="publication" y={[-20, 20]} tagOuter="figure">
+                <div className="publication">
                     <Grid
                         container
                         direction="row"
@@ -30,7 +29,7 @@ export function Publication(props) {
                                 <h2>{props.title}</h2>
                             </a>
                             <p>{props.text} <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                                <Link style={{fontSize: 20}}/>
+                                {/*<Link style={{fontSize: 20}}/>*/}
                             </a></p>
 
                         </div>
@@ -42,11 +41,11 @@ export function Publication(props) {
                             </Box>
                         </div>
                     </Grid>
-                </Parallax>
+                </div>
             )
         } else {
             return (
-                <Parallax className="publication" y={[-20, 20]} tagOuter="figure">
+                <div className="publication">
                     <Grid
                         container
                         direction="row"
@@ -66,16 +65,16 @@ export function Publication(props) {
                                 <h2>{props.title}</h2>
                             </a>
                             <p>{props.text} <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                                <Link style={{fontSize: 20}}/>
+                                {/*<Link style={{fontSize: 20}}/>*/}
                             </a></p>
                         </div>
                     </Grid>
-                </Parallax>
+                </div>
             )
         }
     } else {
         return (
-            <Parallax className="publication" y={[-20, 20]} tagOuter="figure">
+            <div className="publication">
                 <Grid
                     container
                     direction="row"
@@ -95,11 +94,11 @@ export function Publication(props) {
                             <h2 className={'article-title'}>{props.title}</h2>
                         </a>
                         <p className={'publisher'}>{props.text} <a href={props.link} target="_blank" rel="noreferrer" className="link-icon">
-                            <Link style={{fontSize: 20}}/>
+                            {/*<Link style={{fontSize: 20}}/>*/}
                         </a></p>
                     </div>
                 </Grid>
-            </Parallax>
+            </div>
         )
     }
 }
