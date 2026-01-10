@@ -1,5 +1,5 @@
 import "./App.scss";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import { Scroll } from "./components/Scroll/Scroll";
 import { Project } from "./components/Project/Project";
@@ -164,6 +164,8 @@ const skills = [
 ];
 
 function App() {
+  const [skillsSectionVisible, setSkillsSectionVisible] = useState(false);
+  const skillsGridRef = useRef(null);
   const [activeFilter, setActiveFilter] = useState(null); // State to hold the active filter type
 
   const handleChipClick = (type) => {
@@ -234,6 +236,32 @@ function App() {
   const filteredSkills = activeFilter
     ? skills.filter((skill) => skill.type === activeFilter)
     : skills;
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSkillsSectionVisible(true);
+          observer.unobserve(entry.target); // Stop observing once visible
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.1,
+      },
+    );
+
+    if (skillsGridRef.current) {
+      observer.observe(skillsGridRef.current);
+    }
+
+    return () => {
+      if (skillsGridRef.current) {
+        observer.unobserve(skillsGridRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div>
@@ -307,16 +335,19 @@ function App() {
               direction="row"
               justifyContent="space-evenly"
               alignItems="center"
+              ref={skillsGridRef}
               className={"skills-grid"}
             >
               <AnimatePresence>
                 {filteredSkills
                   .sort((a, b) => (a.label > b.label ? 1 : -1))
-                  .map((skill) => (
+                  .map((skill, i) => (
                     <Skill
                       label={skill.label}
                       color={skill.color}
                       key={skill.label}
+                      pos={i}
+                      parentIsVisible={skillsSectionVisible}
                     />
                   ))}
               </AnimatePresence>
