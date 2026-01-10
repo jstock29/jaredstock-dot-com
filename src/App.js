@@ -11,28 +11,28 @@ import { Box, Chip, Grid } from "@mui/material";
 
 const projects = [
   {
-    title: "Social Data",
+    title: "social data",
     text: "I led the development of an open source app and open data for a variety of social datasets in the US.",
     image: "https://jareds-file-sharing.s3.amazonaws.com/social-data.png",
     link: "https://share.streamlit.io/arup-group/social-data/run.py",
     github: "https://github.com/arup-group/social-data",
   },
   {
-    title: "Deal or No Deal",
+    title: "deal or no deal",
     text: "I watched over 100 episodes of Deal or No Deal to conduct this analysis of the greatest game show of all time.",
     image: "https://jareds-file-sharing.s3.amazonaws.com/dond-interface.png",
     link: "https://share.streamlit.io/jstock29/dealnodeal/main/app.py",
     github: "https://github.com/jstock29/dealnodeal",
   },
   {
-    title: "Teetum.com",
+    title: "teetum.com",
     text: "I made a website for my friend's birthday as joke. You won't get the jokes.",
     image: "https://jareds-file-sharing.s3.amazonaws.com/teetum.png",
     link: "https://teetum.com/",
     github: "https://github.com/jstock29/teetum-dot-com",
   },
   {
-    title: "Bigballsannie.com",
+    title: "bigballsannie.com",
     text: "I made yet another joke website for my friend's birthday, only even weirder somehow.",
     image: "https://jareds-file-sharing.s3.amazonaws.com/bba.png",
     link: "https://bigballsannie.com/",
@@ -86,11 +86,16 @@ const work = [
     text: "Piloted kickboxing bag sensor with Hit House",
     color: "primary",
   },
+  // {
+  //   date: "2025",
+  //   text: "Piloted kickboxing bag sensor with Hit House",
+  //   color: "primary",
+  // },
 ];
 
 const publications = [
   {
-    title: "I figured out how Deal or No Deal works (kind of)",
+    title: "i figured out how deal or no deal works (kind of)",
     text: "Towards Data Science",
     image: "https://jareds-file-sharing.s3.amazonaws.com/tds.png",
     link: "https://towardsdatascience.com/i-figured-out-how-deal-or-no-deal-works-kind-of-875e63a8cef6",
@@ -108,7 +113,7 @@ const publications = [
   //     link: 'https://blog.streamlit.io/open-source-eviction-data/',
   // },
   {
-    title: "An open source approach to preventing evictions",
+    title: "an open source approach to preventing evictions",
     text: "Arup Digital News | Medium",
     image: "https://jareds-file-sharing.s3.amazonaws.com/arup-digital.png",
     link: "https://medium.com/arup-digital-news/an-open-source-approach-to-preventing-evictions-5ed4ad5daea6",
@@ -263,7 +268,7 @@ function App() {
         </div>
         <div className="work" id="work">
           <div>
-            <h1 className="section-title">EXPERIENCE</h1>
+            <h1 className="section-title">experience</h1>
           </div>
           <div>
             <WorkTimeline work={work} />
@@ -351,7 +356,7 @@ function App() {
         </div>
         <div className="projects" id="projects">
           <div>
-            <h1 className="section-title">PROJECTS</h1>
+            <h1 className="section-title">projects</h1>
           </div>
           <Grid
             container
@@ -364,7 +369,7 @@ function App() {
         </div>
         <div className="publications" id="publications">
           <div>
-            <h1 className="section-title">PUBLICATIONS</h1>
+            <h1 className="section-title">publications</h1>
           </div>
           <Grid
             container

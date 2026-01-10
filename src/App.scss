@@ -79,22 +79,21 @@ p {
 }
 
 .resume {
-    
 }
 
 .category-1 {
-    margin: 0 var.$spacing-xs; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs !important; /* Adjusted for more balanced spacing */
     background-color: colors.$navy !important;
     color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .category-2 {
-    margin: 0 var.$spacing-xs; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs !important; /* Adjusted for more balanced spacing */
     background-color: colors.$navy-light !important;
 }
 
 .category-3 {
-    margin: 0 var.$spacing-xs; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs !important; /* Adjusted for more balanced spacing */
     background-color: colors.$navy-super-light !important;
 }
 

@@ -18,8 +18,8 @@ export function Project(props) {
         <div className="project">
           <Grid
             container
-            direction="row"
-            justifyContent="space-evenly"
+            direction="column"
+            justifyContent="center"
             alignItems="center"
             className={"project"}
           >
@@ -59,8 +59,8 @@ export function Project(props) {
         <div className="project">
           <Grid
             container
-            direction="row"
-            justifyContent="space-around"
+            direction="column"
+            justifyContent="center"
             alignItems="center"
             className={"project"}
           >
@@ -101,8 +101,8 @@ export function Project(props) {
       <div className="project">
         <Grid
           container
-          direction="row"
-          justifyContent="space-around"
+          direction="column"
+          justifyContent="center"
           alignItems="center"
           className={"project"}
         >

@@ -38,7 +38,7 @@ export const Scroll = () => {
 
   return (
     <div className="scroll">
-      <h1 className="title">Jared Stock</h1>
+      <h1 className="title">jared stock</h1>
       <motion.div
         className="pointer"
         variants={containerVariants}

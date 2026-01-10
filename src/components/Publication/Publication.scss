@@ -3,12 +3,15 @@
 .publication {
     position: relative;
     padding: 8px;
-    margin: 24px 0;
+    margin: 24px auto; /* Center the publication block itself */
+    display: flex; /* Use flexbox to center children */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center children horizontally */
 }
 
 .responsive {
     width: 100%;
-    max-width: 400px;
+    max-width: 90%;
     height: auto;
 }
 
@@ -20,8 +23,10 @@
 }
 
 .content {
-    width: 400px;
-    margin: 8px;
+    width: 100% !important; /* Make content responsive */
+    max-width: 90% !important; /* Limit content width */
+    margin: 8px auto; /* Center the content block */
+    text-align: center; /* Center text content */
 }
 
 a > h2 {
