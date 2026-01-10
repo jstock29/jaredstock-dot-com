@@ -1,4 +1,5 @@
 @use "@styles/colors" as colors;
+@use "@styles/variables" as var;
 
 .App {
     text-align: center;
@@ -6,33 +7,33 @@
 }
 
 .section-title {
-    margin-bottom: 60px;
+    margin-bottom: var.$spacing-xl;
 }
 
 .projects {
     position: relative;
-    margin-bottom: 300px;
+    margin-bottom: var.$spacing-xxxxl;
 }
 
 .about {
     position: relative;
-    margin-bottom: 300px;
+    margin-bottom: var.$spacing-xxxxl;
 }
 
 .work {
     position: relative;
-    margin-bottom: 300px;
+    margin-bottom: var.$spacing-xxxxl;
 }
 
 .publications {
     position: relative;
-    margin-bottom: 300px;
+    margin-bottom: var.$spacing-xxxxl;
 }
 
 .anchors {
     position: fixed;
-    top: 16px;
-    margin-left: 16px;
+    top: var.$spacing-sm;
+    margin-left: var.$spacing-sm;
     z-index: 999;
 }
 
@@ -65,7 +66,7 @@ p {
 
 .footer {
     color: colors.$neutral;
-    margin: auto auto 8px auto;
+    margin: auto auto var.$spacing-xs auto;
 }
 
 .link {
@@ -78,22 +79,22 @@ p {
 }
 
 .resume {
-    //margin-top: -36px;
+    
 }
 
 .category-1 {
-    margin: 0 8px !important; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs; /* Adjusted for more balanced spacing */
     background-color: colors.$navy !important;
     color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .category-2 {
-    margin: 0 8px !important; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs; /* Adjusted for more balanced spacing */
     background-color: colors.$navy-light !important;
 }
 
 .category-3 {
-    margin: 0 8px !important; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs; /* Adjusted for more balanced spacing */
     background-color: colors.$navy-super-light !important;
 }
 
@@ -105,7 +106,7 @@ p {
 
 .skills-legend {
     max-width: 400px;
-    margin: 16px auto;
+    margin: var.$spacing-sm auto;
     justify-content: center;
 }
 

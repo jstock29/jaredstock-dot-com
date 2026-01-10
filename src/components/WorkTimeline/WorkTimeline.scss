@@ -1,4 +1,6 @@
+@use "@styles/variables" as var;
+
 .timeline {
-    margin-bottom: 200px;
-    margin-top: 120px;
+    margin-bottom: var.$spacing-xxxl;
+    margin-top: var.$spacing-xxl;
 }

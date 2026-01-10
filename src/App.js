@@ -176,62 +176,28 @@ function App() {
     }
   };
 
-  let projectsList = [];
-  let publicationList = [];
+  const projectsList = projects.map((proj, i) => (
+    <Project
+      title={proj.title}
+      text={proj.text}
+      image={proj.image}
+      link={proj.link}
+      github={proj.github}
+      key={proj.title}
+      alternate={i % 2 !== 0}
+    />
+  ));
 
-  for (let [i, proj] of projects.entries()) {
-    if (i % 2 === 0) {
-      projectsList.push(
-        <Project
-          title={proj.title}
-          text={proj.text}
-          image={proj.image}
-          link={proj.link}
-          github={proj.github}
-          key={proj.title}
-          alternate={false}
-        />,
-      );
-    } else {
-      projectsList.push(
-        <Project
-          title={proj.title}
-          text={proj.text}
-          image={proj.image}
-          link={proj.link}
-          github={proj.github}
-          key={proj.title}
-          alternate={true}
-        />,
-      );
-    }
-  }
-
-  for (let [i, pub] of publications.entries()) {
-    if (i % 2 === 0) {
-      publicationList.push(
-        <Publication
-          title={pub.title}
-          text={pub.text}
-          image={pub.image}
-          link={pub.link}
-          key={pub.title}
-          alternate={false}
-        />,
-      );
-    } else {
-      publicationList.push(
-        <Publication
-          title={pub.title}
-          text={pub.text}
-          image={pub.image}
-          link={pub.link}
-          key={pub.title}
-          alternate={true}
-        />,
-      );
-    }
-  }
+  const publicationList = publications.map((pub, i) => (
+    <Publication
+      title={pub.title}
+      text={pub.text}
+      image={pub.image}
+      link={pub.link}
+      key={pub.title}
+      alternate={i % 2 !== 0}
+    />
+  ));
 
   const filteredSkills = activeFilter
     ? skills.filter((skill) => skill.type === activeFilter)

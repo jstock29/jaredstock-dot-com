@@ -1,26 +1,24 @@
 @use "@styles/colors" as colors;
+@use "@styles/variables" as var;
 
 .skill-chip {
-    margin: 4px 2px;
+    margin: var.$spacing-xxs var.$spacing-xxs;
     background-color: colors.$navy-super-light !important;
-    //color: white !important;
 }
 
 .skill-chip-primary {
-    margin: 4px 2px;
+    margin: var.$spacing-xxs var.$spacing-xxs;
     background-color: colors.$navy !important;
     color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .skill-chip-secondary {
-    margin: 4px 2px;
+    margin: var.$spacing-xxs var.$spacing-xxs;
     background-color: colors.$navy-light !important;
-    //color: white !important;
 }
 
 .skill-chip:hover,
 .skill-chip-primary:hover,
 .skill-chip-secondary:hover {
-    //background-color: colors.$gold !important;
     box-shadow: 3px 3px rgba(0, 0, 0, 0.5);
 }
