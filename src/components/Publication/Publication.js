@@ -1,6 +1,5 @@
 import './Publication.scss'
 import { Box, Grid } from "@mui/material";
-import { Link } from "@mui/material";
 
 function isMobile() {
     let width = window.innerWidth;
@@ -20,7 +19,7 @@ export function Publication(props) {
                     <Grid
                         container
                         direction="row"
-                        justify="space-evenly"
+                        justifyContent="space-evenly"
                         alignItems="center"
                         className={'publication'}
                     >
@@ -49,7 +48,7 @@ export function Publication(props) {
                     <Grid
                         container
                         direction="row"
-                        justify="space-evenly"
+                        justifyContent="space-evenly"
                         alignItems="center"
                         className={'publication'}
                     >
@@ -78,7 +77,7 @@ export function Publication(props) {
                 <Grid
                     container
                     direction="row"
-                    justify="space-evenly"
+                    justifyContent="space-evenly"
                     alignItems="center"
                     className={'publication'}
                 >

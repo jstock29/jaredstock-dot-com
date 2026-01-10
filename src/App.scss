@@ -1,109 +1,119 @@
-@import "styles/colors";
+@use "@styles/colors" as colors;
 
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .section-title {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .projects {
-  position: relative;
-  margin-bottom: 300px;
+    position: relative;
+    margin-bottom: 300px;
 }
 
 .about {
-  position: relative;
-  margin-bottom: 300px;
+    position: relative;
+    margin-bottom: 300px;
 }
 
 .work {
-  position: relative;
-  margin-bottom: 300px;
+    position: relative;
+    margin-bottom: 300px;
 }
 
 .publications {
-  position: relative;
-  margin-bottom: 300px;
+    position: relative;
+    margin-bottom: 300px;
 }
 
 .anchors {
-  position: fixed;
-  top: 16px;
-  margin-left: 16px;
-  z-index: 999;
+    position: fixed;
+    top: 16px;
+    margin-left: 16px;
+    z-index: 999;
 }
 
 a > h5 {
-  color: $neutral;
-  text-decoration: none;
-  cursor: pointer;
+    color: colors.$neutral;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 a > h5:hover {
-  color: $gold;
+    color: colors.$gold;
 }
 
 a > h4:hover {
-  color: $gold;
+    color: colors.$gold;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: $navy;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: colors.$navy;
 }
 
 p {
-  color: $neutral-dark;
+    color: colors.$neutral-dark;
 }
 
 .footer {
-  color: $neutral;
-  margin: auto auto 8px auto;
+    color: colors.$neutral;
+    margin: auto auto 8px auto;
 }
 
 .link {
-  color: $navy;
-  padding: 0;
+    color: colors.$navy;
+    padding: 0;
 }
 
-.link:hover{
-  color: $gold;
+.link:hover {
+    color: colors.$gold;
 }
 
-.resume{
-  //margin-top: -36px;
+.resume {
+    //margin-top: -36px;
 }
 
-
-.category-1{
-  margin-right:4px;
-  background-color: $navy !important;
-  color: rgba(255, 255, 255, 0.85) !important;
+.category-1 {
+    margin: 0 8px !important; /* Adjusted for more balanced spacing */
+    background-color: colors.$navy !important;
+    color: rgba(255, 255, 255, 0.85) !important;
 }
 
-.category-2{
-  margin-right:4px;
-  background-color: $navy-light !important;
-
+.category-2 {
+    margin: 0 8px !important; /* Adjusted for more balanced spacing */
+    background-color: colors.$navy-light !important;
 }
 
-.category-3{
-  margin-right:4px;
-  background-color: $navy-super-light !important;
+.category-3 {
+    margin: 0 8px !important; /* Adjusted for more balanced spacing */
+    background-color: colors.$navy-super-light !important;
 }
 
-.category-1:hover, .category-2:hover, .category-3:hover{
-  //background-color: $gold !important;
+.category-1:hover,
+.category-2:hover,
+.category-3:hover {
+    //background-color: $gold !important;
 }
 
-.skills-legend{
-  max-width: 400px;
-  margin: 16px auto;
-  justify-content: center;
+.skills-legend {
+    max-width: 400px;
+    margin: 16px auto;
+    justify-content: center;
 }
 
-.skills-grid{
-  max-width: 800px;
-  margin: auto;
+.skills-grid {
+    max-width: 800px;
+    margin: auto;
+}
+
+.faded {
+    opacity: 0.4;
+    transition: opacity 0.3s ease-in-out;
 }

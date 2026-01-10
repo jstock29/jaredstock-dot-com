@@ -1,44 +1,43 @@
-@import "src/styles/colors";
+@use "@styles/colors" as colors;
 
 .publication {
-  position: relative;
-  padding: 8px;
-  margin: 24px 0;
+    position: relative;
+    padding: 8px;
+    margin: 24px 0;
 }
 
-
 .responsive {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
 }
 
 .pub-image {
-  margin-bottom: 24px;
-  //display: block;
-  //height: 280px;
-  //width: auto;
+    margin-bottom: 24px;
+    //display: block;
+    //height: 280px;
+    //width: auto;
 }
 
 .content {
-  width: 400px;
-  margin: 8px;
+    width: 400px;
+    margin: 8px;
 }
 
-a>h2 {
-  color: $navy ;
-  text-decoration: none;
-  cursor: pointer;
+a > h2 {
+    color: colors.$navy;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-a>h2:hover {
-  color: $gold;
+a > h2:hover {
+    color: colors.$gold;
 }
 
 .article-title {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .publisher {
-  margin-top: 0;
+    margin-top: 0;
 }

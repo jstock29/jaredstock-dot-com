@@ -15,7 +15,7 @@ export const Scroll = () => (
         <Grid
             container
             direction="row"
-            justify="space-evenly"
+            justifyContent="space-evenly"
             alignItems="center"
         >
             <a href="https://github.com/jstock29" title="Github" target="_blank" rel="noreferrer" className="link-icon">
