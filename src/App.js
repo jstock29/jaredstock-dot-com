@@ -166,6 +166,7 @@ const skills = [
 function App() {
   const [skillsSectionVisible, setSkillsSectionVisible] = useState(false);
   const skillsGridRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false); // State to manage hover for resume link animation
   const [activeFilter, setActiveFilter] = useState(null); // State to hold the active filter type
 
   const handleChipClick = (type) => {
@@ -324,7 +325,27 @@ function App() {
               rel="noreferrer"
               className="link"
             >
-              <h4 className={"resume"}>Resume</h4>
+              <motion.h4
+                className={"resume"}
+                onHoverStart={() => setIsHovered(true)}
+                onHoverEnd={() => setIsHovered(false)}
+                animate={
+                  isHovered
+                    ? {
+                        y: ["0%", "-25%", "0%"], // Increased bounce height
+                        rotate: [0, 5, -5, 0], // Added subtle rotation
+                        transition: {
+                          duration: 0.7, // Slightly faster to enhance visibility
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                      }
+                    : { y: "0%", rotate: 0 } // Reset rotate when not hovered
+                }
+                whileTap={{ scale: 0.9 }}
+              >
+                Resume
+              </motion.h4>
             </a>
           </div>
         </div>
