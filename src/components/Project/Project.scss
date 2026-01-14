@@ -1,5 +1,18 @@
 @use "@styles/colors" as colors;
 
+.project-item {
+    opacity: 0;
+    transform: translateY(50px);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.project-item-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .project {
     position: relative;
     padding: 8px;
@@ -12,13 +25,13 @@
 .responsive {
     width: 100%;
     max-width: 90%;
-    height: auto;
+    /* height: auto; */
 }
 
 .project-image {
     margin-bottom: 24px;
     //display: block;
-    //height: 280px;
+    /* height: 280px; */
     //width: auto;
 }
 
@@ -32,8 +45,8 @@
 }
 
 .content {
-    width: 100% !important; /* Make content responsive */
-    max-width: 90% !important; /* Limit content width */
+    width: 100% !important;
+    max-width: 90% !important;
     margin: 8px auto; /* Center the content block */
     text-align: center; /* Center text content */
 }

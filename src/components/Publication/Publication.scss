@@ -1,5 +1,18 @@
 @use "@styles/colors" as colors;
 
+.publication-item {
+    opacity: 0;
+    transform: translateY(50px);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.publication-item-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .publication {
     position: relative;
     padding: 8px;
@@ -23,8 +36,8 @@
 }
 
 .content {
-    width: 100% !important; /* Make content responsive */
-    max-width: 90% !important; /* Limit content width */
+    width: 100% !important;
+    max-width: 90% !important;
     margin: 8px auto; /* Center the content block */
     text-align: center; /* Center text content */
 }

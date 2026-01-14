@@ -10,8 +10,8 @@ export const Scroll = () => {
   const containerVariants = {
     animate: {
       transition: {
-        staggerChildren: 0.5, // Stagger animation of children for a more deliberate rhythm
-        delayChildren: 0.25, // Start animation immediately
+        staggerChildren: 0.1, // Stagger animation of children for a more deliberate rhythm
+        delayChildren: 0, // Start animation immediately
       },
     },
   };
@@ -19,17 +19,17 @@ export const Scroll = () => {
   const triangleVariants = {
     initial: { y: 0, scale: 1 },
     animate: {
-      y: [0, -25, 10, 0], // Individual bounce
+      y: [0, -22, 10, 0], // Individual bounce
       scale: [1, 1.03, 0.98, 1], // Individual pulse
       transition: {
         y: {
           repeat: Infinity,
-          duration: 1.8, // Snappier bounce
+          duration: 3, // Snappier bounce
           ease: "easeInOut",
         },
         scale: {
           repeat: Infinity,
-          duration: 1.8, // Snappier pulse
+          duration: 3, // Snappier pulse
           ease: "easeInOut",
         },
       },
