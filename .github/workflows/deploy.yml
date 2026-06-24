@@ -29,11 +29,11 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-          workload_identity_provider: "projects/ project_id: ${{ secrets.GCLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
-          service_account: "github-deployer@driven-binder-500400-c2.iam.gserviceaccount.com"
+          project_id: "${{ secrets.GCLOUD_PROJECT_ID }}"
+          workload_identity_provider: "projects/${{ secrets.GCLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "github-deployer@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com"
 
       - name: Deploy to Firebase
         run: |
           # npx runs the CLI immediately without a slow global installation step
-          npx firebase-tools deploy --only hosting --project driven-binder-500400-c2
+          npx firebase-tools deploy --only hosting --project ${{ secrets.GCLOUD_PROJECT_ID }}
