@@ -28,12 +28,12 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/82365835272/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
-          service_account: "github-deployer@driven-binder-500400-c2.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/${{ secrets.GCLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "github-deployer@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com"
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          projectId: driven-binder-500400-c2
+          projectId: ${{ secrets.GCLOUD_PROJECT_ID }}
           channelId: live
