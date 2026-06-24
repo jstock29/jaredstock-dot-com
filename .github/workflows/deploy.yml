@@ -32,8 +32,6 @@ jobs:
           service_account: "github-deployer@driven-binder-500400-c2.iam.gserviceaccount.com"
 
       - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          projectId: driven-binder-500400-c2
-          channelId: live
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only hosting --project ${{ secrets.GCLOUD_PROJECT_ID }}
