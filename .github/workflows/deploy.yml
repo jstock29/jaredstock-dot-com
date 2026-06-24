@@ -8,6 +8,7 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment: jaredstock-dot-com
     permissions:
       contents: read
       id-token: write # Required for Workload Identity Federation
