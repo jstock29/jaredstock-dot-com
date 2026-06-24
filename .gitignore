@@ -3,3 +3,7 @@ node_modules/
 build/
 dist/
 .DS_Store
+infra/.terraform/
+infra/.terraform.lock.hcl
+*.backup
+*.tfstate
