@@ -38,11 +38,15 @@ jobs:
       - name: Deploy to Firebase
         run: |
           npm install -g firebase-tools
+          echo "DEBUG: GCLOUD_PROJECT_ID is: ${{ secrets.GCLOUD_PROJECT_ID }}"
+          echo "DEBUG: GOOGLE_APPLICATION_CREDENTIALS path is: ${{ steps.auth.outputs.credentials_file_path }}"
+          # Check if the credentials file exists
+          ls -l ${{ steps.auth.outputs.credentials_file_path }}
+
           # We use the Service Account credentials directly
-          # This is the most reliable way to authenticate in GCP/GitHub environments.
           export GOOGLE_APPLICATION_CREDENTIALS=${{ steps.auth.outputs.credentials_file_path }}
-          firebase deploy --only hosting --project=${{ secrets.GCLOUD_PROJECT_ID }}
+
+          # Attempt deploy with debug output
+          firebase deploy --only hosting --project=${{ secrets.GCLOUD_PROJECT_ID }} --debug
         env:
-          # This should not be needed if GOOGLE_APPLICATION_CREDENTIALS is set,
-          # but ensuring the project ID is available.
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
