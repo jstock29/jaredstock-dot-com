@@ -26,28 +26,14 @@ jobs:
           npm run build
 
       - name: Authenticate to Google Cloud
-        id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/82365835272/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
-          service_account: "github-deployer@driven-binder-500400-c2.iam.gserviceaccount.com"
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+          workload_identity_provider: "projects/${{ secrets.GCLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "github-deployer@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com"
 
       - name: Deploy to Firebase
-        run: |
-          npm install -g firebase-tools
-
-          # Explicitly set the project ID if it's not being picked up
-          echo "Setting default project..."
-          firebase use driven-binder-500400-c2
-
-          # Force the use of the credential file via the standard GCloud path
-          # Firebase CLI uses this variable to authenticate.
-          export GOOGLE_APPLICATION_CREDENTIALS=${{ steps.auth.outputs.credentials_file_path }}
-
-          echo "Attempting deploy..."
-          firebase deploy --only hosting --project=driven-binder-500400-c2
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          projectId: ${{ secrets.GCLOUD_PROJECT_ID }}
+          channelId: live
