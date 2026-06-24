@@ -38,7 +38,10 @@ jobs:
       - name: Deploy to Firebase
         run: |
           npm install -g firebase-tools
+          # Use the Service Account provided by Workload Identity Federation
+          # to authenticate firebase-tools directly.
           firebase deploy --only hosting --project=${{ secrets.GCLOUD_PROJECT_ID }}
         env:
+          # This tells firebase-tools to use the Google Cloud service account credentials
+          # already configured by the google-github-actions/auth step.
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
-          FIREBASE_TOKEN: ${{ steps.auth.outputs.token }}
