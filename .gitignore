@@ -7,3 +7,4 @@ infra/.terraform/
 infra/.terraform.lock.hcl
 *.backup
 *.tfstate
+*scratch*.txt
