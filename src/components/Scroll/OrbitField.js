@@ -98,9 +98,27 @@ export const OrbitField = ({
   };
 
   useEffect(() => {
-    if (p5Ref.current) return;
+    // Ensure the container is ready
     if (!containerRef.current) return;
-    if (containerRef.current.querySelector("canvas")) return;
+
+    // --- DEFENSIVE CLEANUP ON MOUNT ---
+    // If the container already has a canvas, remove it before we do anything else.
+    // This handles scenarios where React unmounts/remounts are delayed or messy.
+    const existingCanvases = containerRef.current.querySelectorAll("canvas");
+    if (existingCanvases.length > 0) {
+      console.log(
+        `Force-clearing ${existingCanvases.length} existing canvas(es)`,
+      );
+      existingCanvases.forEach((c) => c.remove());
+    }
+
+    // Prevent redundant initialization
+    if (p5Ref.current) {
+      console.log("already initialized, skipping");
+      return;
+    }
+
+    console.log("create orbit field");
 
     const sketch = (p) => {
       let shapes = [];
@@ -111,6 +129,8 @@ export const OrbitField = ({
       let cnv;
 
       p.setup = () => {
+        p.clear();
+
         cnv = p.createCanvas(1, 1);
         cnv.parent(containerRef.current);
         cnv.style("position", "absolute");
@@ -142,6 +162,10 @@ export const OrbitField = ({
           }
         };
         window.addEventListener("resize", resizeCanvas);
+
+        // Keep a reference to the resize listener to remove it
+        p.removeResizeListener = () =>
+          window.removeEventListener("resize", resizeCanvas);
 
         shapes = [];
         for (let i = 0; i < cfg.numShapes; i++) {
@@ -182,19 +206,6 @@ export const OrbitField = ({
           prevMousePos.x = mousePos.x;
           prevMousePos.y = mousePos.y;
         }
-
-        /* if (cfg.hasOrbitPaths) {
-          p.noFill();
-          p.strokeWeight(0.5);
-          for (
-            let r = cfg.orbitPathRadius[0];
-            r <= cfg.orbitPathRadius[1];
-            r += cfg.orbitPathStep
-          ) {
-            p.stroke(200, 200, 200, 25);
-            p.ellipse(canvasCenter.x, canvasCenter.y, r * 2, r * 2);
-          }
-        } */
 
         shapes.forEach((s) => {
           s.angle += s.speed;
@@ -288,10 +299,46 @@ export const OrbitField = ({
     p5Ref.current = p5Instance;
 
     return () => {
-      p5Instance.remove();
-      p5Ref.current = null;
+      if (p5Ref.current) {
+        console.log("remove existing orbits");
+
+        p5Ref.current.removeResizeListener?.();
+        p5Ref.current.remove();
+        p5Ref.current = null;
+      }
+
+      // Ensure the container is explicitly cleared of ALL remaining canvas elements
+      if (containerRef.current) {
+        const canvases = containerRef.current.querySelectorAll("canvas");
+        if (canvases.length > 0) {
+          console.log(`removing ${canvases.length} canvas(es)`);
+          canvases.forEach((canvas) => canvas.remove());
+        }
+      }
     };
-  }, []);
+  }, [
+    cfg.numShapes,
+    cfg.sizeRange,
+    cfg.distanceRange,
+    cfg.speedRange,
+    cfg.shapeTypes,
+    cfg.wobbleRange,
+    cfg.wobbleSpeedRange,
+    cfg.orbitPathRadius,
+    cfg.orbitPathStep,
+    cfg.shadowBlur,
+    cfg.shadowColor,
+    cfg.fillAlpha,
+    cfg.sizeMultiplier,
+    cfg.hasOrbitPaths,
+    cfg.hasWobble,
+    cfg.hasMouseInteraction,
+    cfg.influenceRadius,
+    cfg.scatterMultiplier,
+    cfg.velocityInfluence,
+    cfg.springKRange,
+    cfg.dampingRange,
+  ]);
 
   return (
     <div

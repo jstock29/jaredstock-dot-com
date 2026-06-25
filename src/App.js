@@ -268,7 +268,7 @@ function App() {
         <div className="hero">
           <OrbitField
             className="orbits-container"
-            numShapes={24}
+            numShapes={29}
             sizeRange={[12, 36]}
             distanceRange={[180, 420]}
             speedRange={[0.005, 0.018]}
@@ -356,7 +356,7 @@ function App() {
             <div style={{ position: "relative", display: "inline-block" }}>
               <OrbitField
                 style={{ position: "absolute", zIndex: 0 }}
-                numShapes={4}
+                numShapes={7}
                 sizeRange={[2, 8]}
                 distanceRange={[30, 42]}
                 speedRange={[0.01, 0.02]}
