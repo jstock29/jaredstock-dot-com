@@ -31,9 +31,12 @@ export class About extends React.Component {
             backgroundImage: `url(${imgPath})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            // backgroundAttachment: 'fixed', // This creates the parallax-like effect
-            height: "600px",
+            height: "400px",
             width: "100%",
+            borderRadius: "16px",
+            margin: "0 auto 24px auto",
+            maxWidth: "800px",
+            boxShadow: "0 4px 24px rgba(9, 48, 107, 0.15)",
           }}
         ></div>
         <h2>i'm jared. i make things on the internet.</h2>

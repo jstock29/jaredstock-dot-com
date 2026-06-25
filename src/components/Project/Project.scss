@@ -24,15 +24,21 @@
 
 .responsive {
     width: 100%;
-    max-width: 90%;
-    /* height: auto; */
+    max-width: 520px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(9, 48, 107, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    object-fit: cover;
+}
+
+.responsive:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(9, 48, 107, 0.2);
 }
 
 .project-image {
-    margin-bottom: 24px;
-    //display: block;
-    /* height: 280px; */
-    //width: auto;
+    margin-bottom: 16px;
 }
 
 .project-desc {

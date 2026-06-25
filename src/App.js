@@ -1,7 +1,10 @@
 import "./App.scss";
+import "./components/Scroll/Scroll.scss";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
-import { Scroll } from "./components/Scroll/Scroll";
+import { OrbitField } from "./components/Scroll/OrbitField";
+import { EntryPointer } from "./components/Scroll/EntryPointer";
+import { PageTitle } from "./components/Scroll/PageTitle";
 import { Project } from "./components/Project/Project";
 import { WorkTimeline } from "./components/WorkTimeline/WorkTimeline";
 import { Publication } from "./components/Publication/Publication";
@@ -262,7 +265,33 @@ function App() {
         </div>
       </Box>
       <div className="App">
-        <Scroll />
+        <div className="hero">
+          <OrbitField
+            className="orbits-container"
+            numShapes={24}
+            sizeRange={[12, 36]}
+            distanceRange={[180, 420]}
+            speedRange={[0.005, 0.018]}
+            shapeTypes={["circle", "polygon", "rect", "diamond"]}
+            wobbleRange={[0, 1.5]}
+            wobbleSpeedRange={[0.0, 0.04]}
+            orbitPathRadius={[180, 420]}
+            orbitPathStep={60}
+            shadowBlur={6}
+            shadowColor="rgba(9, 48, 107, 0.18)"
+            fillAlpha={220}
+            sizeMultiplier={1.5}
+            influenceRadius={45}
+            scatterMultiplier={20}
+            velocityInfluence={1}
+            springKRange={[0.02, 0.06]}
+            dampingRange={[0.85, 0.95]}
+          />
+          <div className="hero-content">
+            <PageTitle />
+            {/* <EntryPointer />*/}
+          </div>
+        </div>
         <div className="about" id="about">
           <About></About>
         </div>
@@ -324,34 +353,57 @@ function App() {
                   ))}
               </AnimatePresence>
             </Grid>
-            <a
-              href="https://jareds-file-sharing.s3.amazonaws.com/Jared+Stock+Resume.pdf"
-              target="_blank"
-              rel="noreferrer"
-              className="link"
-            >
-              <motion.h4
-                className={"resume"}
-                onHoverStart={() => setIsHovered(true)}
-                onHoverEnd={() => setIsHovered(false)}
-                animate={
-                  isHovered
-                    ? {
-                        y: ["0%", "-25%", "0%"], // Increased bounce height
-                        rotate: [0, 5, -5, 0], // Added subtle rotation
-                        transition: {
-                          duration: 0.7, // Slightly faster to enhance visibility
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        },
-                      }
-                    : { y: "0%", rotate: 0 } // Reset rotate when not hovered
-                }
-                whileTap={{ scale: 0.9 }}
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <OrbitField
+                style={{ position: "absolute", zIndex: 0 }}
+                numShapes={4}
+                sizeRange={[2, 8]}
+                distanceRange={[30, 42]}
+                speedRange={[0.01, 0.02]}
+                colorPalette={["#09306B", "#4F83D1", "#BAA22B", "#D5C471"]}
+                shapeTypes={["circle", "polygon"]}
+                hasWobble={false}
+                hasOrbitPaths={false}
+                shadowBlur={4}
+                shadowColor="rgba(9, 48, 107, 0.15)"
+                fillAlpha={200}
+                sizeMultiplier={1}
+                influenceRadius={10}
+                scatterMultiplier={20}
+                velocityInfluence={1}
+                springKRange={[0.03, 0.08]}
+                dampingRange={[0.82, 0.92]}
+              />
+              <a
+                href="https://jareds-file-sharing.s3.amazonaws.com/Jared+Stock+Resume.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="link"
+                style={{ position: "relative", zIndex: 1 }}
               >
-                Resume
-              </motion.h4>
-            </a>
+                <motion.h4
+                  className={"resume"}
+                  // onHoverStart={() => setIsHovered(true)}
+                  // onHoverEnd={() => setIsHovered(false)}
+                  // animate={
+                  //   isHovered
+                  //     ? {
+                  //         y: ["0%", "-25%", "0%"],
+                  //         rotate: [0, 5, -5, 0],
+                  //         transition: {
+                  //           duration: 0.7,
+                  //           repeat: Infinity,
+                  //           ease: "easeInOut",
+                  //         },
+                  //       }
+                  //     : { y: "0%", rotate: 0 }
+                  // }
+                  // whileTap={{ scale: 0.9 }}
+                >
+                  Resume
+                </motion.h4>
+              </a>
+            </div>
           </div>
         </div>
         <div className="projects" id="projects">

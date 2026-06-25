@@ -8,26 +8,28 @@
 
 .section-title {
     margin-bottom: var.$spacing-xl;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
 }
 
 .projects {
     position: relative;
-    margin-bottom: var.$spacing-xxxxl;
+    margin-bottom: var.$spacing-xxxl;
 }
 
 .about {
     position: relative;
-    margin-bottom: var.$spacing-xxxxl;
+    margin-bottom: var.$spacing-xxxl;
 }
 
 .work {
     position: relative;
-    margin-bottom: var.$spacing-xxxxl;
+    margin-bottom: var.$spacing-xxxl;
 }
 
 .publications {
     position: relative;
-    margin-bottom: var.$spacing-xxxxl;
+    margin-bottom: var.$spacing-xxl;
 }
 
 .anchors {
@@ -83,25 +85,36 @@ p {
 }
 
 .category-1 {
-    margin: 0 var.$spacing-xs !important; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs !important;
     background-color: colors.$navy !important;
-    color: rgba(255, 255, 255, 0.85) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
 }
 
 .category-2 {
-    margin: 0 var.$spacing-xs !important; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs !important;
     background-color: colors.$navy-light !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
 }
 
 .category-3 {
-    margin: 0 var.$spacing-xs !important; /* Adjusted for more balanced spacing */
+    margin: 0 var.$spacing-xs !important;
     background-color: colors.$navy-super-light !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
 }
 
 .category-1:hover,
 .category-2:hover,
 .category-3:hover {
-    //background-color: $gold !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(9, 48, 107, 0.25);
+    border-color: colors.$gold-light !important;
 }
 
 .skills-legend {

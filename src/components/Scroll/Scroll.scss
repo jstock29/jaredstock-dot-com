@@ -1,22 +1,81 @@
 @use "@styles/colors" as colors;
 
-.scroll {
+/* Hero section - full viewport */
+.hero {
     position: relative;
-    top: 30vh;
-    width: 180px;
-    height: auto;
-    //letter-spacing: 0.3rem;
-    text-align: center;
-    //font-size: 2rem;
-    color: colors.$navy;
-    margin: 0 auto 75vh auto;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
 }
 
-svg {
-    display: block;
+/* Orbits canvas - background layer */
+.orbits-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: transparent;
+}
+
+/* Centered content overlay */
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Title */
+.title {
+    margin: 0 0 12px 0;
+    font-size: 2.5rem;
+    letter-spacing: 0.1em;
+    color: colors.$navy;
+    transition: color 0.2s ease;
+    user-select: none;
+}
+
+.title:hover {
+    color: colors.$gold;
+}
+
+/* Links */
+.links-grid {
+    margin-top: 8px;
+    justify-content: center;
+}
+
+.link-icon {
+    color: colors.$navy;
+    margin: 0 12px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.link-icon:hover {
+    color: colors.$gold;
+    transform: translateY(-2px);
+}
+
+/* Entry pointer / triangles */
+.pointer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.pointer-svg {
     width: 180px;
     height: auto;
-    background-color: transparent;
+    filter: drop-shadow(0px 4px 12px rgba(9, 48, 107, 0.25));
 }
 
 .fill-1 {
@@ -27,29 +86,7 @@ svg {
     fill: colors.$gold;
 }
 
-.fullscreen {
-    position: fixed;
-    width: 32px;
-    height: 32px;
-    bottom: 20px;
-    right: 20px;
-}
-
-.pointer {
-    /* filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.2)); */
-}
-
-.title {
-    margin-bottom: 40px;
-}
-
-.link-icon {
-    color: colors.$navy;
-    margin-left: 4px;
-    margin-right: 4px;
-    margin-bottom: 16px;
-}
-
-.link-icon:hover {
-    color: colors.$gold;
+/* Resume orbit accent */
+.resume-orbits {
+    pointer-events: none;
 }
