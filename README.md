@@ -1,7 +1,6 @@
-# Getting Started with Create React App
+# jaredstock.com
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
+[![Deploy to Firebase Hosting](https://github.com/jstock29/jaredstock-dot-com/actions/workflows/deploy.yml/badge.svg?event=push)](https://github.com/jstock29/jaredstock-dot-com/actions/workflows/deploy.yml)
 ## Available Scripts
 
 In the project directory, you can run:
