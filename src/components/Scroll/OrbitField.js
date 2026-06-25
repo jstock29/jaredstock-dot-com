@@ -297,7 +297,12 @@ export const OrbitField = ({
     <div
       ref={containerRef}
       className={className}
-      style={{ width: "100%", height: "100%", ...style }}
+      style={{
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none", // Fixes touch/scroll hijacking on mobile
+        ...style,
+      }}
     />
   );
 };
