@@ -55,17 +55,6 @@ export function Publication(props) {
           alignItems="center"
           className={"publication"}
         >
-          <div>
-            <Box>
-              <a href={props.link} target="_blank" rel="noreferrer">
-                <img
-                  src={props.image}
-                  className="pub-image responsive"
-                  alt={props.title}
-                ></img>
-              </a>
-            </Box>
-          </div>
           <div className={"content"}>
             <a
               href={props.link}
@@ -87,6 +76,17 @@ export function Publication(props) {
               </a>
             </p>
           </div>
+          <div>
+            <Box>
+              <a href={props.link} target="_blank" rel="noreferrer">
+                <img
+                  src={props.image}
+                  className="pub-image responsive"
+                  alt={props.title}
+                ></img>
+              </a>
+            </Box>
+          </div>
         </Grid>
       </div>
     );
@@ -100,17 +100,6 @@ export function Publication(props) {
           alignItems="center"
           className={"publication"}
         >
-          <div>
-            <Box>
-              <a href={props.link} target="_blank" rel="noreferrer">
-                <img
-                  src={props.image}
-                  className="responsive"
-                  alt={props.title}
-                ></img>
-              </a>
-            </Box>
-          </div>
           <div className={"content"}>
             <a
               href={props.link}
@@ -131,6 +120,17 @@ export function Publication(props) {
                 {/*<Link style={{fontSize: 20}}/>*/}
               </a>
             </p>
+          </div>
+          <div>
+            <Box>
+              <a href={props.link} target="_blank" rel="noreferrer">
+                <img
+                  src={props.image}
+                  className="responsive"
+                  alt={props.title}
+                ></img>
+              </a>
+            </Box>
           </div>
         </Grid>
       </div>

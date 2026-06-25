@@ -54,17 +54,6 @@ export function Project(props) {
           alignItems="center"
           className={"project"}
         >
-          <div>
-            <Box>
-              <a href={props.link} target="_blank" rel="noreferrer">
-                <img
-                  src={props.image}
-                  className="project-image responsive"
-                  alt={props.title}
-                ></img>
-              </a>
-            </Box>
-          </div>
           <div className={"content"}>
             <h2 className={"project-heading"}>{props.title}</h2>
             <p className="project-desc">{props.text}</p>
@@ -81,6 +70,17 @@ export function Project(props) {
             {/*<a href={props.link} target="_blank" rel="noreferrer" className="link-icon">*/}
             {/*    <Link style={{ fontSize: 20 }} />*/}
             {/*</a>*/}
+          </div>
+          <div>
+            <Box>
+              <a href={props.link} target="_blank" rel="noreferrer">
+                <img
+                  src={props.image}
+                  className="project-image responsive"
+                  alt={props.title}
+                ></img>
+              </a>
+            </Box>
           </div>
         </Grid>
       </div>
@@ -95,17 +95,6 @@ export function Project(props) {
           alignItems="center"
           className={"project"}
         >
-          <div>
-            <Box>
-              <a href={props.link} target="_blank" rel="noreferrer">
-                <img
-                  src={props.image}
-                  className="responsive"
-                  alt={props.title}
-                ></img>
-              </a>
-            </Box>
-          </div>
           <div className={"content"}>
             <h2 className={"project-heading"}>{props.title}</h2>
             <p className="project-desc">{props.text}</p>
@@ -122,6 +111,17 @@ export function Project(props) {
             {/*<a href={props.link} target="_blank" rel="noreferrer" className="link-icon">*/}
             {/*    <Link style={{ fontSize: 20 }} />*/}
             {/*</a>*/}
+          </div>
+          <div>
+            <Box>
+              <a href={props.link} target="_blank" rel="noreferrer">
+                <img
+                  src={props.image}
+                  className="responsive"
+                  alt={props.title}
+                ></img>
+              </a>
+            </Box>
           </div>
         </Grid>
       </div>
