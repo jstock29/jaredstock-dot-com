@@ -11,6 +11,7 @@ import { Publication } from "./components/Publication/Publication";
 import { About } from "./components/About/About";
 import { Skill } from "./components/Skill/Skill";
 import { Box, Chip, Grid } from "@mui/material";
+import { SnowAccumulator } from "./components/SnowAccumulator/SnowAccumulator";
 
 const projects = [
   {
@@ -176,6 +177,7 @@ function App() {
   const skillsGridRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false); // State to manage hover for resume link animation
   const [activeFilter, setActiveFilter] = useState(null); // State to hold the active filter type
+  const [isSnowActive, setIsSnowActive] = useState(false);
 
   const handleChipClick = (type) => {
     if (activeFilter === type) {
@@ -432,7 +434,55 @@ function App() {
             {publicationList}
           </Grid>
         </div>
-        <footer className={"footer"}>Jared Stock | 2026 | NYC</footer>
+        {/* Bring the canvas to the very front using z-index 9999 */}
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            height: "80vh",
+            zIndex: 9999,
+            pointerEvents: "none", // Let clicks pass through
+          }}
+        >
+          <SnowAccumulator
+            style={{
+              width: "100%",
+              height: "100%",
+              pointerEvents: "none", // Snow canvas itself shouldn't block
+            }}
+            isActive={isSnowActive}
+          />
+        </div>
+        <footer
+          className="footer"
+          style={{
+            position: "relative",
+            zIndex: 1000,
+            backgroundColor: "transparent",
+          }}
+        >
+          <div
+            style={{ textAlign: "center", padding: "50px 0", width: "100%" }}
+          >
+            <h4
+              style={{
+                display: "inline",
+                margin: 0,
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+              onClick={() => {
+                console.log("Name clicked! Toggling state:", !isSnowActive);
+                setIsSnowActive(!isSnowActive);
+              }}
+            >
+              Jared Stock
+            </h4>
+            <span style={{ display: "inline" }}> | 2026 | NYC</span>
+          </div>
+        </footer>
       </div>
     </div>
   );
