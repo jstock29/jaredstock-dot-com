@@ -15,6 +15,7 @@ import { Publication } from "./components/Publication/Publication";
 import { About } from "./components/About/About";
 import { Skill } from "./components/Skill/Skill";
 import { Box, Chip, Grid } from "@mui/material";
+import { Signature } from "./components/Signature";
 import { SnowAccumulator } from "./components/SnowAccumulator/SnowAccumulator";
 
 
@@ -328,18 +329,21 @@ function PortfolioContent() {
             backgroundColor: "transparent",
           }}
         >
+          <Signature
+          onClick={() => {
+            setIsSnowActive(!isSnowActive);
+          }}/>
           <div
-            style={{ textAlign: "center", padding: "50px 0", width: "100%" }}
+            style={{ textAlign: "center", padding: "0 0 50px 0", width: "100%" }}
           >
             <h4
               style={{
                 display: "inline",
                 margin: 0,
                 cursor: "pointer",
-                textDecoration: "underline",
+                textDecoration: "none",
               }}
               onClick={() => {
-                console.log("Name clicked! Toggling state:", !isSnowActive);
                 setIsSnowActive(!isSnowActive);
               }}
             >
