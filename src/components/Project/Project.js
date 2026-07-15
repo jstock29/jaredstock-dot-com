@@ -55,7 +55,14 @@ export function Project(props) {
           className={"project"}
         >
           <div className={"content"}>
-            <h2 className={"project-heading"}>{props.title}</h2>
+            <a
+              href={props.link}
+              target="_blank"
+              rel="noreferrer"
+              className="link-icon"
+            >
+              <h2 className={"project-heading"}>{props.title}</h2>
+            </a>
             <p className="project-desc">{props.text}</p>
             {props.github && (
               <a

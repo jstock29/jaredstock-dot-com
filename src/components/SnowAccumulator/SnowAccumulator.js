@@ -27,10 +27,10 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
       let wasActive = false;
 
       // Physics configuration
-      const MAX_SHAPES = 150;
-      const gravity = 0.15;          // Gravity acceleration
+      const MAX_SHAPES = 300;
+      const gravity = 0.2;          // Gravity acceleration
       const friction = 0.985;        // Air resistance damping
-      const bounce = 0.15;            // Bounce elasticity
+      const bounce = 0.3;            // Bounce elasticity
       const groundFriction = 0.82;   // Friction when touching floor
       const physicsSteps = 3;        // Sub-steps per frame for simulation stability
 
@@ -52,7 +52,7 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
 
       p.setup = () => {
         p.clear();
-        
+
         // Initialize as 1x1 canvas styled to fill parent, then resize to match container
         const cnv = p.createCanvas(1, 1);
         cnv.parent(containerRef.current);
@@ -101,7 +101,7 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
         wasActive = active;
 
         // Spawn shapes if active at a gentler rate
-        if (active && p.random() < 0.04) {
+        if (active && p.random() < 0.07) {
           flakes.push(createFlake());
           if (flakes.length > MAX_SHAPES) {
             flakes.shift(); // Remove oldest shape to maintain performance
@@ -111,14 +111,14 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
         // Sub-stepping loop: running physics multiple times per frame prevents tunneling
         const dt = 1.0 / physicsSteps;
         for (let step = 0; step < physicsSteps; step++) {
-          
+
           // 1. Apply gravity, mouse forces, and update positions
           for (let s of flakes) {
             s.vy += gravity * dt;
 
             // Mouse repel interaction (applying force vectors)
             const d = p.dist(p.mouseX, p.mouseY, s.x, s.y);
-            const repelRadius = 85;
+            const repelRadius = 75;
             if (d < repelRadius && d > 0.1) {
               const force = (repelRadius - d) / repelRadius;
               const angle = p.atan2(s.y - p.mouseY, s.x - p.mouseX);
@@ -148,7 +148,7 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
 
               if (dist < minDist) {
                 const overlap = minDist - dist;
-                
+
                 // Normal direction vector
                 const nx = dist > 0.1 ? dx / dist : p.random(-0.5, 0.5);
                 const ny = dist > 0.1 ? dy / dist : 1;

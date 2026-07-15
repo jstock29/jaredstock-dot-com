@@ -1,6 +1,10 @@
 import "./App.scss";
 import "./components/Scroll/Scroll.scss";
 import React, { useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Admin from './components/Admin/Admin';
+import { db } from "./firebase";
+import { collection, getDocs } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import { OrbitField } from "./components/Scroll/OrbitField";
 import { EntryPointer } from "./components/Scroll/EntryPointer";
@@ -13,166 +17,39 @@ import { Skill } from "./components/Skill/Skill";
 import { Box, Chip, Grid } from "@mui/material";
 import { SnowAccumulator } from "./components/SnowAccumulator/SnowAccumulator";
 
-const projects = [
-  {
-    title: "social data",
-    text: "I led the development of an open source app and open data for a variety of social datasets in the US.",
-    image: "https://jareds-file-sharing.s3.amazonaws.com/social-data.png",
-    link: "https://share.streamlit.io/arup-group/social-data/run.py",
-    github: "https://github.com/arup-group/social-data",
-  },
-  {
-    title: "deal or no deal",
-    text: "I watched over 100 episodes of Deal or No Deal to conduct this analysis of the greatest game show of all time.",
-    image: "https://jareds-file-sharing.s3.amazonaws.com/dond-interface.png",
-    link: "https://share.streamlit.io/jstock29/dealnodeal/main/app.py",
-    github: "https://github.com/jstock29/dealnodeal",
-  },
-  {
-    title: "teetum.com",
-    text: "I made a website for my friend's birthday as joke. You won't get the jokes.",
-    image: "https://jareds-file-sharing.s3.amazonaws.com/teetum.png",
-    link: "https://teetum.com/",
-    github: "https://github.com/jstock29/teetum-dot-com",
-  },
-  {
-    title: "bigballsannie.com",
-    text: "I made yet another joke website for my friend's birthday, only even weirder somehow.",
-    image: "https://jareds-file-sharing.s3.amazonaws.com/bba.png",
-    link: "https://bigballsannie.com/",
-    github: "https://github.com/jstock29/bigballsannie-dot-com",
-  },
-];
 
-const work = [
-  {
-    date: "2016",
-    text: "Graduated University of Colorado - Boulder",
-    color: "primary",
-  },
-  {
-    date: "2016",
-    text: "Started at Arup New York",
-    color: "primary",
-  },
-  {
-    date: "2018",
-    text: "Delivered genetic optimization of energy models for NRDC",
-    color: "primary",
-  },
-  {
-    date: "2019",
-    text: "Presented at World Engineering Conference Melbourne",
-    color: "primary",
-  },
-  {
-    date: "2020",
-    text: "Led pro-bono open source eviction work",
-    color: "primary",
-  },
-  {
-    date: "2021",
-    text: "Promoted to Lead Developer",
-    color: "primary",
-  },
-  {
-    date: "2021",
-    text: "Delivered district energy modeling platfrom on Google Cloud Platform",
-    color: "primary",
-  },
-  {
-    date: "2022",
-    text: "Joined Thoughtworks as a Senior Developer",
-    color: "primary",
-  },
-  {
-    date: "2024",
-    text: "Piloted kickboxing bag sensor with Hit House",
-    color: "primary",
-  },
-  // {
-  //   date: "2025",
-  //   text: "Piloted kickboxing bag sensor with Hit House",
-  //   color: "primary",
-  // },
-];
-
-const publications = [
-  {
-    title: "i figured out how deal or no deal works (kind of)",
-    text: "Towards Data Science",
-    image: "https://jareds-file-sharing.s3.amazonaws.com/tds.png",
-    link: "https://towardsdatascience.com/i-figured-out-how-deal-or-no-deal-works-kind-of-875e63a8cef6",
-  },
-  // {
-  //     title: 'How data can prevent pandemic-related homelessness',
-  //     text: 'Arup.com',
-  //     image: 'https://jareds-file-sharing.s3.amazonaws.com/arupdotcom.png',
-  //     link: 'https://www.arup.com/perspectives/how-data-can-prevent-pandemic-related-homelessness',
-  // },
-  // {
-  //     title: 'Arup and New Story use data to help combat pandemic related evictions',
-  //     text: 'Streamlit Community Blog',
-  //     image: 'https://jareds-file-sharing.s3.amazonaws.com/streamlit-blog.png',
-  //     link: 'https://blog.streamlit.io/open-source-eviction-data/',
-  // },
-  {
-    title: "an open source approach to preventing evictions",
-    text: "Arup Digital News | Medium",
-    image: "https://jareds-file-sharing.s3.amazonaws.com/arup-digital.png",
-    link: "https://medium.com/arup-digital-news/an-open-source-approach-to-preventing-evictions-5ed4ad5daea6",
-  },
-];
-
-const skills = [
-  { label: "Python", color: "primary", type: "languages" },
-  { label: "Pandas", color: "secondary", type: "frameworks_tools" },
-  { label: "Streamlit", color: "secondary", type: "frameworks_tools" },
-  { label: "Data Analysis", color: "default", type: "skills" },
-  { label: "Data Science", color: "default", type: "skills" },
-  { label: "Machine Learning", color: "default", type: "skills" },
-  { label: "Genetic Algorithms", color: "default", type: "skills" },
-  { label: "Javascript", color: "primary", type: "languages" },
-  { label: "Typescript", color: "primary", type: "languages" },
-  { label: "HTML", color: "primary", type: "languages" },
-  { label: "CSS", color: "primary", type: "languages" },
-  { label: "Sass", color: "primary", type: "languages" },
-  { label: "Angular", color: "secondary", type: "frameworks_tools" },
-  { label: "NGRX", color: "secondary", type: "frameworks_tools" },
-  { label: "React", color: "secondary", type: "frameworks_tools" },
-  { label: "Node.js", color: "secondary", type: "frameworks_tools" },
-  { label: "SQL", color: "primary", type: "languages" },
-  { label: "PostgreSQL", color: "secondary", type: "frameworks_tools" },
-  { label: "Devops", color: "default", type: "skills" },
-  { label: "Git", color: "secondary", type: "frameworks_tools" },
-  { label: "Docker", color: "secondary", type: "frameworks_tools" },
-  { label: "Serverless", color: "secondary", type: "frameworks_tools" },
-  { label: "JSON", color: "secondary", type: "frameworks_tools" },
-  {
-    label: "Amazon Web Services",
-    color: "secondary",
-    type: "frameworks_tools",
-  },
-  {
-    label: "Google Cloud Platform",
-    color: "secondary",
-    type: "frameworks_tools",
-  },
-  { label: "Websockets", color: "default", type: "skills" },
-  { label: "Parallel Programming", color: "default", type: "skills" },
-  { label: "Linux", color: "default", type: "skills" },
-  { label: "Agile", color: "default", type: "skills" },
-  { label: "Solution Architecture", color: "default", type: "skills" },
-  { label: "Responsive Design", color: "default", type: "skills" },
-  { label: "Bash", color: "primary", type: "languages" },
-  { label: "MongoDB", color: "secondary", type: "frameworks_tools" },
-  { label: "Terraform", color: "secondary", type: "frameworks_tools" },
-  { label: "Kubernetes", color: "secondary", type: "frameworks_tools" },
-  { label: "Cloud Architecture", color: "default", type: "skills" },
-  { label: "Unit Testing", color: "default", type: "skills" },
-];
 
 function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/" element={<PortfolioContent />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function PortfolioContent() {
+  const [projects, setProjects] = useState([]);
+  const [publications, setPublications] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [work, setWork] = useState([]);
+
+  useEffect(() => {
+    getDocs(collection(db, "projects")).then(snapshot => {
+       setProjects(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+    });
+    getDocs(collection(db, "publications")).then(snapshot => {
+       setPublications(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+    });
+    getDocs(collection(db, "skills")).then(snapshot => {
+       setSkills(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+    });
+    getDocs(collection(db, "work")).then(snapshot => {
+       setWork(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+    });
+  }, []);
   const [skillsSectionVisible, setSkillsSectionVisible] = useState(false);
   const skillsGridRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false); // State to manage hover for resume link animation
@@ -359,8 +236,8 @@ function App() {
               <OrbitField
                 style={{ position: "absolute", zIndex: 0 }}
                 numShapes={7}
-                sizeRange={[2, 8]}
-                distanceRange={[30, 42]}
+                sizeRange={[5, 9]}
+                distanceRange={[24, 36]}
                 speedRange={[0.01, 0.02]}
                 colorPalette={["#09306B", "#4F83D1", "#BAA22B", "#D5C471"]}
                 shapeTypes={["circle", "polygon"]}
@@ -371,7 +248,7 @@ function App() {
                 fillAlpha={200}
                 sizeMultiplier={1}
                 influenceRadius={10}
-                scatterMultiplier={20}
+                scatterMultiplier={10}
                 velocityInfluence={1}
                 springKRange={[0.03, 0.08]}
                 dampingRange={[0.82, 0.92]}
@@ -385,22 +262,6 @@ function App() {
               >
                 <motion.h4
                   className={"resume"}
-                  // onHoverStart={() => setIsHovered(true)}
-                  // onHoverEnd={() => setIsHovered(false)}
-                  // animate={
-                  //   isHovered
-                  //     ? {
-                  //         y: ["0%", "-25%", "0%"],
-                  //         rotate: [0, 5, -5, 0],
-                  //         transition: {
-                  //           duration: 0.7,
-                  //           repeat: Infinity,
-                  //           ease: "easeInOut",
-                  //         },
-                  //       }
-                  //     : { y: "0%", rotate: 0 }
-                  // }
-                  // whileTap={{ scale: 0.9 }}
                 >
                   Resume
                 </motion.h4>
