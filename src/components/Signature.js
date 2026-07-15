@@ -53,7 +53,7 @@ export function Signature() {
         <motion.div
             key={i}
             whileHover={{ rotate: 360 }}
-            transition={{ type: "spring", stiffness: 200, damping: 10 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10 }}
             style={{ display: 'flex', cursor: 'pointer' }}
         >
             <svg width={RADIUS * 2} height={RADIUS * 2} viewBox={`${-RADIUS} ${-RADIUS} ${RADIUS * 2} ${RADIUS * 2}`}>

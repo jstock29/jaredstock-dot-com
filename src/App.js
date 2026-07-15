@@ -329,10 +329,7 @@ function PortfolioContent() {
             backgroundColor: "transparent",
           }}
         >
-          <Signature
-          onClick={() => {
-            setIsSnowActive(!isSnowActive);
-          }}/>
+          <Signature/>
           <div
             style={{ textAlign: "center", padding: "0 0 50px 0", width: "100%" }}
           >
@@ -342,6 +339,7 @@ function PortfolioContent() {
                 margin: 0,
                 cursor: "pointer",
                 textDecoration: "none",
+                color: "rgba(0, 0, 0, 0.55)"
               }}
               onClick={() => {
                 setIsSnowActive(!isSnowActive);

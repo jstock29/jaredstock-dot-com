@@ -27,7 +27,7 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
       let wasActive = false;
 
       // Physics configuration
-      const MAX_SHAPES = 300;
+      const MAX_SHAPES = 150;
       const gravity = 0.2;          // Gravity acceleration
       const friction = 0.985;        // Air resistance damping
       const bounce = 0.3;            // Bounce elasticity
@@ -144,7 +144,8 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
               const dx = s1.x - s2.x;
               const dy = s1.y - s2.y;
               const dist = p.sqrt(dx * dx + dy * dy);
-              const minDist = s1.radius + s2.radius;
+              // Use slightly larger radius for collision detection to make shapes feel more solid
+              const minDist = (s1.radius + s2.radius) * 1.1;
 
               if (dist < minDist) {
                 const overlap = minDist - dist;
