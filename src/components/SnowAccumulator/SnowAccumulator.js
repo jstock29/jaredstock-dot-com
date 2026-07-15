@@ -226,7 +226,7 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
         p.translate(x, y);
 
         if (type === "circle") {
-          p.ellipse(0, 0, size);
+          p.ellipse(0, 0, size, size);
         } else if (type === "rect") {
           p.rectMode(p.CENTER);
           p.rect(0, 0, size, size);

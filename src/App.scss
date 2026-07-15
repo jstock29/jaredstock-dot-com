@@ -7,29 +7,31 @@
 }
 
 .section-title {
-    margin-bottom: var.$spacing-xl;
+    margin-bottom: var.$spacing-sm;
     letter-spacing: 0.05em;
     text-transform: lowercase;
-}
-
-.projects {
-    position: relative;
-    margin-bottom: var.$spacing-xxxl;
+    font-weight: bold;
 }
 
 .about {
     position: relative;
-    margin-bottom: var.$spacing-xxxl;
+    margin-bottom: var.$spacing-lg;
 }
 
 .work {
     position: relative;
-    margin-bottom: var.$spacing-xxxl;
+    margin-top: var.$spacing-xl;
+    margin-bottom: var.$spacing-lg;
+}
+
+.projects {
+    position: relative;
+    margin-bottom: var.$spacing-md;
 }
 
 .publications {
     position: relative;
-    margin-bottom: var.$spacing-xxl;
+    margin-bottom: var.$spacing-md;
 }
 
 .anchors {

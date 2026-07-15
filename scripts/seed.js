@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { db } from "../src/firebase.js";
 import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 
@@ -12,6 +13,14 @@ const projects = [
 const publications = [
   { title: "i figured out how deal or no deal works (kind of)", text: "Towards Data Science", image: "https://jareds-file-sharing.s3.amazonaws.com/tds.png", link: "https://towardsdatascience.com/i-figured-out-how-deal-or-no-deal-works-kind-of-875e63a8cef6", order: 1 },
   { title: "an open source approach to preventing evictions", text: "Arup Digital News | Medium", image: "https://jareds-file-sharing.s3.amazonaws.com/arup-digital.png", link: "https://medium.com/arup-digital-news/an-open-source-approach-to-preventing-evictions-5ed4ad5daea6", order: 2 },
+];
+
+const work = [
+  { text: "Software Engineer @ Arup", date: "2019 – 2022", color: "blue", order: 1 },
+  { text: "Senior Software Engineer @ Arup", date: "2022 – 2024", color: "blue", order: 2 },
+  { text: "teetum.com", date: "2021", color: "gold", order: 3 },
+  { text: "bigballsannie.com", date: "2022", color: "gold", order: 4 },
+  { text: "processing-playground", date: "2024", color: "gold", order: 5 },
 ];
 
 const skills = [
@@ -67,10 +76,12 @@ async function seed() {
     await clearCollection("projects");
     await clearCollection("publications");
     await clearCollection("skills");
+    await clearCollection("work");
 
     for (const p of projects) await addDoc(collection(db, "projects"), p);
     for (const p of publications) await addDoc(collection(db, "publications"), p);
     for (const s of skills) await addDoc(collection(db, "skills"), s);
+    for (const w of work) await addDoc(collection(db, "work"), w);
     console.log("Seeding complete");
   } catch (e) {
     console.error("Error seeding: ", e);

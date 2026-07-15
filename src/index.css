@@ -17,7 +17,7 @@ code {
 body {
     position: relative;
     background-color: transparent;
-    background-image: linear-gradient(to bottom, #90a4b1 0%, #DDD7B7 100%);
+    background-image: linear-gradient(to bottom, #90a4b1 0%, var(--gold-super-light) 100%);
     align-items: center;
     justify-content: center;
 }
@@ -32,9 +32,9 @@ a {
 }
 
 ::selection {
-    background: #D5C471; /* WebKit/Blink Browsers */
+    background: var(--gold-light); /* WebKit/Blink Browsers */
 }
 
 ::-moz-selection {
-    background: #D5C471; /* Gecko Browsers */
+    background: var(--gold-light); /* Gecko Browsers */
 }

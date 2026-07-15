@@ -1,17 +1,32 @@
-//$navy: #0B3B85;
 $navy: #09306B;
 $navy-light: #4F83D1;
 $navy-super-light: #93AFD9;
 $navy-bold: #05199C;
 
-//$gold: #CCB22F;
 $gold: #BAA22B;
 $gold-light: #D5C471;
 $gold-super-light: #DDD7B7;
 
+$warning: #DE946A;
+
 $neutral: rgba(0, 0, 0, 0.55);
 $neutral-light: rgba(0, 0, 0, 0.05);
 $neutral-dark: rgba(0, 0, 0, 0.81);
+$neutral-gray: #bdbdbd;
 
-$neutral-gray: #bdbdbd
-
+// Expose all color tokens as CSS custom properties so JS can reference them
+// via var(--navy) etc. without duplicating values.
+:root {
+  --navy:              #{$navy};
+  --navy-light:        #{$navy-light};
+  --navy-super-light:  #{$navy-super-light};
+  --navy-bold:         #{$navy-bold};
+  --gold:              #{$gold};
+  --gold-light:        #{$gold-light};
+  --gold-super-light:  #{$gold-super-light};
+  --warning:           #{$warning};
+  --neutral-gray:      #{$neutral-gray};
+  --neutral:           #{$neutral};
+  --neutral-light:     #{$neutral-light};
+  --neutral-dark:      #{$neutral-dark};
+}

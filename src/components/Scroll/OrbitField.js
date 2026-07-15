@@ -7,13 +7,13 @@ const defaults = {
   distanceRange: [160, 360],
   speedRange: [0.005, 0.018],
   colorPalette: [
-    "#09306B",
-    "#4F83D1",
-    "#93AFD9",
-    "#BAA22B",
-    "#D5C471",
-    "#DDD7B7",
-  ],
+  "#09306B",
+  "#4F83D1",
+  "#93AFD9",
+  "#BAA22B",
+  "#D5C471",
+  "#DDD7B7",
+],
   shapeTypes: ["circle", "polygon", "diamond"],
   wobbleRange: [0.5, 2],
   wobbleSpeedRange: [0.015, 0.04],
@@ -91,10 +91,15 @@ export const OrbitField = ({
 
   // Helper to convert hex color to p5 color with alpha
   const hexToColor = (p, hex, alpha) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return p.color(r, g, b, alpha);
+    // If it's already a valid CSS color string (like hex), pass it to color
+    if (typeof hex === 'string' && hex.startsWith('#')) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return p.color(r, g, b, alpha);
+    }
+    // Fallback if not a hex string
+    return p.color(hex || '#000000');
   };
 
   useEffect(() => {

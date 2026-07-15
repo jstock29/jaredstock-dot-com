@@ -38,7 +38,9 @@ function PortfolioContent() {
 
   useEffect(() => {
     getDocs(collection(db, "projects")).then(snapshot => {
-       setProjects(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+       const projectData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+       projectData.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+       setProjects(projectData);
     });
     getDocs(collection(db, "publications")).then(snapshot => {
        setPublications(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
@@ -47,7 +49,9 @@ function PortfolioContent() {
        setSkills(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
     });
     getDocs(collection(db, "work")).then(snapshot => {
-       setWork(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+       const workData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+       workData.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+       setWork(workData);
     });
   }, []);
   const [skillsSectionVisible, setSkillsSectionVisible] = useState(false);

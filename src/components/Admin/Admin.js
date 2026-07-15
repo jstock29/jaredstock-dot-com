@@ -26,11 +26,9 @@ const SCHEMAS = {
     { key: 'order', label: 'Order', type: 'number' },
   ],
   work: [
-    { key: 'company', label: 'Company', required: true },
-    { key: 'title', label: 'Job Title', required: true },
-    { key: 'start', label: 'Start Date' },
-    { key: 'end', label: 'End Date' },
-    { key: 'description', label: 'Description', multiline: true },
+    { key: 'text', label: 'Text (e.g. "Software Engineer @ Acme")', required: true },
+    { key: 'date', label: 'Date (e.g. "Jan 2023" or "2022 – 2024")', required: true },
+    { key: 'color', label: 'Shape Color — "blue" or "primary" for professional, "gold" or "secondary" for personal' },
     { key: 'order', label: 'Order', type: 'number' },
   ],
   publications: [
