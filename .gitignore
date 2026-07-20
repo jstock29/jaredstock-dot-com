@@ -9,3 +9,6 @@ infra/.terraform.lock.hcl
 *.tfstate
 *scratch*.txt
 .env
+_agents/
+GEMINI.md
+MIGRATION_PLAN.md

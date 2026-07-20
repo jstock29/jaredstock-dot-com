@@ -1,69 +1,284 @@
 # jaredstock.com
 
 [![Deploy to Firebase Hosting](https://github.com/jstock29/jaredstock-dot-com/actions/workflows/deploy.yml/badge.svg?event=push)](https://github.com/jstock29/jaredstock-dot-com/actions/workflows/deploy.yml)
-## Available Scripts
 
-In the project directory, you can run:
+# Architectural Standards & Deployment Practices
 
-### `npm start`
+This document establishes the foundational architecture, engineering conventions, security standards, and deployment patterns for this project. It serves as a direct instruction set for all AI agents and developers working within this codebase and the Google Cloud Platform (GCP) / Firebase ecosystem.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 1. System Architecture & Tech Stack
 
-### `npm test`
+This project is built as a **Serverless Single Page Application (SPA)** with a client-first, BaaS (Backend-as-a-Service) architecture. This decoupled design removes the need for custom web servers or custom API layers, improving security, scalability, and performance while reducing operational costs to near-zero.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+                  +-----------------------------------+
+                  |        Client Browser             |
+                  |  (React 19, Router 7, MUI v6)     |
+                  +-------+--------------------+------+
+                          |                    |
+          Firebase Auth   |                    |   Firestore SDK
+            Operations    |                    |   (Direct Data Access)
+                          v                    v
+                  +-------+-------+    +-------+-------+
+                  | Firebase Auth |    | GCP Firestore |
+                  | (Email/Pass)  |    |  (Database)   |
+                  +---------------+    +---------------+
+```
 
-### `npm run build`
+### Core Stack Components:
+- **Frontend Framework:** React 19 + React Router 7 (for client-side routing and protected admin sub-paths).
+- **Bundler & Build Tool:** Vite 6 (replaces legacy Webpack/Create React App for faster compilation and optimized module bundling).
+- **Styling & Theme:** SCSS (Sass, utilizing the "modern-compiler" API) with centralized custom design tokens ("src/styles/_variables.scss"), complemented by Material-UI (MUI v6) on the Admin dashboard.
+- **Backend-as-a-Service (BaaS):** Firebase SDK v12, providing high-speed direct client connections to Firestore (NoSQL database) and Firebase Authentication.
+- **Asset Hosting:** Firebase Hosting (Google's global CDN, providing built-in SSL/HTTPS, asset caching, and atomic, zero-downtime rollbacks).
+- **Infrastructure as Code (IaC):** Terraform, ensuring programmatic, declarative configuration of Google Cloud and Firebase resources.
+- **CI/CD Pipeline:** GitHub Actions with Workload Identity Federation (WIF).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 2. Codebase Conventions & Frontend Architecture
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2.1 File & Module Organization
+The project organizes code by functional concerns to enforce a modular, scalable structure:
+- `src/components/`: Reusable, atomic components (e.g., `Signature`, `ResponsiveImage`, `Scroll`).
+- `src/components/About/`, `src/components/Project/`, `src/components/Publication/`, `src/components/Skill/`: Scoped component directories, each containing its corresponding `.js` implementation and `.scss` styling stylesheet.
+- `src/components/Admin/`: Contains the admin dashboard (`Admin.js`) and login form (`Login.js`) for data management.
+- `src/styles/`: Shared, global style tokens and utility mixins (e.g., `_variables.scss`, `colors.scss`).
+- `scripts/`: Operational tools, such as local seed scripts (`seed.js`).
 
-### `npm run eject`
+### 2.2 Vite 6 Configuration Patterns
+Vite 6 requires specific configuration details to support modern and legacy React integrations cleanly:
+1. **Sass Modern Compiler:** SCSS processing is configured in `vite.config.js` to use the modern Sass compiler:
+   ```javascript
+   css: {
+     preprocessorOptions: {
+       scss: {
+         api: "modern-compiler",
+       },
+     },
+   }
+   ```
+2. **Implicit JSX in `.js` Files:** To allow the use of JSX syntax in files with standard `.js` extensions without forcing mass renaming to `.jsx`, Vite's esbuild loader is customized:
+   ```javascript
+   esbuild: {
+     loader: "jsx",
+     include: /src\/.*\.js$/,
+     exclude: [],
+   }
+   ```
+3. **Path Aliasing:** Use defined alias paths to prevent brittle, relative imports (e.g., `@styles` pointing directly to `src/styles`).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 2.3 State Management & Data Fetching
+- **Client-Direct Fetching:** Instead of a server API, the frontend queries Firestore directly via the Firebase SDK.
+- **Query Optimization:** Data is retrieved inside React components utilizing standard React hooks (`useState`, `useEffect`). Collections (e.g., `projects`, `publications`, `skills`, `work`) are queried with deterministic ordering (using an `order` field) to ensure consistent layout rendering.
+- **Reactive Updates:** For sections requiring real-time updates (like the admin panel status), use Firebase's `onSnapshot` listener. For standard portfolio items, prefer resolved promises via `getDocs` to minimize continuous database read charges.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 3. Authentication & Security Architecture
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Direct client-to-database architectures (BaaS) shift the burden of security from custom API code to **database-level rules** and identity controls.
 
-## Learn More
+```
+    Client App  =======[ Unauthenticated Public Query ]========>  Allow Read (True)
+    Client App  =======[ Authenticated Query (No Token) ]=======>  Block Write (403)
+    Client App  =======[ Authenticated Admin Query ]============>  Allow Write (Verified)
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 3.1 Authentication Strategy
+- **Identity Provider:** Firebase Authentication utilizing the standard **Email/Password** sign-in method.
+- **Persistence:** Session persistence is configured to use `browserLocalPersistence` via `setPersistence(auth, browserLocalPersistence)`. This securely stores the JSON Web Token (JWT) in local storage, managing auto-refresh states without manual developer intervention.
+- **Client Security Guard:** Protected admin routes verify the active auth user (`auth.currentUser`) on page transition. Unauthenticated requests are immediately blocked and redirected to `/login`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3.2 Cloud Firestore Security Rules (Least-Privilege)
+Database security rules enforce authorization at the database boundary, ensuring that even if a malicious user bypasses frontend UI controls, they cannot modify data.
 
-### Code Splitting
+Rules are structured to allow global public reads but strictly restrict write operations to authenticated administrators:
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if the caller is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    // Public portfolio collections: read is open, write is gated
+    match /projects/{project} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    match /work/{entry} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    match /publications/{pub} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    match /skills/{skill} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+  }
+}
+```
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 4. Local Development, Tooling & Verification
 
-### Making a Progressive Web App
+A robust, predictable local environment ensures development consistency and avoids "works on my machine" issues.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 4.1 Local Setup Workflow
+1. **Dependency Installation:**
+   ```bash
+   npm install
+   ```
+2. **Environment Configuration:**
+   - Copy `.env.example` to a local `.env` file (which is git-ignored).
+   - Populate `.env` with client-side Firebase credentials.
+   - All client environment variables MUST be prefixed with `VITE_` to be parsed by Vite's bundler.
+3. **Execution:**
+   - Start the local dev server: `npm run dev`
+   - Access the site locally via `http://localhost:5173`.
 
-### Advanced Configuration
+### 4.2 Database Seeding & Testing Data
+- **Seeding Script:** The script `scripts/seed.js` uses Node.js ES Modules to connect directly to the Firestore instance. Running `node scripts/seed.js` completely resets the active collections (`projects`, `publications`, `skills`, `work`) and seeds them with predefined high-fidelity default data.
+- **Environment Context:** The seed script uses `dotenv` to load the target environment variables, allowing safe database clearing/seeding across staging or production databases by swapping the `.env` targets.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 4.3 Engineering Validation Mandates
+- **Empirical Bug Fixes:** When resolving code or configuration issues, always write automated tests or scripts that reproduce the failure state *before* applying the fix.
+- **Post-Change Verification:** After implementing features or applying updates, execute standard linting and build commands locally (`npm run build`) to ensure the bundle compiles successfully prior to staging.
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 5. Infrastructure as Code (IaC) with Terraform
 
-### `npm run build` fails to minify
+All cloud-level backend configurations (GCP APIs, database creation, hosting sites) must be managed programmatically using **Terraform** within the `infra/` folder. This guarantees environment reproducibility and prevents manual state drift.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+                  +--------------------------------+
+                  |      Terraform (IaC)           |
+                  +---------------+----------------+
+                                  |
+            Applies State         |  (Configures GCP APIs)
+                                  v
+                  +---------------+----------------+
+                  |  Google Cloud Platform (GCP)   |
+                  |                                |
+                  |   +- Enable Firestore API      |
+                  |   +- Enable Identity Toolkit   |
+                  |   +- Provision Firestore DB    |
+                  |   +- Setup Firebase Hosting    |
+                  +--------------------------------+
+```
+
+### 5.1 Configuration Standards:
+- **Provider Standardization:** Leverage both `google` and `google-beta` providers pinned to the correct GCP project (e.g., "driven-binder-500400-c2") and region (e.g., "us-central1").
+- **Declarative Services:** Explicitly declare all required GCP service enablement resources (like `firestore.googleapis.com` and `identitytoolkit.googleapis.com`) as `google_project_service` blocks.
+- **Resource Dependency Management:** Declare explicit resource relationships to ensure execution order safety. For example, the Firestore database resource must explicitly depend on the enablement of the firestore service:
+  ```hcl
+  resource "google_firestore_database" "default" {
+    project     = "driven-binder-500400-c2"
+    name        = "(default)"
+    location_id = "us-central1"
+    type        = "FIRESTORE_NATIVE"
+    depends_on  = [google_project_service.firestore]
+  }
+  ```
+
+---
+
+## 6. Secure CI/CD Pipeline (GitHub Actions)
+
+This project utilizes a secure, zero-downtime automated delivery pipeline. 
+
+### 6.1 Workload Identity Federation (WIF)
+To ensure state-of-the-art security compliance, **no static, long-lived GCP Service Account JSON keys are stored as GitHub secrets.** 
+
+Instead, the workflow uses Google's **Workload Identity Federation (WIF)**. This establishes a trust relationship between GitHub Actions and Google Cloud Platform, exchanging a short-lived, environment-bound OpenID Connect (OIDC) token for temporary GCP deployment credentials.
+
+#### WIF Requirements in `.github/workflows/deploy.yml`:
+1. **GitHub Job Permissions:** The job must declare write access to the ID token:
+   ```yaml
+   permissions:
+     contents: read
+     id-token: write  # Crucial for exchanging OIDC token with GCP WIF
+   ```
+2. **Authentication Action:** Utilize `google-github-actions/auth@v2` targeting the custom identity pool and service account:
+   ```yaml
+   - name: Authenticate to Google Cloud
+     uses: google-github-actions/auth@v2
+     with:
+       project_id: "${{ secrets.GCLOUD_PROJECT_ID }}"
+       workload_identity_provider: "projects/${{ secrets.GCLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+       service_account: "github-deployer@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com"
+   ```
+
+### 6.2 Deployment Pipeline Steps:
+1. **Trigger:** Automated trigger on a `push` to the `main` branch.
+2. **Checkout & Runtime Setup:** Code checkout followed by Node.js setup (utilizing Node.js v24).
+3. **Reproducible Install:** Dependencies are installed with `npm ci --legacy-peer-deps` to enforce strict lockfile matching and bypass legacy peer dependency blocks.
+4. **Build Compilation:** Client-side Firebase credentials (from secure GitHub Secrets) are injected as build-time `VITE_` environment variables, and the static web bundle is compiled via `npm run build`.
+5. **GCP Auth:** Short-lived credentials are authenticated via WIF.
+6. **CDN Deployment:** The CLI tools are invoked via `npx firebase-tools` (avoiding global package installation overhead) to deploy compiled files from the `/dist` directory to Firebase Hosting.
+
+---
+
+## 7. Containerization & Docker Best Practices
+
+### 7.1 Static Hosting vs. Containerization
+This React application utilizes **Firebase Hosting** directly, deliberately omitting Docker containers for the frontend. 
+
+**Architectural Rationale:**
+- **Zero Runtime Overhead:** SPAs compiled down to static html, css, and js do not require continuous CPU runtimes. Hosting them via an edge CDN like Firebase Hosting ensures sub-millisecond response times, global caching, and completely eliminates container cold starts.
+- **Cost Efficiency:** CDN file delivery has near-zero operational costs, scaling to millions of hits without invoking billing thresholds that accompany dedicated web-server runtimes.
+- **Security:** Static hosting has no operating system layer or server runtime to patch, significantly reducing the attack surface area.
+
+### 7.2 Docker Patterns for GCP Compute Runtimes (Cloud Run / GKE)
+For backend services, microservices, or custom API layers requiring server-side runtimes in a Google Cloud environment, containerization is mandatory. The standard container platform for serverless GCP microservices is **Google Cloud Run**.
+
+When designing Dockerfiles and container configurations for Google Cloud, developers and agents must adhere to the following strict best practices:
+
+#### 1. Multi-Stage Builds (Size & Security Optimization)
+Isolate development-only tooling (like compilers, lints, and test dependencies) from the final production runtime to minimize container image sizes and reduce vulnerabilities.
+```dockerfile
+# --- Stage 1: Build & Compilation ---
+FROM node:24-slim AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# --- Stage 2: Minimal Production Runtime ---
+FROM node:24-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+# Copy package definitions and install only production dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+# Copy only the compiled build output from Stage 1
+COPY --from=builder /app/dist ./dist
+```
+
+#### 2. Least Privilege Execution (Non-Root User)
+Never run application code inside a container as the default `root` user. This limits the blast radius of remote code execution exploits.
+```dockerfile
+# Declare and switch to the pre-existing non-privileged node user
+USER node
+EXPOSE 8080
+CMD ["node", "dist/server.js"]
+```
+
+#### 3. Efficient Layer Caching
+Order Docker commands sequentially from least-frequently-changed to most-frequently-changed to optimize Docker layer reuse during consecutive builds.
+- **Incorrect:** Copying all files (`COPY . .`) *before* running dependency installation forces a full, slow re-download of packages on every line of code change.
+- **Correct:** Copy package files first, run installation, and only *then* copy the remaining source directory.
+
+#### 4. Environment Variables & Runtime Port Binding
+- **Dynamic Port Injection:** Google Cloud Run dynamically injects a `$PORT` environment variable (defaults to `8080`). The container runtime must dynamically bind to this port (e.g., listening on `0.0.0.0:${PORT}` or `0.0.0.0:8080`). Do not hardcode static ports.
+- **Secret Configuration:** Never bake API keys, GCP credentials, or service passwords directly into Docker images. Use Google Cloud **Secret Manager** and mount secrets dynamically as environment variables or volume mounts during Cloud Run deployment.
