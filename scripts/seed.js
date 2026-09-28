@@ -1,13 +1,16 @@
 import "dotenv/config";
 import { db } from "../src/firebase.js";
 import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { signInAdmin } from "./admin-auth.js";
+
+// Warning: this wipes every collection first, including project pages written in /admin.
 
 const projects = [
-  { title: "social data", text: "I led the development of an open source app and open data for a variety of social datasets in the US.", image: "https://jareds-file-sharing.s3.amazonaws.com/social-data.png", link: "https://share.streamlit.io/arup-group/social-data/run.py", github: "https://github.com/arup-group/social-data", order: 1 },
-  { title: "deal or no deal", text: "I watched over 100 episodes of Deal or No Deal to conduct this analysis of the greatest game show of all time.", image: "https://jareds-file-sharing.s3.amazonaws.com/dond-interface.png", link: "https://share.streamlit.io/jstock29/dealnodeal/main/app.py", github: "https://github.com/jstock29/dealnodeal", order: 2 },
-  { title: "processing playground", text: "A little AI-made tool to view, edit, and export p5.js animations.", image: "https://jareds-file-sharing.s3.us-east-1.amazonaws.com/processing-playground.jpeg", link: "https://processing-playground.web.app", github: "https://github.com/jstock29/processing-playground", order: 3 },
-  { title: "teetum.com", text: "I made a website for my friend's birthday as joke. You won't get the jokes.", image: "https://jareds-file-sharing.s3.amazonaws.com/teetum.png", link: "https://teetum.com/", github: "https://github.com/jstock29/teetum-dot-com", order: 4 },
-  { title: "bigballsannie.com", text: "I made yet another joke website for my friend's birthday, only even weirder somehow.", image: "https://jareds-file-sharing.s3.amazonaws.com/bba.png", link: "https://bigballsannie.com/", github: "https://github.com/jstock29/bigballsannie-dot-com", order: 5 },
+  { title: "social data", slug: "social-data", published: true, text: "I led the development of an open source app and open data for a variety of social datasets in the US.", image: "https://jareds-file-sharing.s3.amazonaws.com/social-data.png", link: "https://share.streamlit.io/arup-group/social-data/run.py", github: "https://github.com/arup-group/social-data", order: 1 },
+  { title: "deal or no deal", slug: "deal-or-no-deal", published: true, text: "I watched over 100 episodes of Deal or No Deal to conduct this analysis of the greatest game show of all time.", image: "https://jareds-file-sharing.s3.amazonaws.com/dond-interface.png", link: "https://share.streamlit.io/jstock29/dealnodeal/main/app.py", github: "https://github.com/jstock29/dealnodeal", order: 2 },
+  { title: "processing playground", slug: "processing-playground", published: true, text: "A little AI-made tool to view, edit, and export p5.js animations.", image: "https://jareds-file-sharing.s3.us-east-1.amazonaws.com/processing-playground.jpeg", link: "https://processing-playground.web.app", github: "https://github.com/jstock29/processing-playground", order: 3 },
+  { title: "teetum.com", slug: "teetum-com", published: true, text: "I made a website for my friend's birthday as joke. You won't get the jokes.", image: "https://jareds-file-sharing.s3.amazonaws.com/teetum.png", link: "https://teetum.com/", github: "https://github.com/jstock29/teetum-dot-com", order: 4 },
+  { title: "bigballsannie.com", slug: "bigballsannie-com", published: true, text: "I made yet another joke website for my friend's birthday, only even weirder somehow.", image: "https://jareds-file-sharing.s3.amazonaws.com/bba.png", link: "https://bigballsannie.com/", github: "https://github.com/jstock29/bigballsannie-dot-com", order: 5 },
 ];
 
 const publications = [
@@ -73,6 +76,7 @@ async function clearCollection(colName) {
 
 async function seed() {
   try {
+    await signInAdmin();
     await clearCollection("projects");
     await clearCollection("publications");
     await clearCollection("skills");

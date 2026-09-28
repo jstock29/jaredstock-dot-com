@@ -41,6 +41,19 @@
     margin-bottom: 16px;
 }
 
+.project-read-more {
+    display: inline-block;
+    color: colors.$neutral;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.project-read-more:hover {
+    color: colors.$gold;
+    transform: translateX(4px);
+}
+
 .project-desc {
     //max-width: 360px;
     //width: 360px;

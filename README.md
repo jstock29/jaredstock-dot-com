@@ -95,35 +95,11 @@ Direct client-to-database architectures (BaaS) shift the burden of security from
 ### 3.2 Cloud Firestore Security Rules (Least-Privilege)
 Database security rules enforce authorization at the database boundary, ensuring that even if a malicious user bypasses frontend UI controls, they cannot modify data.
 
-Rules are structured to allow global public reads but strictly restrict write operations to authenticated administrators:
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Helper function to check if the caller is authenticated
-    function isSignedIn() {
-      return request.auth != null;
-    }
+Rules live in `firestore.rules` and `storage.rules` (wired up in `firebase.json`). Content collections and project media are public to read; writes require an **admin**, meaning a signed-in user whose uid has a document at `admins/{uid}`. Being merely signed in is not enough, because Email/Password sign-up is open to anyone who has the web API key.
 
-    // Public portfolio collections: read is open, write is gated
-    match /projects/{project} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-    match /work/{entry} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-    match /publications/{pub} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-    match /skills/{skill} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-  }
-}
+The deploy workflow ships hosting only, so deploy rule changes by hand:
+```bash
+npx firebase-tools deploy --only firestore:rules,storage --project driven-binder-500400-c2
 ```
 
 ---
@@ -146,7 +122,7 @@ A robust, predictable local environment ensures development consistency and avoi
    - Access the site locally via `http://localhost:5173`.
 
 ### 4.2 Database Seeding & Testing Data
-- **Seeding Script:** The script `scripts/seed.js` uses Node.js ES Modules to connect directly to the Firestore instance. Running `node scripts/seed.js` completely resets the active collections (`projects`, `publications`, `skills`, `work`) and seeds them with predefined high-fidelity default data.
+- **Seeding Script:** The script `scripts/seed.js` uses Node.js ES Modules to connect directly to the Firestore instance. Running `node scripts/seed.js` (with `ADMIN_EMAIL` / `ADMIN_PASSWORD` set once rules are deployed) completely resets the active collections (`projects`, `publications`, `skills`, `work`) and seeds them with predefined high-fidelity default data. That includes any project page content written in the admin editor, so don't run it against production.
 - **Environment Context:** The seed script uses `dotenv` to load the target environment variables, allowing safe database clearing/seeding across staging or production databases by swapping the `.env` targets.
 
 ### 4.3 Engineering Validation Mandates
@@ -155,7 +131,17 @@ A robust, predictable local environment ensures development consistency and avoi
 
 ---
 
-## 5. Infrastructure as Code (IaC) with Terraform
+## 5. Project Pages & Media
+
+- **Routes:** `/projects` is the orbit index (`ProjectsOrbit`), `/projects/:slug` is a project page (`ProjectPage`), and `/admin/projects/:id` is the block editor (`ProjectEditor`). All three are lazy-loaded.
+- **Data:** all project reads go through `src/data/projects.js`. A project doc keeps its card fields (`title`, `text`, `image`, `link`, `github`, `order`) and adds `slug`, `published`, `tagline`, `year`, `role`, `tags`, `hero` (`{ type, src, poster, alt }`) and `blocks`. Docs without a `slug` fall back to a slug of their title, and docs without `published` count as published.
+- **Blocks:** `text` (markdown), `image`, `video`, `gallery`, `embed` (YouTube/Vimeo) and `quote`, rendered by `src/components/ProjectPage/blocks/Blocks.js`. Store GIFs as looping `video` blocks: an MP4 is usually far smaller than the GIF.
+- **Media:** uploads from the editor go to Firebase Storage under `projects/{slug}/`. `scripts/migrate-media.js` copies older externally hosted images (e.g. S3) into Storage and rewrites the docs; run it with `--dry-run` first. It needs `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env`.
+- **Drafts:** unpublished projects are hidden from the site. A signed-in admin can view one at `/projects/:slug?preview=1`.
+
+---
+
+## 6. Infrastructure as Code (IaC) with Terraform
 
 All cloud-level backend configurations (GCP APIs, database creation, hosting sites) must be managed programmatically using **Terraform** within the `infra/` folder. This guarantees environment reproducibility and prevents manual state drift.
 
@@ -176,7 +162,7 @@ All cloud-level backend configurations (GCP APIs, database creation, hosting sit
                   +--------------------------------+
 ```
 
-### 5.1 Configuration Standards:
+### 6.1 Configuration Standards:
 - **Provider Standardization:** Leverage both `google` and `google-beta` providers pinned to the correct GCP project (e.g., "driven-binder-500400-c2") and region (e.g., "us-central1").
 - **Declarative Services:** Explicitly declare all required GCP service enablement resources (like `firestore.googleapis.com` and `identitytoolkit.googleapis.com`) as `google_project_service` blocks.
 - **Resource Dependency Management:** Declare explicit resource relationships to ensure execution order safety. For example, the Firestore database resource must explicitly depend on the enablement of the firestore service:
@@ -192,11 +178,11 @@ All cloud-level backend configurations (GCP APIs, database creation, hosting sit
 
 ---
 
-## 6. Secure CI/CD Pipeline (GitHub Actions)
+## 7. Secure CI/CD Pipeline (GitHub Actions)
 
 This project utilizes a secure, zero-downtime automated delivery pipeline. 
 
-### 6.1 Workload Identity Federation (WIF)
+### 7.1 Workload Identity Federation (WIF)
 To ensure state-of-the-art security compliance, **no static, long-lived GCP Service Account JSON keys are stored as GitHub secrets.** 
 
 Instead, the workflow uses Google's **Workload Identity Federation (WIF)**. This establishes a trust relationship between GitHub Actions and Google Cloud Platform, exchanging a short-lived, environment-bound OpenID Connect (OIDC) token for temporary GCP deployment credentials.
@@ -218,7 +204,7 @@ Instead, the workflow uses Google's **Workload Identity Federation (WIF)**. This
        service_account: "github-deployer@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com"
    ```
 
-### 6.2 Deployment Pipeline Steps:
+### 7.2 Deployment Pipeline Steps:
 1. **Trigger:** Automated trigger on a `push` to the `main` branch.
 2. **Checkout & Runtime Setup:** Code checkout followed by Node.js setup (utilizing Node.js v24).
 3. **Reproducible Install:** Dependencies are installed with `npm ci --legacy-peer-deps` to enforce strict lockfile matching and bypass legacy peer dependency blocks.
@@ -228,9 +214,9 @@ Instead, the workflow uses Google's **Workload Identity Federation (WIF)**. This
 
 ---
 
-## 7. Containerization & Docker Best Practices
+## 8. Containerization & Docker Best Practices
 
-### 7.1 Static Hosting vs. Containerization
+### 8.1 Static Hosting vs. Containerization
 This React application utilizes **Firebase Hosting** directly, deliberately omitting Docker containers for the frontend. 
 
 **Architectural Rationale:**
@@ -238,7 +224,7 @@ This React application utilizes **Firebase Hosting** directly, deliberately omit
 - **Cost Efficiency:** CDN file delivery has near-zero operational costs, scaling to millions of hits without invoking billing thresholds that accompany dedicated web-server runtimes.
 - **Security:** Static hosting has no operating system layer or server runtime to patch, significantly reducing the attack surface area.
 
-### 7.2 Docker Patterns for GCP Compute Runtimes (Cloud Run / GKE)
+### 8.2 Docker Patterns for GCP Compute Runtimes (Cloud Run / GKE)
 For backend services, microservices, or custom API layers requiring server-side runtimes in a Google Cloud environment, containerization is mandatory. The standard container platform for serverless GCP microservices is **Google Cloud Run**.
 
 When designing Dockerfiles and container configurations for Google Cloud, developers and agents must adhere to the following strict best practices:

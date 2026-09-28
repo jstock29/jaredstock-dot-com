@@ -1,0 +1,386 @@
+@use "@styles/colors" as colors;
+@use "@styles/variables" as var;
+
+.projects-orbit-page {
+    overflow-x: hidden;
+}
+
+// ─── Stage ─────────────────────────────────────────────────────────────────
+.orbit-stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 520px;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    touch-action: pan-y;
+    background: radial-gradient(circle at 50% 50%, rgba(221, 215, 183, 0.35) 0%, rgba(255, 255, 255, 0) 55%);
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.orbit-stars span {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    opacity: 0.5;
+    animation: orbit-twinkle 6s ease-in-out infinite;
+
+    &.gold {
+        background: colors.$gold-light;
+    }
+}
+
+@keyframes orbit-twinkle {
+    0%,
+    100% {
+        opacity: 0.15;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+.orbit-rings {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    ellipse {
+        fill: none;
+        stroke-width: 1;
+        stroke-dasharray: 2 7;
+        stroke-linecap: round;
+        opacity: 0.45;
+        transition: opacity 0.4s ease;
+    }
+}
+
+.orbit-stage-has-active .orbit-rings ellipse {
+    opacity: 0.25;
+}
+
+// ─── Sun + readout ─────────────────────────────────────────────────────────
+.orbit-sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 15;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var.$spacing-sm;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: radial-gradient(circle at 35% 30%, #fffdf2 0%, colors.$gold-super-light 45%, colors.$gold-light 100%);
+    box-shadow:
+        0 0 0 10px rgba(213, 196, 113, 0.18),
+        0 0 0 26px rgba(213, 196, 113, 0.08),
+        0 10px 40px rgba(186, 162, 43, 0.35);
+    animation: orbit-sun-pulse 5s ease-in-out infinite;
+    transition: transform 0.3s ease;
+    font: inherit;
+
+    &:hover {
+        transform: translate(-50%, -50%) scale(1.04);
+    }
+
+    &:focus-visible {
+        outline: 2px solid colors.$navy;
+        outline-offset: 6px;
+    }
+}
+
+.orbit-sun-small {
+    padding: 0;
+    box-shadow:
+        0 0 0 6px rgba(213, 196, 113, 0.2),
+        0 6px 20px rgba(186, 162, 43, 0.35);
+}
+
+@keyframes orbit-sun-pulse {
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 10px rgba(213, 196, 113, 0.18),
+            0 0 0 26px rgba(213, 196, 113, 0.08),
+            0 10px 40px rgba(186, 162, 43, 0.35);
+    }
+    50% {
+        box-shadow:
+            0 0 0 14px rgba(213, 196, 113, 0.22),
+            0 0 0 34px rgba(213, 196, 113, 0.06),
+            0 10px 48px rgba(186, 162, 43, 0.4);
+    }
+}
+
+.orbit-readout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var.$spacing-xxs;
+    text-align: center;
+    pointer-events: none;
+}
+
+.orbit-readout-title {
+    color: colors.$navy;
+    font-weight: bold;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.orbit-readout-text {
+    color: colors.$neutral-dark;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.orbit-readout-hint {
+    color: colors.$gold;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+}
+
+.orbit-readout-docked {
+    position: absolute;
+    left: var.$spacing-sm;
+    right: var.$spacing-sm;
+    bottom: var.$spacing-lg;
+    z-index: 60;
+    margin: 0 auto;
+    max-width: 360px;
+    padding: var.$spacing-sm;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 20px rgba(9, 48, 107, 0.12);
+}
+
+// ─── Planets ───────────────────────────────────────────────────────────────
+.orbit-planet {
+    --depth: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    will-change: transform;
+    -webkit-user-drag: none;
+    filter: saturate(calc(0.55 + var(--depth) * 0.45));
+    opacity: calc(0.55 + var(--depth) * 0.45);
+    transition: opacity 0.3s ease;
+
+    &:focus-visible {
+        outline: none;
+
+        .orbit-planet-body {
+            outline: 2px solid colors.$navy;
+            outline-offset: 4px;
+        }
+    }
+}
+
+.orbit-stage-has-active .orbit-planet:not(.orbit-planet-active) {
+    opacity: 0.35;
+}
+
+.orbit-planet-body {
+    display: block;
+    width: var(--planet-size);
+    height: var(--planet-size);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--ring-color);
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(9, 48, 107, 0.22);
+    transition:
+        transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.35s ease;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+    }
+}
+
+.orbit-planet-initial {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    color: colors.$navy;
+    font-weight: bold;
+    font-size: 1.6rem;
+    text-transform: lowercase;
+}
+
+.orbit-planet-active {
+    opacity: 1 !important;
+    filter: none;
+
+    .orbit-planet-body {
+        transform: scale(1.35);
+        box-shadow:
+            0 0 0 6px rgba(213, 196, 113, 0.35),
+            0 12px 30px rgba(9, 48, 107, 0.3);
+    }
+
+    .orbit-planet-label {
+        opacity: 1;
+        transform: translateY(10px);
+        color: colors.$gold;
+    }
+}
+
+.orbit-moon {
+    position: absolute;
+    top: calc(var(--planet-size) / 2 - 5px);
+    left: calc(50% - 5px);
+    width: 10px;
+    height: 10px;
+    animation: orbit-moon-spin 5s linear infinite;
+    pointer-events: none;
+
+    svg {
+        display: block;
+        transform: translateX(calc(var(--planet-size) / 2 + 12px));
+        fill: var(--ring-color);
+    }
+}
+
+@keyframes orbit-moon-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.orbit-planet-label {
+    margin-top: var.$spacing-xs;
+    max-width: 150px;
+    color: colors.$navy;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-transform: lowercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: clamp(0, calc(var(--depth) * 2 - 1), 0.9);
+    transition:
+        transform 0.35s ease,
+        color 0.2s ease;
+}
+
+// ─── Launch transition ─────────────────────────────────────────────────────
+.orbit-launch {
+    position: fixed;
+    z-index: 2000;
+    border-radius: 50%;
+    // Matches the body gradient so the page underneath appears seamlessly.
+    background: linear-gradient(to bottom, #90a4b1 0%, colors.$gold-super-light 100%);
+    transform: translate(-50%, -50%);
+    box-shadow:
+        0 0 0 6px var(--launch-color),
+        0 0 0 18px rgba(213, 196, 113, 0.25);
+    pointer-events: none;
+}
+
+// ─── Manifest ──────────────────────────────────────────────────────────────
+.orbit-manifest {
+    max-width: 760px;
+    margin: var.$spacing-xl auto 0;
+    padding: 0 var.$spacing-sm;
+    text-align: center;
+
+    ol {
+        list-style: none;
+        margin: var.$spacing-md 0 0;
+        padding: 0;
+        text-align: left;
+    }
+
+    li + li {
+        border-top: 1px dashed colors.$neutral-gray;
+    }
+
+    a {
+        display: grid;
+        grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+        grid-template-areas:
+            "num title year"
+            "num text  year";
+        column-gap: var.$spacing-sm;
+        padding: var.$spacing-sm var.$spacing-xs;
+        text-decoration: none;
+        border-radius: 12px;
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+
+        &:hover {
+            background: colors.$neutral-light;
+            transform: translateX(6px);
+
+            .orbit-manifest-title {
+                color: colors.$gold;
+            }
+        }
+    }
+}
+
+.orbit-manifest-num {
+    grid-area: num;
+    color: colors.$gold;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}
+
+.orbit-manifest-title {
+    grid-area: title;
+    color: colors.$navy;
+    font-weight: bold;
+    text-transform: lowercase;
+    transition: color 0.2s ease;
+}
+
+.orbit-manifest-text {
+    grid-area: text;
+    color: colors.$neutral;
+    font-size: 0.9rem;
+}
+
+.orbit-manifest-year {
+    grid-area: year;
+    color: colors.$neutral;
+    font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orbit-stars span,
+    .orbit-sun,
+    .orbit-moon {
+        animation: none;
+    }
+}

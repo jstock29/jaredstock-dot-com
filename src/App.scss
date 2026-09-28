@@ -135,3 +135,14 @@ p {
     opacity: 0.4;
     transition: opacity 0.3s ease-in-out;
 }
+
+.orbit-cta {
+    color: colors.$neutral;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.orbit-cta:hover {
+    color: colors.$gold;
+}

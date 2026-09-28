@@ -1,9 +1,11 @@
 import "./App.scss";
 import "./components/Scroll/Scroll.scss";
-import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Admin from './components/Admin/Admin';
 import { db } from "./firebase";
+import { getProjects, projectPath } from "./data/projects";
+import { ScrollToTop } from "./components/SiteChrome/SiteChrome";
 import { collection, getDocs } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import { OrbitField } from "./components/Scroll/OrbitField";
@@ -20,13 +22,23 @@ import { SnowAccumulator } from "./components/SnowAccumulator/SnowAccumulator";
 
 
 
+const ProjectPage = lazy(() => import("./components/ProjectPage/ProjectPage"));
+const ProjectsOrbit = lazy(() => import("./components/ProjectsOrbit/ProjectsOrbit"));
+const ProjectEditor = lazy(() => import("./components/Admin/ProjectEditor"));
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/" element={<PortfolioContent />} />
-      </Routes>
+      <ScrollToTop />
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/projects/:id" element={<ProjectEditor />} />
+          <Route path="/projects" element={<ProjectsOrbit />} />
+          <Route path="/projects/:slug" element={<ProjectPage />} />
+          <Route path="/" element={<PortfolioContent />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
@@ -38,11 +50,7 @@ function PortfolioContent() {
   const [work, setWork] = useState([]);
 
   useEffect(() => {
-    getDocs(collection(db, "projects")).then(snapshot => {
-       const projectData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-       projectData.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-       setProjects(projectData);
-    });
+    getProjects().then(setProjects);
     getDocs(collection(db, "publications")).then(snapshot => {
        setPublications(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
     });
@@ -76,7 +84,8 @@ function PortfolioContent() {
       image={proj.image}
       link={proj.link}
       github={proj.github}
-      key={proj.title}
+      to={projectPath(proj)}
+      key={proj.id}
       alternate={i % 2 !== 0}
     />
   ));
@@ -277,6 +286,9 @@ function PortfolioContent() {
         <div className="projects" id="projects">
           <div>
             <h1 className="section-title">projects</h1>
+            <Link to="/projects" className="orbit-cta">
+              see them all in orbit →
+            </Link>
           </div>
           <Grid
             container
