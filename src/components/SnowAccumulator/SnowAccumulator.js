@@ -17,7 +17,6 @@ export const SnowAccumulator = ({ className, style, isActive }) => {
     // Defensively clear any existing canvases in the container to avoid duplicates
     const existingCanvases = containerRef.current.querySelectorAll("canvas");
     if (existingCanvases.length > 0) {
-      console.log(`[SnowAccumulator] Force-clearing ${existingCanvases.length} lingering canvas(es)`);
       existingCanvases.forEach((c) => c.remove());
     }
 

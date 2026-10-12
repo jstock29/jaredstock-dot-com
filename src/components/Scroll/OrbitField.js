@@ -111,19 +111,13 @@ export const OrbitField = ({
     // This handles scenarios where React unmounts/remounts are delayed or messy.
     const existingCanvases = containerRef.current.querySelectorAll("canvas");
     if (existingCanvases.length > 0) {
-      console.log(
-        `Force-clearing ${existingCanvases.length} existing canvas(es)`,
-      );
       existingCanvases.forEach((c) => c.remove());
     }
 
     // Prevent redundant initialization
     if (p5Ref.current) {
-      console.log("already initialized, skipping");
       return;
     }
-
-    console.log("create orbit field");
 
     const sketch = (p) => {
       let shapes = [];
@@ -305,8 +299,6 @@ export const OrbitField = ({
 
     return () => {
       if (p5Ref.current) {
-        console.log("remove existing orbits");
-
         p5Ref.current.removeResizeListener?.();
         p5Ref.current.remove();
         p5Ref.current = null;
@@ -316,7 +308,6 @@ export const OrbitField = ({
       if (containerRef.current) {
         const canvases = containerRef.current.querySelectorAll("canvas");
         if (canvases.length > 0) {
-          console.log(`removing ${canvases.length} canvas(es)`);
           canvases.forEach((canvas) => canvas.remove());
         }
       }
