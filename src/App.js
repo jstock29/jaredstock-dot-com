@@ -44,7 +44,9 @@ function PortfolioContent() {
        setProjects(projectData);
     });
     getDocs(collection(db, "publications")).then(snapshot => {
-       setPublications(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+       const publicationData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+       publicationData.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+       setPublications(publicationData);
     });
     getDocs(collection(db, "skills")).then(snapshot => {
        setSkills(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
