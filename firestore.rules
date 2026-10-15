@@ -1,0 +1,23 @@
+rules_version = '2';
+
+// Site content is public to read. Only admins can write: an admin is a signed-in
+// user whose uid has a document in the `admins` collection (create it by hand in
+// the Firebase console: admins/{your-auth-uid}).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /{collection}/{docId} {
+      allow read: if collection in ['projects', 'work', 'publications', 'skills'];
+      allow write: if collection in ['projects', 'work', 'publications', 'skills'] && isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}
