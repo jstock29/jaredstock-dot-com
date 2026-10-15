@@ -95,36 +95,16 @@ Direct client-to-database architectures (BaaS) shift the burden of security from
 ### 3.2 Cloud Firestore Security Rules (Least-Privilege)
 Database security rules enforce authorization at the database boundary, ensuring that even if a malicious user bypasses frontend UI controls, they cannot modify data.
 
-Rules are structured to allow global public reads but strictly restrict write operations to authenticated administrators:
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Helper function to check if the caller is authenticated
-    function isSignedIn() {
-      return request.auth != null;
-    }
+The rules live in [`firestore.rules`](firestore.rules) and are deployed by Terraform (`infra/main.tf`). Site content (`projects`, `work`, `publications`, `skills`) is public to read. Only an **admin** can write: a signed-in user whose uid has a document in the `admins` collection. Being signed in is not enough. Every other collection is closed.
 
-    // Public portfolio collections: read is open, write is gated
-    match /projects/{project} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-    match /work/{entry} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-    match /publications/{pub} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-    match /skills/{skill} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-  }
-}
-```
+Public sign-up is disabled in Terraform (`google_identity_platform_config`), so nobody can create an account from the site's public API key.
+
+**One-time setup** before applying the rules, or the admin page will be locked out:
+1. Firebase console → Authentication → copy your user's UID.
+2. Firestore → create a document `admins/<that UID>` (an empty document is fine).
+3. `cd infra && terraform apply`.
+
+Test the rules locally against the emulator (needs Java): `npm run test:rules`.
 
 ---
 
