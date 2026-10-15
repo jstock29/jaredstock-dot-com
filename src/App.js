@@ -7,7 +7,6 @@ import { db } from "./firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import { OrbitField } from "./components/Scroll/OrbitField";
-import { EntryPointer } from "./components/Scroll/EntryPointer";
 import { PageTitle } from "./components/Scroll/PageTitle";
 import { Project } from "./components/Project/Project";
 import { WorkTimeline } from "./components/WorkTimeline/WorkTimeline";
@@ -49,7 +48,9 @@ function PortfolioContent() {
        setPublications(publicationData);
     });
     getDocs(collection(db, "skills")).then(snapshot => {
-       setSkills(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
+       const skillData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+       skillData.sort((a, b) => (a.label ?? "").localeCompare(b.label ?? ""));
+       setSkills(skillData);
     });
     getDocs(collection(db, "work")).then(snapshot => {
        const workData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
@@ -59,7 +60,6 @@ function PortfolioContent() {
   }, []);
   const [skillsSectionVisible, setSkillsSectionVisible] = useState(false);
   const skillsGridRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false); // State to manage hover for resume link animation
   const [activeFilter, setActiveFilter] = useState(null); // State to hold the active filter type
   const [isSnowActive, setIsSnowActive] = useState(false);
 
@@ -78,7 +78,7 @@ function PortfolioContent() {
       image={proj.image}
       link={proj.link}
       github={proj.github}
-      key={proj.title}
+      key={proj.id}
       alternate={i % 2 !== 0}
     />
   ));
@@ -89,7 +89,7 @@ function PortfolioContent() {
       text={pub.text}
       image={pub.image}
       link={pub.link}
-      key={pub.title}
+      key={pub.id}
       alternate={i % 2 !== 0}
     />
   ));
@@ -175,7 +175,6 @@ function PortfolioContent() {
           />
           <div className="hero-content">
             <PageTitle />
-            {/* <EntryPointer />*/}
           </div>
         </div>
         <div className="about" id="about">
@@ -226,13 +225,11 @@ function PortfolioContent() {
               className={"skills-grid"}
             >
               <AnimatePresence>
-                {filteredSkills
-                  .sort((a, b) => (a.label > b.label ? 1 : -1))
-                  .map((skill, i) => (
+                {filteredSkills.map((skill, i) => (
                     <Skill
                       label={skill.label}
                       color={skill.color}
-                      key={skill.label}
+                      key={skill.id}
                       pos={i}
                       parentIsVisible={skillsSectionVisible}
                     />
@@ -349,7 +346,7 @@ function PortfolioContent() {
             >
               Jared Stock
             </h4>
-            <span style={{ display: "inline" }}> | 2026 | NYC</span>
+            <span style={{ display: "inline" }}> | {new Date().getFullYear()} | NYC</span>
           </div>
         </footer>
       </div>

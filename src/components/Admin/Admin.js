@@ -196,7 +196,7 @@ const CollectionTab = ({ collectionName }) => {
   };
 
   const getDisplayTitle = (record) =>
-    record.title || record.label || record.company || record.id;
+    record.title || record.label || record.text || record.id;
 
   return (
     <Box>
