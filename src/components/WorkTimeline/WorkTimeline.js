@@ -10,7 +10,7 @@ export function WorkTimeline(props) {
       date={data.date}
       color={data.color}
       pos={i}
-      key={i}
+      key={data.id}
       last={i === props.work.length - 1}
     />
   ));
