@@ -1,9 +1,11 @@
 import "./App.scss";
 import "./components/Scroll/Scroll.scss";
-import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Admin from './components/Admin/Admin';
 import { db } from "./firebase";
+import { getProjects, projectPath } from "./data/projects";
+import { ScrollToTop } from "./components/SiteChrome/SiteChrome";
 import { collection, getDocs } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import { OrbitField } from "./components/Scroll/OrbitField";
@@ -19,13 +21,23 @@ import { SnowAccumulator } from "./components/SnowAccumulator/SnowAccumulator";
 
 
 
+const ProjectPage = lazy(() => import("./components/ProjectPage/ProjectPage"));
+const ProjectsOrbit = lazy(() => import("./components/ProjectsOrbit/ProjectsOrbit"));
+const ProjectEditor = lazy(() => import("./components/Admin/ProjectEditor"));
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/" element={<PortfolioContent />} />
-      </Routes>
+      <ScrollToTop />
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/projects/:id" element={<ProjectEditor />} />
+          <Route path="/projects" element={<ProjectsOrbit />} />
+          <Route path="/projects/:slug" element={<ProjectPage />} />
+          <Route path="/" element={<PortfolioContent />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
@@ -37,20 +49,12 @@ function PortfolioContent() {
   const [work, setWork] = useState([]);
 
   useEffect(() => {
-    getDocs(collection(db, "projects")).then(snapshot => {
-       const projectData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-       projectData.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-       setProjects(projectData);
-    });
+    getProjects().then(setProjects);
     getDocs(collection(db, "publications")).then(snapshot => {
-       const publicationData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-       publicationData.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-       setPublications(publicationData);
+       setPublications(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
     });
     getDocs(collection(db, "skills")).then(snapshot => {
-       const skillData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-       skillData.sort((a, b) => (a.label ?? "").localeCompare(b.label ?? ""));
-       setSkills(skillData);
+       setSkills(snapshot.docs.map(d => ({id: d.id, ...d.data()})));
     });
     getDocs(collection(db, "work")).then(snapshot => {
        const workData = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
@@ -60,6 +64,7 @@ function PortfolioContent() {
   }, []);
   const [skillsSectionVisible, setSkillsSectionVisible] = useState(false);
   const skillsGridRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false); // State to manage hover for resume link animation
   const [activeFilter, setActiveFilter] = useState(null); // State to hold the active filter type
   const [isSnowActive, setIsSnowActive] = useState(false);
 
@@ -78,6 +83,7 @@ function PortfolioContent() {
       image={proj.image}
       link={proj.link}
       github={proj.github}
+      to={projectPath(proj)}
       key={proj.id}
       alternate={i % 2 !== 0}
     />
@@ -89,7 +95,7 @@ function PortfolioContent() {
       text={pub.text}
       image={pub.image}
       link={pub.link}
-      key={pub.id}
+      key={pub.title}
       alternate={i % 2 !== 0}
     />
   ));
@@ -225,11 +231,13 @@ function PortfolioContent() {
               className={"skills-grid"}
             >
               <AnimatePresence>
-                {filteredSkills.map((skill, i) => (
+                {filteredSkills
+                  .sort((a, b) => (a.label > b.label ? 1 : -1))
+                  .map((skill, i) => (
                     <Skill
                       label={skill.label}
                       color={skill.color}
-                      key={skill.id}
+                      key={skill.label}
                       pos={i}
                       parentIsVisible={skillsSectionVisible}
                     />
@@ -276,6 +284,9 @@ function PortfolioContent() {
         <div className="projects" id="projects">
           <div>
             <h1 className="section-title">projects</h1>
+            <Link to="/projects" className="orbit-cta">
+              see them all in orbit →
+            </Link>
           </div>
           <Grid
             container
@@ -346,7 +357,7 @@ function PortfolioContent() {
             >
               Jared Stock
             </h4>
-            <span style={{ display: "inline" }}> | {new Date().getFullYear()} | NYC</span>
+            <span style={{ display: "inline" }}> | 2026 | NYC</span>
           </div>
         </footer>
       </div>

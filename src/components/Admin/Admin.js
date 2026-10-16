@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import {
   collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query
 } from 'firebase/firestore';
@@ -13,17 +14,15 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import Login from './Login';
+import AdminGate from './AdminGate';
 
 // ─── Collection schemas ────────────────────────────────────────────────────────
 const SCHEMAS = {
+  // Projects are edited in the full-page ProjectEditor; these columns feed the table.
   projects: [
     { key: 'title', label: 'Title', required: true },
-    { key: 'text', label: 'Description', multiline: true },
-    { key: 'image', label: 'Image URL' },
-    { key: 'link', label: 'Live Link' },
-    { key: 'github', label: 'GitHub URL' },
-    { key: 'order', label: 'Order', type: 'number' },
+    { key: 'slug', label: 'Slug' },
+    { key: 'published', label: 'Published' },
   ],
   work: [
     { key: 'text', label: 'Text (e.g. "Software Engineer @ Acme")', required: true },
@@ -122,7 +121,14 @@ const DeleteDialog = ({ open, onClose, onConfirm, title }) => (
 );
 
 // ─── Collection Tab ────────────────────────────────────────────────────────────
+// Collections with their own editor page instead of the dialog.
+const EDITOR_ROUTES = {
+  projects: (id) => `/admin/projects/${id}`,
+};
+
 const CollectionTab = ({ collectionName }) => {
+  const navigate = useNavigate();
+  const editorRoute = EDITOR_ROUTES[collectionName];
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -158,11 +164,13 @@ const CollectionTab = ({ collectionName }) => {
   }, [fetchRecords]);
 
   const handleOpenAdd = () => {
+    if (editorRoute) return navigate(editorRoute('new'));
     setEditRecord(emptyRecord(collectionName));
     setDialogOpen(true);
   };
 
   const handleOpenEdit = (record) => {
+    if (editorRoute) return navigate(editorRoute(record.id));
     setEditRecord(record);
     setDialogOpen(true);
   };
@@ -295,32 +303,12 @@ const CollectionTab = ({ collectionName }) => {
 // ─── Main Admin Component ──────────────────────────────────────────────────────
 const COLLECTIONS = ['projects', 'work', 'publications', 'skills'];
 
-const Admin = () => {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+const Admin = () => <AdminGate>{(user) => <AdminPanel user={user} />}</AdminGate>;
+
+const AdminPanel = ({ user }) => {
   const [activeTab, setActiveTab] = useState(0);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setAuthLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-
   const handleLogout = () => signOut(auth);
-
-  if (authLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!user) {
-    return <Login onLogin={() => {}} />;
-  }
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>

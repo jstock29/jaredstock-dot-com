@@ -1,0 +1,52 @@
+@use "@styles/colors" as colors;
+@use "@styles/variables" as var;
+
+.site-nav {
+    position: fixed;
+    top: var.$spacing-sm;
+    left: var.$spacing-sm;
+    z-index: 999;
+    display: flex;
+    align-items: baseline;
+    gap: var.$spacing-xs;
+    padding: var.$spacing-xxs var.$spacing-xs;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(6px);
+
+    a {
+        text-decoration: none;
+    }
+
+    h5 {
+        margin: 0;
+    }
+}
+
+.site-nav-sep {
+    color: colors.$neutral-gray;
+}
+
+.site-footer {
+    text-align: center;
+    margin-top: var.$spacing-xxl;
+}
+
+.site-footer-line {
+    padding: 0 0 50px 0;
+    color: colors.$neutral;
+
+    a {
+        text-decoration: none;
+    }
+
+    h4 {
+        display: inline;
+        margin: 0;
+        color: colors.$neutral;
+    }
+
+    h4:hover {
+        color: colors.$gold;
+    }
+}
