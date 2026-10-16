@@ -16,6 +16,7 @@ code {
 
 body {
     position: relative;
+    min-height: 100vh;
     background-color: transparent;
     background-image: linear-gradient(to bottom, #90a4b1 0%, var(--gold-super-light) 100%);
     align-items: center;

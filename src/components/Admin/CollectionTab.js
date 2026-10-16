@@ -1,47 +1,54 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { auth, db } from '../../firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { db } from '../../firebase';
 import {
-  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query
+  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query
 } from 'firebase/firestore';
 import {
-  Container, Typography, Button, Box, Table, TableBody, TableCell,
+  Typography, Button, Box, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, IconButton, Dialog,
   DialogTitle, DialogContent, DialogActions, TextField, Snackbar, Alert,
-  Tabs, Tab, Chip, CircularProgress, Tooltip, Divider
+  Chip, CircularProgress, Tooltip, MenuItem
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import Login from './Login';
 
 // ─── Collection schemas ────────────────────────────────────────────────────────
 const SCHEMAS = {
-  projects: [
-    { key: 'title', label: 'Title', required: true },
-    { key: 'text', label: 'Description', multiline: true },
-    { key: 'image', label: 'Image URL' },
-    { key: 'link', label: 'Live Link' },
-    { key: 'github', label: 'GitHub URL' },
-    { key: 'order', label: 'Order', type: 'number' },
-  ],
   work: [
     { key: 'text', label: 'Text (e.g. "Software Engineer @ Acme")', required: true },
     { key: 'date', label: 'Date (e.g. "Jan 2023" or "2022 – 2024")', required: true },
-    { key: 'color', label: 'Shape Color — "blue" or "primary" for professional, "gold" or "secondary" for personal' },
-    { key: 'order', label: 'Order', type: 'number' },
-  ],
-  publications: [
-    { key: 'title', label: 'Title', required: true },
-    { key: 'text', label: 'Description', multiline: true },
-    { key: 'image', label: 'Image URL' },
-    { key: 'link', label: 'Link' },
-    { key: 'order', label: 'Order', type: 'number' },
+    {
+      key: 'color',
+      label: 'Shape color',
+      options: [
+        { value: 'blue', label: 'Navy (professional)' },
+        { value: 'gold', label: 'Gold (personal)' },
+      ],
+    },
+    { key: 'order', label: 'Order (lower comes first)', type: 'number' },
   ],
   skills: [
     { key: 'label', label: 'Label', required: true },
-    { key: 'type', label: 'Type (languages / frameworks_tools / skills)', required: true },
-    { key: 'color', label: 'Color (hex)' },
+    {
+      key: 'type',
+      label: 'Type',
+      required: true,
+      options: [
+        { value: 'languages', label: 'Languages' },
+        { value: 'frameworks_tools', label: 'Frameworks + Tools' },
+        { value: 'skills', label: 'Skills' },
+      ],
+    },
+    {
+      key: 'color',
+      label: 'Chip color',
+      options: [
+        { value: 'primary', label: 'Navy' },
+        { value: 'secondary', label: 'Gold' },
+        { value: 'default', label: 'Grey' },
+      ],
+    },
   ],
 };
 
@@ -91,9 +98,14 @@ const RecordDialog = ({ open, onClose, onSave, collectionName, initial }) => {
               rows={f.multiline ? 3 : 1}
               required={f.required}
               type={f.type || 'text'}
+              select={Boolean(f.options)}
               size="small"
               fullWidth
-            />
+            >
+              {f.options?.map((o) => (
+                <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
+              ))}
+            </TextField>
           ))}
         </Box>
       </DialogContent>
@@ -122,7 +134,7 @@ const DeleteDialog = ({ open, onClose, onConfirm, title }) => (
 );
 
 // ─── Collection Tab ────────────────────────────────────────────────────────────
-const CollectionTab = ({ collectionName }) => {
+const CollectionTab = ({ collectionName, title }) => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -202,7 +214,7 @@ const CollectionTab = ({ collectionName }) => {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
-          {collectionName}
+          {title || collectionName}
           <Chip label={records.length} size="small" sx={{ ml: 1 }} />
         </Typography>
         <Button
@@ -292,78 +304,4 @@ const CollectionTab = ({ collectionName }) => {
   );
 };
 
-// ─── Main Admin Component ──────────────────────────────────────────────────────
-const COLLECTIONS = ['projects', 'work', 'publications', 'skills'];
-
-const Admin = () => {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(0);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setAuthLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-
-  const handleLogout = () => signOut(auth);
-
-  if (authLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!user) {
-    return <Login onLogin={() => {}} />;
-  }
-
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          Admin Panel
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {user.email}
-          </Typography>
-          <Button onClick={handleLogout} variant="outlined" size="small">
-            Logout
-          </Button>
-        </Box>
-      </Box>
-      <Divider sx={{ mb: 3 }} />
-
-      {/* Collection Tabs */}
-      <Tabs
-        value={activeTab}
-        onChange={(_, val) => setActiveTab(val)}
-        sx={{ mb: 3 }}
-        variant="scrollable"
-        scrollButtons="auto"
-      >
-        {COLLECTIONS.map((name) => (
-          <Tab
-            key={name}
-            label={name.charAt(0).toUpperCase() + name.slice(1)}
-            sx={{ textTransform: 'capitalize', fontWeight: 600 }}
-          />
-        ))}
-      </Tabs>
-
-      {COLLECTIONS.map((name, i) =>
-        activeTab === i ? (
-          <CollectionTab key={name} collectionName={name} />
-        ) : null
-      )}
-    </Container>
-  );
-};
-
-export default Admin;
+export default CollectionTab;

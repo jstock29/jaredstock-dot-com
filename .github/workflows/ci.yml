@@ -27,5 +27,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Firestore rules tests
+      - name: Security rules tests (Firestore + Storage)
         run: npm run test:rules

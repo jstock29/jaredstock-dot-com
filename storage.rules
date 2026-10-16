@@ -1,0 +1,34 @@
+rules_version = '2';
+
+// Uploaded media is public to read. Uploads are limited to admins (see firestore.rules):
+// images and videos up to 50 MB in any content folder, and PDFs up to 15 MB in site/
+// (the resume).
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    function isMediaFolder(folder) {
+      return folder in ['projects', 'publications', 'pages', 'site'];
+    }
+
+    function isMedia() {
+      return request.resource.size < 50 * 1024 * 1024
+        && request.resource.contentType.matches('(image|video)/.*');
+    }
+
+    function isPdf(folder) {
+      return folder == 'site'
+        && request.resource.size < 15 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+    }
+
+    match /{folder}/{allPaths=**} {
+      allow read: if isMediaFolder(folder);
+      allow create, update: if isMediaFolder(folder) && isAdmin() && (isMedia() || isPdf(folder));
+      allow delete: if isMediaFolder(folder) && isAdmin();
+    }
+  }
+}

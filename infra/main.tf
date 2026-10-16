@@ -99,3 +99,50 @@ resource "google_firebaserules_release" "firestore" {
     replace_triggered_by = [google_firebaserules_ruleset.firestore]
   }
 }
+
+# ─── Storage: uploaded media for the CMS ──────────────────────
+# The default bucket itself is created once in the Firebase console
+# (Storage -> Get started), which Terraform can't do for *.firebasestorage.app buckets.
+# Terraform then owns its rules, deployed from the same storage.rules the emulator tests use.
+variable "storage_bucket" {
+  description = "The project's default Firebase Storage bucket."
+  type        = string
+  default     = "driven-binder-500400-c2.firebasestorage.app"
+}
+
+data "google_project" "this" {
+  project_id = "driven-binder-500400-c2"
+}
+
+resource "google_project_service" "firebasestorage" {
+  service = "firebasestorage.googleapis.com"
+}
+
+resource "google_firebaserules_ruleset" "storage" {
+  project = "driven-binder-500400-c2"
+  source {
+    files {
+      name    = "storage.rules"
+      content = file("${path.module}/../storage.rules")
+    }
+  }
+  depends_on = [google_project_service.firebaserules, google_project_service.firebasestorage]
+}
+
+resource "google_firebaserules_release" "storage" {
+  project      = "driven-binder-500400-c2"
+  name         = "firebase.storage/${var.storage_bucket}"
+  ruleset_name = google_firebaserules_ruleset.storage.name
+
+  lifecycle {
+    replace_triggered_by = [google_firebaserules_ruleset.storage]
+  }
+}
+
+# storage.rules checks admins/{uid} in Firestore. Cross-service rules need Storage's
+# service agent to be allowed to read Firestore for rules evaluation.
+resource "google_project_iam_member" "storage_rules_firestore" {
+  project = "driven-binder-500400-c2"
+  role    = "roles/firebaserules.firestoreServiceAgent"
+  member  = "serviceAccount:service-${data.google_project.this.number}@gcp-sa-firebasestorage.iam.gserviceaccount.com"
+}
