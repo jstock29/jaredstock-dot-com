@@ -8,7 +8,7 @@ import {
 } from "@firebase/rules-unit-testing";
 import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 
-const COLLECTIONS = ["projects", "work", "publications", "skills"];
+const COLLECTIONS = ["projects", "work", "publications", "skills", "pages", "settings"];
 const ADMIN_UID = "jared";
 
 let env;

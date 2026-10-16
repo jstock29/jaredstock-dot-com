@@ -3,7 +3,15 @@ import { db } from "../src/firebase.js";
 import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { signInAdmin } from "./admin-auth.js";
 
-// Warning: this wipes every collection first, including project pages written in /admin.
+// Warning: this wipes the projects, publications, skills and work collections first,
+// including everything written in /admin. Pages and site settings are left alone.
+//
+//   ADMIN_EMAIL=… ADMIN_PASSWORD=… node scripts/seed.js --wipe
+if (!process.argv.includes("--wipe")) {
+  console.error("This deletes every project, publication, skill and work entry and writes the defaults back.");
+  console.error("Run it again with --wipe if that's really what you want.");
+  process.exit(1);
+}
 
 const projects = [
   { title: "social data", slug: "social-data", published: true, text: "I led the development of an open source app and open data for a variety of social datasets in the US.", image: "https://jareds-file-sharing.s3.amazonaws.com/social-data.png", link: "https://share.streamlit.io/arup-group/social-data/run.py", github: "https://github.com/arup-group/social-data", order: 1 },

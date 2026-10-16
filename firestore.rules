@@ -10,9 +10,14 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // `pages` are custom pages; `settings/site` holds the home page copy and links.
+    function isContent(collection) {
+      return collection in ['projects', 'work', 'publications', 'skills', 'pages', 'settings'];
+    }
+
     match /{collection}/{docId} {
-      allow read: if collection in ['projects', 'work', 'publications', 'skills'];
-      allow write: if collection in ['projects', 'work', 'publications', 'skills'] && isAdmin();
+      allow read: if isContent(collection);
+      allow write: if isContent(collection) && isAdmin();
     }
 
     match /admins/{uid} {

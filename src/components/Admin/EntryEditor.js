@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocFromServer, updateDoc } from 'firebase/firestore';
 import {
   Alert, Box, Button, Card, CardContent, CircularProgress, Container, Divider, FormControlLabel,
   IconButton, Menu, MenuItem, Snackbar, Switch, TextField, Tooltip, Typography,
@@ -12,8 +12,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { db } from '../../firebase';
-import { getProjects, slugify } from '../../data/projects';
-import AdminGate from './AdminGate';
+import { ENTRY_TYPES, RESERVED_PAGE_SLUGS, entrySlug, getEntries, hasPage, slugify } from '../../data/content';
 import MediaField from './MediaField';
 
 const newId = () => Math.random().toString(36).slice(2, 10);
@@ -33,9 +32,35 @@ const WIDTHS = [
   { value: 'full', label: 'Full bleed' },
 ];
 
-const EMPTY_PROJECT = {
+// The "Basics" fields for each content type. Rows of fields sit side by side.
+const BASICS = {
+  projects: [
+    [{ key: 'tagline', label: 'Tagline', help: 'One-liner under the title on the project page and in the orbit' }],
+    [{ key: 'text', label: 'Card description', multiline: true, help: 'Shown on the home page card' }],
+    [{ key: 'year', label: 'Year' }, { key: 'role', label: 'Role' }],
+    [{ key: 'tags', label: 'Tags', kind: 'tags', help: 'Comma separated' }],
+    [{ key: 'link', label: 'Live link' }, { key: 'github', label: 'GitHub URL' }],
+    [{ key: 'image', label: 'Card image', kind: 'media', accept: 'image/*', help: 'Home page card and the planet in the orbit' }],
+  ],
+  publications: [
+    [{ key: 'text', label: 'Where it was published', help: 'e.g. "Towards Data Science"' }],
+    [{ key: 'link', label: 'Article URL', help: 'Leave the story below empty and the card links straight here' }],
+    [{ key: 'tagline', label: 'Tagline', help: 'Shown under the title on its page' }],
+    [{ key: 'year', label: 'Year' }, { key: 'tags', label: 'Tags', kind: 'tags', help: 'Comma separated' }],
+    [{ key: 'image', label: 'Card image', kind: 'media', accept: 'image/*' }],
+  ],
+  pages: [
+    [{ key: 'tagline', label: 'Tagline', help: 'Shown under the title' }],
+    [
+      { key: 'showInNav', label: 'Show in the home page menu', kind: 'switch' },
+      { key: 'navLabel', label: 'Menu label', help: 'Defaults to the title' },
+    ],
+  ],
+};
+
+const EMPTY_ENTRY = {
   title: '', slug: '', tagline: '', text: '', year: '', role: '', tags: [],
-  link: '', github: '', image: '', order: 0, published: false,
+  link: '', github: '', image: '', published: false, showInNav: false, navLabel: '',
   hero: { type: 'image', src: '', poster: '', alt: '' },
   blocks: [],
 };
@@ -52,6 +77,51 @@ function Select({ label, value, onChange, options }) {
 
 function Field(props) {
   return <TextField size="small" fullWidth {...props} value={props.value ?? ''} />;
+}
+
+function BasicField({ field, entry, set, folder }) {
+  const value = entry[field.key];
+  switch (field.kind) {
+    case 'tags':
+      return (
+        <Field
+          label={field.label}
+          value={(value || []).join(', ')}
+          onChange={(e) => set({ [field.key]: e.target.value.split(',') })}
+          helperText={field.help}
+        />
+      );
+    case 'media':
+      return (
+        <MediaField
+          label={field.label}
+          value={value}
+          onChange={(v) => set({ [field.key]: v })}
+          folder={folder}
+          accept={field.accept}
+          helperText={field.help}
+        />
+      );
+    case 'switch':
+      return (
+        <FormControlLabel
+          sx={{ minWidth: 260 }}
+          control={<Switch checked={Boolean(value)} onChange={(e) => set({ [field.key]: e.target.checked })} />}
+          label={field.label}
+        />
+      );
+    default:
+      return (
+        <Field
+          label={field.label}
+          multiline={field.multiline}
+          minRows={field.multiline ? 2 : undefined}
+          value={value}
+          onChange={(e) => set({ [field.key]: e.target.value })}
+          helperText={field.help}
+        />
+      );
+  }
 }
 
 // ─── Per-type block forms ──────────────────────────────────────────────────────
@@ -74,7 +144,7 @@ function BlockFields({ block, update, folder }) {
       return (
         <>
           <MediaField
-            label={block.type === 'video' ? 'Video URL (mp4 / webm)' : 'Image URL'}
+            label={block.type === 'video' ? 'Video URL (mp4 / webm)' : 'Image or GIF URL'}
             value={block.src}
             onChange={(src) => update({ src })}
             folder={folder}
@@ -110,7 +180,7 @@ function BlockFields({ block, update, folder }) {
                   <Field label="Caption" value={item.caption} onChange={(e) => setItem(i, { caption: e.target.value })} />
                 </Box>
               </Box>
-              <IconButton size="small" color="error" onClick={() => update({ items: items.filter((_, j) => j !== i) })}>
+              <IconButton size="small" color="error" aria-label="Remove item" onClick={() => update({ items: items.filter((_, j) => j !== i) })}>
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </Box>
@@ -177,39 +247,45 @@ function AddBlockButton({ onAdd, label = 'Add block' }) {
   );
 }
 
+const publicPath = (type, slug) => `${ENTRY_TYPES[type].basePath}/${slug}`;
+
 // ─── Editor ────────────────────────────────────────────────────────────────────
-function Editor() {
-  const { id } = useParams();
+export default function EntryEditor() {
+  const { type, id } = useParams();
   const navigate = useNavigate();
   const isNew = id === 'new';
-  const [project, setProject] = useState(null);
+  const config = ENTRY_TYPES[type];
+  const [entry, setEntry] = useState(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(false);
   const [snack, setSnack] = useState(null);
 
   useEffect(() => {
+    if (!config) return;
     if (isNew) {
-      setProject(EMPTY_PROJECT);
+      setEntry(EMPTY_ENTRY);
+      setSlugTouched(false);
       return;
     }
-    getDoc(doc(db, 'projects', id))
+    getDocFromServer(doc(db, type, id))
       .then((snap) => {
-        if (!snap.exists()) throw new Error('Project not found');
+        if (!snap.exists()) throw new Error(`That ${config.singular} doesn't exist.`);
         const data = snap.data();
-        setProject({
-          ...EMPTY_PROJECT,
+        setEntry({
+          ...EMPTY_ENTRY,
           ...data,
           // Older docs have no slug or published flag yet.
-          slug: data.slug || slugify(data.title),
+          slug: entrySlug(data),
           published: data.published !== false,
-          hero: { ...EMPTY_PROJECT.hero, ...(data.hero || {}) },
+          tags: data.tags || [],
+          hero: { ...EMPTY_ENTRY.hero, ...(data.hero || {}) },
           blocks: (data.blocks || []).map((b) => ({ id: b.id || newId(), ...b })),
         });
         setSlugTouched(true);
       })
       .catch((err) => setSnack({ severity: 'error', message: err.message }));
-  }, [id, isNew]);
+  }, [type, id, isNew, config]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -221,9 +297,13 @@ function Editor() {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
 
-  const folder = useMemo(() => `projects/${project?.slug || 'untitled'}`, [project?.slug]);
+  const folder = useMemo(() => `${type}/${entry?.slug || 'untitled'}`, [type, entry?.slug]);
 
-  if (!project) {
+  if (!config) {
+    return <Alert severity="error" sx={{ m: 4 }}>Unknown content type "{type}".</Alert>;
+  }
+
+  if (!entry) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
         {snack ? <Alert severity="error">{snack.message}</Alert> : <CircularProgress />}
@@ -232,17 +312,16 @@ function Editor() {
   }
 
   const set = (patch) => {
-    setProject((p) => ({ ...p, ...patch }));
+    setEntry((p) => ({ ...p, ...patch }));
     setDirty(true);
   };
-  const setField = (key) => (e) => {
-    const value = e.target.value;
-    if (key === 'title' && !slugTouched) set({ title: value, slug: slugify(value) });
-    else set({ [key]: value });
+  const setTitle = (e) => {
+    const title = e.target.value;
+    set(slugTouched ? { title } : { title, slug: slugify(title) });
   };
-  const setHero = (patch) => set({ hero: { ...project.hero, ...patch } });
+  const setHero = (patch) => set({ hero: { ...entry.hero, ...patch } });
 
-  const blocks = project.blocks;
+  const blocks = entry.blocks;
   const updateBlock = (i, patch) => set({ blocks: blocks.map((b, j) => (j === i ? { ...b, ...patch } : b)) });
   const moveBlock = (i, dir) => {
     const next = [...blocks];
@@ -253,37 +332,51 @@ function Editor() {
   const insertBlock = (i, block) => set({ blocks: [...blocks.slice(0, i), block, ...blocks.slice(i)] });
 
   const handleSave = async () => {
-    const title = project.title.trim();
-    const slug = slugify(project.slug || title);
+    const title = entry.title.trim();
+    const slug = slugify(entry.slug || title);
     if (!title) return setSnack({ severity: 'error', message: 'A title is required.' });
     if (!slug) return setSnack({ severity: 'error', message: 'A slug is required.' });
+    if (type === 'pages' && RESERVED_PAGE_SLUGS.includes(slug)) {
+      return setSnack({ severity: 'error', message: `"${slug}" is already a section of the site. Pick another slug.` });
+    }
 
     setSaving(true);
     try {
-      const others = await getProjects({ includeDrafts: true, fresh: true });
-      const clash = others.find((p) => p.id !== id && (p.slug || slugify(p.title)) === slug);
+      const others = await getEntries(type, { includeDrafts: true, fresh: true });
+      const clash = others.find((p) => p.id !== id && entrySlug(p) === slug);
       if (clash) throw new Error(`"${clash.title}" already uses the slug "${slug}".`);
 
       const data = {
-        ...project,
+        ...entry,
         title,
         slug,
-        order: Number(project.order) || 0,
-        tags: project.tags.map((t) => t.trim()).filter(Boolean),
+        tags: (entry.tags || []).map((t) => t.trim()).filter(Boolean),
+        updatedAt: new Date().toISOString(),
       };
       delete data.id;
 
+      let savedId = id;
       if (isNew) {
-        const created = await addDoc(collection(db, 'projects'), data);
-        setDirty(false);
-        navigate(`/admin/projects/${created.id}`, { replace: true });
+        // New entries go to the end of the list; reorder them from the list view.
+        data.order = others.reduce((max, p) => Math.max(max, Number(p.order) || 0), 0) + 1;
+        const created = await addDoc(collection(db, type), data);
+        savedId = created.id;
       } else {
-        await updateDoc(doc(db, 'projects', id), data);
-        setProject((p) => ({ ...p, slug }));
-        setDirty(false);
+        await updateDoc(doc(db, type, id), data);
       }
-      getProjects({ fresh: true }); // refresh the public-site cache
-      setSnack({ severity: 'success', message: 'Saved.' });
+
+      // Read it back from the server so "Saved" means the site really has it.
+      const check = await getDocFromServer(doc(db, type, savedId));
+      if (!check.exists() || check.data().updatedAt !== data.updatedAt) {
+        throw new Error("the database didn't confirm the change. Try again.");
+      }
+
+      setDirty(false);
+      setEntry((p) => ({ ...p, slug }));
+      getEntries(type, { fresh: true }); // refresh the public-site cache
+      const live = data.published && hasPage(type, data);
+      setSnack({ severity: 'success', message: live ? "Saved. It's on the site now." : 'Saved as a draft.' });
+      if (isNew) navigate(`/admin/${type}/${savedId}`, { replace: true });
     } catch (err) {
       setSnack({ severity: 'error', message: `Save failed: ${err.message}` });
     } finally {
@@ -291,28 +384,24 @@ function Editor() {
     }
   };
 
+  const pagePath = publicPath(type, entry.slug || '…');
+
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 12 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-        <Button component={RouterLink} to="/admin" startIcon={<ArrowBackIcon />} color="inherit">
-          Admin
+        <Button component={RouterLink} to={`/admin?tab=${type}`} startIcon={<ArrowBackIcon />} color="inherit">
+          {config.label}
         </Button>
         <Typography variant="h5" sx={{ fontWeight: 700, flex: 1 }}>
-          {isNew ? 'New project' : project.title || 'Untitled'}
+          {isNew ? `New ${config.singular}` : entry.title || 'Untitled'}
         </Typography>
         <FormControlLabel
-          control={<Switch checked={project.published} onChange={(e) => set({ published: e.target.checked })} />}
-          label={project.published ? 'Published' : 'Draft'}
+          control={<Switch checked={entry.published} onChange={(e) => set({ published: e.target.checked })} />}
+          label={entry.published ? 'Published' : 'Draft'}
         />
-        {!isNew && (
+        {!isNew && hasPage(type, entry) && (
           <Tooltip title={dirty ? 'Save first to preview your latest changes' : 'Opens in a new tab; drafts are visible to you only'}>
-            <Button
-              component="a"
-              href={`/projects/${project.slug}?preview=1`}
-              target="_blank"
-              rel="noreferrer"
-              startIcon={<VisibilityIcon />}
-            >
+            <Button component="a" href={`${pagePath}?preview=1`} target="_blank" rel="noreferrer" startIcon={<VisibilityIcon />}>
               Preview
             </Button>
           </Tooltip>
@@ -325,71 +414,57 @@ function Editor() {
 
       <Typography variant="overline" color="text.secondary">Basics</Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
-        <Field label="Title" required value={project.title} onChange={setField('title')} />
+        <Field label="Title" required value={entry.title} onChange={setTitle} />
         <Field
           label="Slug"
-          value={project.slug}
+          value={entry.slug}
           onChange={(e) => {
             setSlugTouched(true);
             set({ slug: e.target.value });
           }}
-          onBlur={() => set({ slug: slugify(project.slug) })}
-          helperText={`jaredstock.com/projects/${project.slug || '…'}`}
+          onBlur={() => set({ slug: slugify(entry.slug) })}
+          helperText={`jaredstock.com${pagePath}`}
         />
-        <Field label="Tagline" value={project.tagline} onChange={setField('tagline')} helperText="One-liner under the title on the project page and in the orbit" />
-        <Field label="Card description" multiline minRows={2} value={project.text} onChange={setField('text')} helperText="Shown on the home page card" />
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Field label="Year" value={project.year} onChange={setField('year')} />
-          <Field label="Role" value={project.role} onChange={setField('role')} />
-          <Field label="Order" type="number" value={project.order} onChange={setField('order')} />
-        </Box>
-        <Field
-          label="Tags"
-          value={project.tags.join(', ')}
-          onChange={(e) => set({ tags: e.target.value.split(',') })}
-          helperText="Comma separated"
-        />
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Field label="Live link" value={project.link} onChange={setField('link')} />
-          <Field label="GitHub URL" value={project.github} onChange={setField('github')} />
-        </Box>
-        <MediaField
-          label="Card image"
-          value={project.image}
-          onChange={(image) => set({ image })}
-          folder={folder}
-          accept="image/*"
-          helperText="Home page card and the planet in the orbit"
-        />
+        {BASICS[type].map((row, i) => (
+          <Box key={i} sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
+            {row.map((field) => (
+              <BasicField key={field.key} field={field} entry={entry} set={set} folder={folder} />
+            ))}
+          </Box>
+        ))}
       </Box>
 
       <Typography variant="overline" color="text.secondary">Hero</Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
         <Select
           label="Hero type"
-          value={project.hero.type}
-          onChange={(type) => setHero({ type })}
+          value={entry.hero.type}
+          onChange={(heroType) => setHero({ type: heroType })}
           options={[{ value: 'image', label: 'Image / GIF' }, { value: 'video', label: 'Looping video' }]}
         />
         <MediaField
           label="Hero media"
-          value={project.hero.src}
+          value={entry.hero.src}
           onChange={(src) => setHero({ src })}
           folder={folder}
-          accept={project.hero.type === 'video' ? 'video/*' : 'image/*'}
-          helperText="Falls back to the card image when empty"
+          accept={entry.hero.type === 'video' ? 'video/*' : 'image/*'}
+          helperText={type === 'pages' ? 'Optional big picture at the top' : 'Falls back to the card image when empty'}
         />
-        {project.hero.type === 'video' && (
-          <MediaField label="Hero poster" value={project.hero.poster} onChange={(poster) => setHero({ poster })} folder={folder} accept="image/*" />
+        {entry.hero.type === 'video' && (
+          <MediaField label="Hero poster" value={entry.hero.poster} onChange={(poster) => setHero({ poster })} folder={folder} accept="image/*" />
         )}
-        <Field label="Hero alt text" value={project.hero.alt} onChange={(e) => setHero({ alt: e.target.value })} />
+        <Field label="Hero alt text" value={entry.hero.alt} onChange={(e) => setHero({ alt: e.target.value })} />
       </Box>
 
-      <Typography variant="overline" color="text.secondary">Story</Typography>
+      <Typography variant="overline" color="text.secondary">
+        {type === 'pages' ? 'Content' : 'Story'}
+      </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {blocks.length === 0 && (
           <Typography color="text.secondary" sx={{ py: 2 }}>
-            No blocks yet. Add some text, images, videos or embeds.
+            {type === 'publications'
+              ? 'No blocks yet, so the card links straight to the article. Add blocks to give it its own page.'
+              : 'No blocks yet. Add some text, images, GIFs, videos or embeds.'}
           </Typography>
         )}
         {blocks.map((block, i) => (
@@ -433,7 +508,7 @@ function Editor() {
 
       <Snackbar
         open={Boolean(snack)}
-        autoHideDuration={4000}
+        autoHideDuration={5000}
         onClose={() => setSnack(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
@@ -446,7 +521,3 @@ function Editor() {
     </Container>
   );
 }
-
-const ProjectEditor = () => <AdminGate>{() => <Editor />}</AdminGate>;
-
-export default ProjectEditor;

@@ -1,16 +1,22 @@
 import React, { useRef, useState } from 'react';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { connectStorageEmulator, getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { Box, Button, LinearProgress, TextField, Typography } from '@mui/material';
 import UploadIcon from '@mui/icons-material/CloudUpload';
-import { app } from '../../firebase';
-import { isVideoUrl } from '../../data/projects';
+import { app, usingEmulators } from '../../firebase';
+import { isVideoUrl } from '../../data/content';
+
+const storage = getStorage(app);
+if (usingEmulators) connectStorageEmulator(storage, '127.0.0.1', 9199);
 
 const MAX_BYTES = 50 * 1024 * 1024;
+const MAX_PDF_BYTES = 15 * 1024 * 1024;
 const GIF_WARN_BYTES = 4 * 1024 * 1024;
+
+const isPdfUrl = (url = '') => /\.pdf(\?|#|$)/i.test(decodeURIComponent(url));
 
 export function uploadMedia(file, folder, onProgress) {
   const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-');
-  const storageRef = ref(getStorage(app), `${folder}/${Date.now()}-${safeName}`);
+  const storageRef = ref(storage, `${folder}/${Date.now()}-${safeName}`);
   const task = uploadBytesResumable(storageRef, file, {
     contentType: file.type,
     cacheControl: 'public, max-age=31536000, immutable',
@@ -35,8 +41,10 @@ const MediaField = ({ label, value, onChange, folder, accept = 'image/*,video/*'
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    if (file.size > MAX_BYTES) {
-      setMessage({ severity: 'error', text: `That file is ${(file.size / 1e6).toFixed(0)} MB. Keep uploads under 50 MB.` });
+    const isPdf = file.type === 'application/pdf';
+    const limit = isPdf ? MAX_PDF_BYTES : MAX_BYTES;
+    if (file.size > limit) {
+      setMessage({ severity: 'error', text: `That file is ${(file.size / 1e6).toFixed(0)} MB. Keep ${isPdf ? 'PDFs' : 'uploads'} under ${limit / 1024 / 1024} MB.` });
       return;
     }
     setMessage(
@@ -86,7 +94,13 @@ const MediaField = ({ label, value, onChange, folder, accept = 'image/*,video/*'
       )}
       {value && (
         <Box sx={{ mt: 1, '& img, & video': { maxHeight: 120, maxWidth: '100%', borderRadius: 1, display: 'block' } }}>
-          {isVideoUrl(value) ? <video src={value} muted playsInline preload="metadata" /> : <img src={value} alt="" />}
+          {isPdfUrl(value) ? (
+            <a href={value} target="_blank" rel="noreferrer">Open the current PDF</a>
+          ) : isVideoUrl(value) ? (
+            <video src={value} muted playsInline preload="metadata" />
+          ) : (
+            <img src={value} alt="" />
+          )}
         </Box>
       )}
     </Box>

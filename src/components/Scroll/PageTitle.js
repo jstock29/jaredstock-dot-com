@@ -17,7 +17,7 @@ const titleVariants = {
   },
 };
 
-export const PageTitle = () => {
+export const PageTitle = ({ name, links = {} }) => {
   const heroRef = useRef(null);
 
   const scrollToAbout = () => {
@@ -41,7 +41,7 @@ export const PageTitle = () => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        jared stock
+        {name}
       </motion.h1>
       <Grid
         container
@@ -50,33 +50,21 @@ export const PageTitle = () => {
         alignItems="center"
         className="links-grid"
       >
-        <a
-          href="https://github.com/jstock29"
-          title="Github"
-          target="_blank"
-          rel="noreferrer"
-          className="link-icon"
-        >
-          <GitHubIcon style={{ fontSize: 26 }} />
-        </a>
-        <a
-          href="https://www.linkedin.com/in/jaredstock/"
-          title="LinkedIn"
-          target="_blank"
-          rel="noreferrer"
-          className="link-icon"
-        >
-          <LinkedInIcon style={{ fontSize: 26 }} />
-        </a>
-        <a
-          href="mailto:jstock529@gmail.com"
-          title="Email"
-          target="_blank"
-          rel="noreferrer"
-          className="link-icon"
-        >
-          <EmailOutlinedIcon style={{ fontSize: 26 }} />
-        </a>
+        {links.github && (
+          <a href={links.github} title="Github" target="_blank" rel="noreferrer" className="link-icon">
+            <GitHubIcon style={{ fontSize: 26 }} />
+          </a>
+        )}
+        {links.linkedin && (
+          <a href={links.linkedin} title="LinkedIn" target="_blank" rel="noreferrer" className="link-icon">
+            <LinkedInIcon style={{ fontSize: 26 }} />
+          </a>
+        )}
+        {links.email && (
+          <a href={`mailto:${links.email}`} title="Email" className="link-icon">
+            <EmailOutlinedIcon style={{ fontSize: 26 }} />
+          </a>
+        )}
       </Grid>
     </div>
   );

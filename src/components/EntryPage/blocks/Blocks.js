@@ -2,7 +2,7 @@ import React from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
-import { isVideoUrl, toEmbedUrl } from "../../../data/projects";
+import { isVideoUrl, toEmbedUrl } from "../../../data/content";
 
 // Media sits in the prose column by default; "wide" and "full" break out of it.
 const widthClass = (width) => `block-width-${width || "column"}`;

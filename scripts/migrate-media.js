@@ -1,5 +1,5 @@
-// Copies externally hosted media (e.g. the old S3 bucket) referenced by projects and
-// publications into Firebase Storage, then rewrites the docs to point at the new URLs.
+// Copies externally hosted images and videos (e.g. the old S3 bucket) referenced by projects,
+// publications, pages and the site settings (the about photo) into Firebase Storage, then rewrites the docs to point at the new URLs.
 //
 //   ADMIN_EMAIL=… ADMIN_PASSWORD=… node scripts/migrate-media.js [--dry-run]
 import "dotenv/config";
@@ -34,7 +34,7 @@ async function copyToStorage(url, folder) {
 }
 
 // Walks a doc and replaces every external media URL under the media keys.
-const MEDIA_KEYS = new Set(["image", "src", "poster"]);
+const MEDIA_KEYS = new Set(["image", "src", "poster", "photo"]);
 
 async function rewrite(value, folder, changes) {
   if (Array.isArray(value)) {
@@ -64,7 +64,8 @@ async function migrate(colName) {
   const snapshot = await getDocs(collection(db, colName));
   for (const d of snapshot.docs) {
     const data = d.data();
-    const folder = `${colName}/${data.slug || slugify(data.title)}`;
+    // Site settings media goes in site/, the only other folder storage.rules allows.
+    const folder = colName === "settings" ? "site" : `${colName}/${data.slug || slugify(data.title)}`;
     const changes = [];
     const next = await rewrite(data, folder, changes);
     if (changes.length === 0) continue;
@@ -78,6 +79,8 @@ async function main() {
   await signInAdmin();
   await migrate("projects");
   await migrate("publications");
+  await migrate("pages");
+  await migrate("settings");
   console.log(DRY_RUN ? "Dry run complete; nothing written." : "Migration complete.");
   process.exit(0);
 }

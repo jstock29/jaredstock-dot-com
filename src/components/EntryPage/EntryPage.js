@@ -1,4 +1,4 @@
-import "./ProjectPage.scss";
+import "./EntryPage.scss";
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
@@ -7,7 +7,8 @@ import { Chip, CircularProgress } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LaunchIcon from "@mui/icons-material/Launch";
 import { auth } from "../../firebase";
-import { getProjectBySlug, isPublished, projectPath } from "../../data/projects";
+import { ENTRY_TYPES, entryPath, getEntryBySlug, isPublished } from "../../data/content";
+import { useSettings } from "../../data/settings";
 import { OrbitField } from "../Scroll/OrbitField";
 import { SiteFooter, SiteNav, useDocumentTitle } from "../SiteChrome/SiteChrome";
 import { BlockRenderer, Media } from "./blocks/Blocks";
@@ -32,7 +33,14 @@ function usePreviewMode() {
   return { ready: user !== undefined, preview: Boolean(user) };
 }
 
-export default function ProjectPage() {
+// Where the breadcrumb and the pager's centre button lead for each content type.
+function listingFor(type, settings) {
+  if (type === "projects") return { to: "/projects", label: settings?.sections.projects.title ?? "projects" };
+  if (type === "publications") return { to: "/#publications", label: settings?.sections.publications.title ?? "publications" };
+  return null;
+}
+
+export default function EntryPage({ type }) {
   const { slug } = useParams();
   const { ready, preview } = usePreviewMode();
   const [state, setState] = useState({ loading: true });
@@ -41,18 +49,21 @@ export default function ProjectPage() {
     if (!ready) return;
     let cancelled = false;
     setState({ loading: true });
-    getProjectBySlug(slug, { includeDrafts: preview })
+    getEntryBySlug(type, slug, { includeDrafts: preview })
       .then((result) => !cancelled && setState({ loading: false, ...result }))
       .catch((error) => !cancelled && setState({ loading: false, error }));
     return () => {
       cancelled = true;
     };
-  }, [slug, ready, preview]);
+  }, [type, slug, ready, preview]);
 
-  const { loading, project, prev, next, error } = state;
-  useDocumentTitle(project ? `${project.title} · Jared Stock` : null);
+  const settings = useSettings();
+  const { loading, entry: project, prev, next, error } = state;
+  useDocumentTitle(project && settings ? `${project.title} · ${settings.footer.name}` : null);
 
-  const crumbs = [{ to: "/projects", label: "projects" }];
+  const listing = listingFor(type, settings);
+  const crumbs = listing ? [listing] : [];
+  const backTo = listing?.to ?? "/";
 
   if (loading) {
     return (
@@ -68,9 +79,9 @@ export default function ProjectPage() {
       <div className="project-page project-page-status">
         <SiteNav crumbs={crumbs} />
         <h1 className="section-title">lost in space</h1>
-        <p>{error ? "Couldn't load this project." : "There's no project here."}</p>
-        <Link to="/projects" className="project-page-cta">
-          back to the orbit →
+        <p>{error ? "Couldn't load this page." : "There's nothing here."}</p>
+        <Link to={backTo} className="project-page-cta">
+          {type === "projects" ? "back to the orbit →" : "back home →"}
         </Link>
       </div>
     );
@@ -123,7 +134,13 @@ export default function ProjectPage() {
               </a>
             )}
             {project.link && (
-              <a href={project.link} target="_blank" rel="noreferrer" className="link-icon" aria-label="Visit the live project">
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noreferrer"
+                className="link-icon"
+                aria-label={type === "publications" ? "Read the article" : `Visit the live ${ENTRY_TYPES[type].singular}`}
+              >
                 <LaunchIcon style={{ fontSize: 22 }} />
               </a>
             )}
@@ -145,16 +162,16 @@ export default function ProjectPage() {
         )}
       </article>
 
-      {prev && next && prev.id !== project.id && (
+      {type !== "pages" && prev && next && prev.id !== project.id && (
         <nav className="project-page-pager" aria-label="More projects">
-          <Link to={projectPath(prev)}>
+          <Link to={entryPath(type, prev)}>
             <span className="project-page-pager-label">← previous</span>
             <span className="project-page-pager-title">{prev.title}</span>
           </Link>
-          <Link to="/projects" className="project-page-pager-center" aria-label="All projects">
+          <Link to={backTo} className="project-page-pager-center" aria-label={listing ? `All ${listing.label}` : "Home"}>
             <span className="project-page-pager-sun" />
           </Link>
-          <Link to={projectPath(next)} className="project-page-pager-next">
+          <Link to={entryPath(type, next)} className="project-page-pager-next">
             <span className="project-page-pager-label">next →</span>
             <span className="project-page-pager-title">{next.title}</span>
           </Link>

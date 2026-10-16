@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-jaredstock \"node --test tests/rules/*.test.js\""
+    "emulators": "firebase emulators:start --only auth,firestore,storage --project driven-binder-500400-c2",
+    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-jaredstock \"node --test --test-concurrency=1 tests/rules/*.test.js\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

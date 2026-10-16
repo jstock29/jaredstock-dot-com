@@ -2,6 +2,7 @@ import "./SiteChrome.scss";
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Signature } from "../Signature";
+import { useSettings } from "../../data/settings";
 
 // Resets scroll on navigation, or scrolls to the #hash target when there is one.
 export function ScrollToTop() {
@@ -23,10 +24,11 @@ export function ScrollToTop() {
 
 // Top-left breadcrumb used on pages outside the home page.
 export function SiteNav({ crumbs = [] }) {
+  const settings = useSettings();
   return (
     <nav className="site-nav" aria-label="Breadcrumb">
       <Link to="/">
-        <h5>jared stock</h5>
+        <h5>{settings?.name ?? "\u00a0"}</h5>
       </Link>
       {crumbs.map((c) => (
         <React.Fragment key={c.to}>
@@ -41,14 +43,18 @@ export function SiteNav({ crumbs = [] }) {
 }
 
 export function SiteFooter() {
+  const settings = useSettings();
+  if (!settings) return null;
   return (
     <footer className="footer site-footer">
       <Signature />
       <div className="site-footer-line">
         <Link to="/">
-          <h4>Jared Stock</h4>
+          <h4>{settings.footer.name}</h4>
         </Link>
-        <span> | 2026 | NYC</span>
+        <span>
+          {" "}| {new Date().getFullYear()} | {settings.footer.location}
+        </span>
       </div>
     </footer>
   );
