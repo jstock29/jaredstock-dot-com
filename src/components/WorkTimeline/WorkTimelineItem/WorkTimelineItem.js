@@ -123,7 +123,7 @@ export function WorkTimelineItem(props) {
 
   return (
     <TimelineItem ref={timelineItemRef} className={itemClassName}>
-      <TimelineOppositeContent>
+      <TimelineOppositeContent sx={{ flex: { xs: 0.6, sm: 1 } }}>
         <Typography color="text.secondary">{props.date}</Typography>
       </TimelineOppositeContent>
       {separator}

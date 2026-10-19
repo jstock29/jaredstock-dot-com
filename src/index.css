@@ -27,6 +27,41 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Major Mono Display', monospace;
 }
 
+/* Major Mono Display draws capitals as heavier, odd-looking glyphs, so mixed-case text
+   (a footer name, a project title typed with capitals) renders unevenly. Lowercase it all.
+   The admin's MUI headings use Montserrat and keep their case. */
+h1:not(.MuiTypography-root),
+h2:not(.MuiTypography-root),
+h3:not(.MuiTypography-root),
+h4:not(.MuiTypography-root),
+h5:not(.MuiTypography-root),
+h6:not(.MuiTypography-root) {
+    text-transform: lowercase;
+}
+
+/* Keyboard focus gets a visible ring; mouse clicks don't. */
+:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .project-item,
+    .publication-item,
+    .work-timeline-item,
+    .shape-bullet,
+    .block-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
 a {
     text-decoration: none;
     cursor: pointer;

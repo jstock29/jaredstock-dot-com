@@ -34,6 +34,16 @@
     margin-top: var.$spacing-md;
 }
 
+// Phones: keep text, chips and photos off the screen edges.
+@media (max-width: 599px) {
+    .about,
+    .work,
+    .projects,
+    .publications {
+        padding: 0 var.$spacing-sm;
+    }
+}
+
 .anchors {
     position: fixed;
     top: var.$spacing-sm;
@@ -97,7 +107,7 @@
 }
 
 a > h5 {
-    color: colors.$neutral;
+    color: rgba(0, 0, 0, 0.7); // colors.$neutral is under 4.5:1 on the blue-grey top of the page
     text-decoration: none;
     cursor: pointer;
 }
