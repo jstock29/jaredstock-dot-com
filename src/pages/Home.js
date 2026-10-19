@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { Chip, Grid } from "@mui/material";
@@ -192,9 +191,6 @@ export default function Home() {
           <div className="projects" id="projects">
             <div>
               <h1 className="section-title">{sections.projects.title}</h1>
-              <Link to="/projects" className="orbit-cta">
-                see them all in orbit →
-              </Link>
             </div>
             <Grid container direction="column" justifyContent="space-evenly" alignItems="center">
               {projects.map((proj, i) => (

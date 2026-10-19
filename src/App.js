@@ -17,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin/*" element={<AdminApp />} />
+          {/* Hidden: nothing links here until Jared puts it live. */}
           <Route path="/projects" element={<ProjectsOrbit />} />
           <Route path="/projects/:slug" element={<EntryPage type="projects" />} />
           <Route path="/publications/:slug" element={<EntryPage type="publications" />} />

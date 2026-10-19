@@ -35,7 +35,7 @@ function usePreviewMode() {
 
 // Where the breadcrumb and the pager's centre button lead for each content type.
 function listingFor(type, settings) {
-  if (type === "projects") return { to: "/projects", label: settings?.sections.projects.title ?? "projects" };
+  if (type === "projects") return { to: "/#projects", label: settings?.sections.projects.title ?? "projects" };
   if (type === "publications") return { to: "/#publications", label: settings?.sections.publications.title ?? "publications" };
   return null;
 }
@@ -81,7 +81,7 @@ export default function EntryPage({ type }) {
         <h1 className="section-title">lost in space</h1>
         <p>{error ? "Couldn't load this page." : "There's nothing here."}</p>
         <Link to={backTo} className="project-page-cta">
-          {type === "projects" ? "back to the orbit →" : "back home →"}
+          back home →
         </Link>
       </div>
     );
