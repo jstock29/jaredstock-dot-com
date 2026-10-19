@@ -17,7 +17,7 @@ export function About({ about }) {
             backgroundImage: `url(${about.photo})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            height: "400px",
+            height: "clamp(260px, 60vw, 400px)",
             width: "100%",
             borderRadius: "16px",
             margin: "0 auto 24px auto",

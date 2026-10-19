@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
+import { MotionConfig } from 'framer-motion';
 
 
 let theme = createTheme({
@@ -51,7 +52,10 @@ const root = createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <ThemeProvider theme={theme}>
-            <App/>
+            {/* Honour the OS "reduce motion" setting for every framer-motion animation. */}
+            <MotionConfig reducedMotion="user">
+                <App/>
+            </MotionConfig>
         </ThemeProvider>
     </React.StrictMode>
 );
