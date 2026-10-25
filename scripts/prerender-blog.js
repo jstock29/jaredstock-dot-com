@@ -9,11 +9,13 @@
 //   dist/blog.html          served at /blog
 //   dist/blog/feed.xml      RSS, full text
 //   dist/blog/version.txt   see scripts/blog-data.js
+//   dist/.well-known/site.standard.publication/blog   see scripts/atproto-sync.js
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { syncStandardSite } from "./atproto-sync.js";
 import { blogVersion, getPublishedPosts, getSiteSettings } from "./blog-data.js";
 import { plainText, shareDescription, shareImage } from "../src/data/posts.js";
 
@@ -144,6 +146,14 @@ async function main() {
 
   await mkdir(new URL("blog/", DIST), { recursive: true });
 
+  // Each post's standard.site record, linked from its page so the record and the page vouch
+  // for each other.
+  const at = await syncStandardSite(
+    posts.map((p) => ({ ...p, cover: shareImage(p) })),
+    blog,
+    { describe: shareDescription },
+  );
+
   for (const post of posts) {
     const url = `${SITE}/blog/${post.slug}`;
     const description = shareDescription(post);
@@ -164,6 +174,7 @@ async function main() {
       post.updatedAt && `<meta property="article:modified_time" content="${esc(post.updatedAt)}" />`,
       `<meta property="article:author" content="${esc(author)}" />`,
       ...(post.tags || []).map((t) => `<meta property="article:tag" content="${esc(t)}" />`),
+      at?.documents.get(post.slug) && `<link rel="site.standard.document" href="${esc(at.documents.get(post.slug))}" />`,
       `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, "\\u003c")}</script>`,
     ]
       .filter(Boolean)
@@ -193,10 +204,16 @@ async function main() {
         url: `${SITE}/blog`,
         image: latestImage,
         siteName: blog.title,
+        extra: at ? `<link rel="site.standard.publication" href="${esc(at.publicationUri)}" />` : "",
       }),
     ),
   );
   await writeFile(new URL("blog/feed.xml", DIST), feed(posts, blog, author));
+  if (at) {
+    // The publication lives at /blog, so its proof goes at /.well-known/site.standard.publication/blog.
+    await mkdir(new URL(".well-known/site.standard.publication/", DIST), { recursive: true });
+    await writeFile(new URL(".well-known/site.standard.publication/blog", DIST), at.publicationUri);
+  }
   await writeFile(new URL("blog/version.txt", DIST), `${version}\n`);
   console.log(`Prerendered the blog: ${posts.length} post${posts.length === 1 ? "" : "s"}, front page, feed.`);
 }

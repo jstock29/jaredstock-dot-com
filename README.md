@@ -68,6 +68,17 @@ if that happens.)
 public API in the visitor's browser. There's no account, key or server. Moderate on Bluesky: a reply
 you hide there disappears here too, and replies Bluesky labels as adult or graphic are skipped.
 
+**Posts on the AT Protocol network.** At deploy time [`scripts/atproto-sync.js`](scripts/atproto-sync.js)
+mirrors the published posts into @jaredstock.com's repo as [standard.site](https://standard.site)
+records: one `site.standard.publication` for the blog and one `site.standard.document` per post
+(title, description, plain text, tags, cover image, and the Bluesky post it was shared in), so
+readers and apps across the network can find them. Unpublishing or deleting a post removes its
+record. Ownership is verified both ways: `/.well-known/site.standard.publication/blog` returns the
+publication's AT-URI and each post page links its record. Writing needs an app password (Bluesky →
+Settings → Privacy and security → App passwords) saved as the `BLUESKY_APP_PASSWORD` Actions secret;
+without it the build only reads existing records. After adding the secret, run the deploy workflow
+once by hand to publish existing posts.
+
 **Sharing** is plain links to each network's compose screen (plus the phone's share sheet and copy
 link): no third-party scripts.
 
