@@ -1,0 +1,63 @@
+@use "@styles/colors" as colors;
+
+.shapes {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.shape {
+    position: absolute;
+    display: block;
+    opacity: 0.5;
+    animation: shape-drift 14s ease-in-out infinite;
+}
+
+.shape-circle {
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.shape-ring {
+    border-radius: 50%;
+    border: 3px solid currentColor;
+}
+
+.shape-square {
+    border-radius: 4px;
+    background: currentColor;
+}
+
+.shape-diamond {
+    background: currentColor;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.shape-triangle {
+    background: currentColor;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.shape-navy { color: colors.$navy; }
+.shape-navy-light { color: colors.$navy-light; }
+.shape-gold { color: colors.$gold; }
+.shape-gold-light { color: colors.$gold-light; }
+
+@keyframes shape-drift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(8px, -14px) rotate(25deg); }
+}
+
+@media (max-width: 599px) {
+    .shape {
+        opacity: 0.3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shape {
+        animation: none;
+    }
+}

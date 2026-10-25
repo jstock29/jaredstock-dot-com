@@ -1,3 +1,4 @@
+import Shapes from "../components/Shapes/Shapes";
 import React, { useState, useEffect, useRef } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
@@ -108,11 +109,13 @@ export default function Home() {
         </div>
         {sections.about.show && (
           <div className="about" id="about">
+            <Shapes shapes={[{ type: "circle", size: 18, color: "navy-light", top: 10, right: "8%" }, { type: "triangle", size: 28, color: "gold-light", bottom: 10, left: "6%", delay: 6 }]} />
             <About about={settings.about} />
           </div>
         )}
         {sections.work.show && (
           <div className="work" id="work">
+            <Shapes shapes={[{ type: "diamond", size: 30, color: "gold", top: 20, right: "6%" }, { type: "ring", size: 22, color: "navy-light", top: "55%", left: "3%", delay: 3 }]} />
             <div>
               <h1 className="section-title">{sections.work.title}</h1>
             </div>
@@ -189,6 +192,7 @@ export default function Home() {
         )}
         {sections.projects.show && (
           <div className="projects" id="projects">
+            <Shapes shapes={[{ type: "triangle", size: 34, color: "navy-light", top: 30, left: "5%", delay: 2 }, { type: "circle", size: 16, color: "gold", bottom: "15%", right: "7%", delay: 5 }]} />
             <div>
               <h1 className="section-title">{sections.projects.title}</h1>
             </div>
@@ -210,6 +214,7 @@ export default function Home() {
         )}
         {sections.publications.show && (
           <div className="publications" id="publications">
+            <Shapes shapes={[{ type: "square", size: 22, color: "gold-light", top: 40, right: "5%", delay: 1 }, { type: "diamond", size: 26, color: "navy", bottom: "20%", left: "4%", delay: 4 }]} />
             <div>
               <h1 className="section-title">{sections.publications.title}</h1>
             </div>
