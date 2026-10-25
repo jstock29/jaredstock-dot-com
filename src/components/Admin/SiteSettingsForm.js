@@ -166,6 +166,18 @@ export default function SiteSettingsForm() {
         ))}
       </Section>
 
+      <Section title="Blog" help="The name and description at the top of /blog, in its link previews and in the RSS feed.">
+        <Field label="Blog name" value={form.blog.title} onChange={onText('blog', 'title')} />
+        <Field
+          label="Description"
+          multiline
+          minRows={2}
+          value={form.blog.description}
+          onChange={onText('blog', 'description')}
+          helperText="Optional. Share previews update with the next deploy."
+        />
+      </Section>
+
       <Section title="Footer" help="Click the name in the footer to make it snow.">
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Field label="Name" value={form.footer.name} onChange={onText('footer', 'name')} />

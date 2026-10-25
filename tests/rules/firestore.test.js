@@ -6,7 +6,7 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
-import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 
 const COLLECTIONS = ["projects", "work", "publications", "skills", "pages", "settings"];
 const ADMIN_UID = "jared";
@@ -29,6 +29,8 @@ beforeEach(async () => {
     await setDoc(doc(db, "admins", ADMIN_UID), {});
     for (const name of COLLECTIONS) await setDoc(doc(db, name, "existing"), { title: "x" });
     await setDoc(doc(db, "secrets", "s"), { value: 1 });
+    await setDoc(doc(db, "posts", "live"), { title: "live", published: true });
+    await setDoc(doc(db, "posts", "draft"), { title: "draft", published: false });
   });
 });
 
@@ -57,6 +59,35 @@ describe("site content", () => {
       await assertSucceeds(deleteDoc(doc(admin(), name, "existing")));
     });
   }
+});
+
+describe("blog posts", () => {
+  const published = (db) => query(collection(db, "posts"), where("published", "==", true));
+
+  test("anyone can read a published post, or query for published posts", async () => {
+    await assertSucceeds(getDoc(doc(visitor(), "posts", "live")));
+    await assertSucceeds(getDocs(published(visitor())));
+  });
+
+  test("drafts are hidden from visitors and signed-in non-admins", async () => {
+    for (const db of [visitor(), stranger()]) {
+      await assertFails(getDoc(doc(db, "posts", "draft")));
+      await assertFails(getDocs(collection(db, "posts")));
+    }
+  });
+
+  test("the admin can read drafts and list every post", async () => {
+    await assertSucceeds(getDoc(doc(admin(), "posts", "draft")));
+    await assertSucceeds(getDocs(collection(admin(), "posts")));
+  });
+
+  test("only the admin can write posts", async () => {
+    await assertFails(setDoc(doc(visitor(), "posts", "new"), { title: "x", published: true }));
+    await assertFails(setDoc(doc(stranger(), "posts", "live"), { title: "hacked", published: true }));
+    await assertFails(deleteDoc(doc(stranger(), "posts", "live")));
+    await assertSucceeds(setDoc(doc(admin(), "posts", "new"), { title: "x", published: false }));
+    await assertSucceeds(deleteDoc(doc(admin(), "posts", "live")));
+  });
 });
 
 describe("admins list", () => {

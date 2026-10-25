@@ -20,6 +20,13 @@ service cloud.firestore {
       allow write: if isContent(collection) && isAdmin();
     }
 
+    // Blog posts: a draft is readable by the admin only, so public queries must ask for
+    // published == true or they're refused.
+    match /posts/{postId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /admins/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;

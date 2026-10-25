@@ -13,12 +13,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { db } from '../../firebase';
-import { ENTRY_TYPES, entryPath, getEntries, hasPage, isPublished } from '../../data/content';
+import { ENTRY_TYPES, entryPath, formatDate, getEntries, hasPage, isPublished } from '../../data/content';
 
-// Projects, publications and pages: a list with ordering and publishing, and a link into
-// the block editor for everything else.
+// Projects, publications, pages and blog posts: a list with ordering (posts are newest
+// first instead) and publishing, and a link into the block editor for everything else.
 export default function EntryList({ type }) {
   const config = ENTRY_TYPES[type];
+  const dated = Boolean(config.dated);
   const [entries, setEntries] = useState(null);
   const [busy, setBusy] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -64,7 +65,12 @@ export default function EntryList({ type }) {
 
   const togglePublished = (entry) =>
     run(
-      () => updateDoc(doc(db, type, entry.id), { published: !isPublished(entry), updatedAt: new Date().toISOString() }),
+      () => {
+        const now = new Date().toISOString();
+        const patch = { published: !isPublished(entry), updatedAt: now };
+        if (dated && patch.published && !entry.publishedAt) patch.publishedAt = now;
+        return updateDoc(doc(db, type, entry.id), patch);
+      },
       isPublished(entry) ? `"${entry.title}" is now a draft.` : `"${entry.title}" is live.`,
     );
 
@@ -92,6 +98,12 @@ export default function EntryList({ type }) {
           basics to link it from the home page menu.
         </Typography>
       )}
+      {dated && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Posts live at jaredstock.com/blog, newest first. Drafts are private: only you can see them, even with the
+          link.
+        </Typography>
+      )}
       {type === 'publications' && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           A publication links straight to the article until you add blocks to it; then it gets its own page.
@@ -111,9 +123,13 @@ export default function EntryList({ type }) {
           <Table size="small">
             <TableHead>
               <TableRow sx={{ backgroundColor: 'action.hover' }}>
-                <TableCell sx={{ fontWeight: 600, width: 88 }}>Order</TableCell>
+                {dated ? (
+                  <TableCell sx={{ fontWeight: 600, display: { xs: 'none', sm: 'table-cell' } }}>Date</TableCell>
+                ) : (
+                  <TableCell sx={{ fontWeight: 600, width: 88 }}>Order</TableCell>
+                )}
                 <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Address</TableCell>
+                <TableCell sx={{ fontWeight: 600, display: { xs: 'none', sm: 'table-cell' } }}>Address</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Published</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
               </TableRow>
@@ -123,21 +139,27 @@ export default function EntryList({ type }) {
                 const live = isPublished(entry) && hasPage(type, entry);
                 return (
                   <TableRow key={entry.id} hover>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      <IconButton size="small" disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up">
-                        <ArrowUpwardIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" disabled={busy || i === entries.length - 1} onClick={() => move(i, 1)} aria-label="Move down">
-                        <ArrowDownwardIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
+                    {dated ? (
+                      <TableCell sx={{ whiteSpace: 'nowrap', color: 'text.secondary', display: { xs: 'none', sm: 'table-cell' } }}>
+                        {entry.publishedAt ? formatDate(entry.publishedAt) : 'Not yet'}
+                      </TableCell>
+                    ) : (
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        <IconButton size="small" disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up">
+                          <ArrowUpwardIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" disabled={busy || i === entries.length - 1} onClick={() => move(i, 1)} aria-label="Move down">
+                          <ArrowDownwardIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    )}
                     <TableCell>
                       <RouterLink to={`/admin/${type}/${entry.id}`} style={{ color: 'inherit', fontWeight: 500 }}>
                         {entry.title || 'Untitled'}
                       </RouterLink>
                       {type === 'pages' && entry.showInNav && <Chip label="in nav" size="small" sx={{ ml: 1 }} />}
                     </TableCell>
-                    <TableCell sx={{ color: 'text.secondary', fontFamily: 'monospace', fontSize: 13 }}>
+                    <TableCell sx={{ color: 'text.secondary', fontFamily: 'monospace', fontSize: 13, display: { xs: 'none', sm: 'table-cell' } }}>
                       {hasPage(type, entry) ? entryPath(type, entry) : 'links out'}
                     </TableCell>
                     <TableCell>

@@ -1,15 +1,18 @@
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 // Content types that get their own pages, edited with the block editor in /admin.
 export const ENTRY_TYPES = {
   projects: { label: "Projects", singular: "project", basePath: "/projects" },
   publications: { label: "Publications", singular: "publication", basePath: "/publications" },
   pages: { label: "Pages", singular: "page", basePath: "" },
+  // Posts are dated and newest first instead of hand-ordered, and the security rules
+  // keep drafts private (see firestore.rules).
+  posts: { label: "Blog", singular: "post", basePath: "/blog", dated: true },
 };
 
 // Slugs a custom page can't take, because the site already uses those paths.
-export const RESERVED_PAGE_SLUGS = ["admin", "projects", "publications"];
+export const RESERVED_PAGE_SLUGS = ["admin", "projects", "publications", "blog"];
 
 export const slugify = (text = "") =>
   text
@@ -34,19 +37,29 @@ export const hasPage = (type, entry) =>
   type !== "publications" || (Array.isArray(entry.blocks) && entry.blocks.length > 0);
 
 const byOrder = (a, b) => (a.order ?? 0) - (b.order ?? 0);
+const byNewest = (a, b) => (b.publishedAt || b.updatedAt || "").localeCompare(a.publishedAt || a.updatedAt || "");
 const caches = {};
 
+// Reading a draft post is refused for anyone but the admin, so the public site only asks
+// for published posts; the admin (includeDrafts) reads the whole collection.
+function load(type, includeDrafts) {
+  const dated = ENTRY_TYPES[type]?.dated;
+  const source = dated && !includeDrafts ? query(collection(db, type), where("published", "==", true)) : collection(db, type);
+  return getDocs(source).then((snapshot) =>
+    snapshot.docs.map((d) => ({ id: d.id, ...d.data() })).sort(dated ? byNewest : byOrder),
+  );
+}
+
 export async function getEntries(type, { includeDrafts = false, fresh = false } = {}) {
-  if (!caches[type] || fresh) {
-    const pending = getDocs(collection(db, type)).then((snapshot) =>
-      snapshot.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byOrder),
-    );
-    caches[type] = pending;
+  const key = ENTRY_TYPES[type]?.dated && includeDrafts ? `${type}:drafts` : type;
+  if (!caches[key] || fresh) {
+    const pending = load(type, includeDrafts);
+    caches[key] = pending;
     pending.catch(() => {
-      if (caches[type] === pending) delete caches[type];
+      if (caches[key] === pending) delete caches[key];
     });
   }
-  const entries = await caches[type];
+  const entries = await caches[key];
   return includeDrafts ? entries : entries.filter(isPublished);
 }
 
@@ -84,3 +97,6 @@ export function toEmbedUrl(url = "") {
 
 // Storage download URLs end in ?alt=media&token=…, so match the extension before the query.
 export const isVideoUrl = (url = "") => /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(decodeURIComponent(url));
+
+// Pure helpers, shared with the build-time prerender script (which runs in Node).
+export { formatDate, plainText, readingStats, shareDescription, shareImage } from "./posts.js";

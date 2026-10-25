@@ -14,7 +14,40 @@ const GIF_WARN_BYTES = 4 * 1024 * 1024;
 
 const isPdfUrl = (url = '') => /\.pdf(\?|#|$)/i.test(decodeURIComponent(url));
 
-export function uploadMedia(file, folder, onProgress) {
+const MAX_EDGE = 2400;
+const RECOMPRESS_BYTES = 1.5 * 1024 * 1024;
+
+// Phone photos are often 4000px+ and several MB. Scale big photos down to 2400px on the
+// long edge and re-encode as JPEG, which looks the same on the site and loads far faster.
+// GIFs, SVGs, PNGs with transparency, small files and anything the browser can't decode
+// are uploaded untouched.
+export async function prepareImage(file) {
+  if (!/^image\/(jpeg|png|webp|heic|heif)$/.test(file.type)) return file;
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch {
+    return file;
+  }
+  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  if (scale === 1 && file.size < RECOMPRESS_BYTES) return file;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close?.();
+  if (file.type === 'image/png') {
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 3; i < data.length; i += 4) if (data[i] < 255) return file;
+  }
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+  if (!blob || blob.size >= file.size) return file;
+  return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+}
+
+export async function uploadMedia(original, folder, onProgress) {
+  const file = await prepareImage(original);
   const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-');
   const storageRef = ref(storage, `${folder}/${Date.now()}-${safeName}`);
   const task = uploadBytesResumable(storageRef, file, {
@@ -37,9 +70,11 @@ const MediaField = ({ label, value, onChange, folder, accept = 'image/*,video/*'
   const [progress, setProgress] = useState(null);
   const [message, setMessage] = useState(null);
 
+  const [dragging, setDragging] = useState(false);
+
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
-    e.target.value = '';
+    if (e.target.value) e.target.value = '';
     if (!file) return;
     const isPdf = file.type === 'application/pdf';
     const limit = isPdf ? MAX_PDF_BYTES : MAX_BYTES;
@@ -64,7 +99,23 @@ const MediaField = ({ label, value, onChange, folder, accept = 'image/*,video/*'
   };
 
   return (
-    <Box>
+    <Box
+      onDragOver={(e) => {
+        if (Array.from(e.dataTransfer.types).includes('Files')) {
+          e.preventDefault();
+          setDragging(true);
+        }
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => {
+        setDragging(false);
+        if (e.dataTransfer.files?.length) {
+          e.preventDefault();
+          handleFile({ target: { files: e.dataTransfer.files } });
+        }
+      }}
+      sx={{ borderRadius: 1, outline: dragging ? '2px dashed' : 'none', outlineColor: 'primary.main', outlineOffset: 4 }}
+    >
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
         <TextField
           label={label}
