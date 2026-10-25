@@ -2,6 +2,7 @@ import "./SiteChrome.scss";
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Signature } from "../Signature";
+import Shapes from "../Shapes/Shapes";
 import { useSettings } from "../../data/settings";
 
 // Resets scroll on navigation, or scrolls to the #hash target when there is one.
@@ -47,6 +48,7 @@ export function SiteFooter() {
   if (!settings) return null;
   return (
     <div className="footer site-footer">
+      <Shapes shapes={[{ type: "triangle", size: 22, color: "gold-light", top: "20%", left: "12%" }, { type: "ring", size: 18, color: "navy-light", top: "45%", right: "14%", delay: 3 }]} />
       <Signature />
       <div className="site-footer-line">
         <Link to="/" className="site-footer-name">

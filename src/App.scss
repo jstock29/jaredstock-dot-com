@@ -147,7 +147,12 @@ p {
     color: colors.$gold;
 }
 
+.link:hover .resume {
+    color: colors.$gold;
+}
+
 .resume {
+    transition: color 0.2s ease;
     display: block;
     margin: 1.33em 0;
     padding: 4px 0;
