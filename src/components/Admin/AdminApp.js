@@ -12,6 +12,7 @@ import SiteSettingsForm from './SiteSettingsForm';
 
 const TABS = [
   { key: 'site', label: 'Site', render: () => <SiteSettingsForm /> },
+  { key: 'posts', label: 'Blog', render: () => <EntryList type="posts" /> },
   { key: 'projects', label: 'Projects', render: () => <EntryList type="projects" /> },
   { key: 'publications', label: 'Publications', render: () => <EntryList type="publications" /> },
   { key: 'pages', label: 'Pages', render: () => <EntryList type="pages" /> },
@@ -24,10 +25,10 @@ function AdminHome({ user }) {
   const current = TABS.find((t) => t.key === params.get('tab')) || TABS[0];
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
+    <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: 8, px: { xs: 1.5, sm: 3 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, gap: 2, flexWrap: 'wrap' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>Site admin</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>Site admin</Typography>
           <Typography variant="body2" color="text.secondary">Signed in as {user.email}</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>

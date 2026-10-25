@@ -28,6 +28,8 @@ export const DEFAULT_SETTINGS = {
     publications: { title: "publications", show: true },
   },
   footer: { name: "Jared Stock", location: "NYC" },
+  // The blog at /blog. Jared named it; the description is his to write.
+  blog: { title: "Minimum Viable", description: "" },
 };
 
 export const SECTION_KEYS = ["about", "work", "projects", "publications"];

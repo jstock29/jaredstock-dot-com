@@ -1,6 +1,7 @@
 rules_version = '2';
 
-// Uploaded media is public to read. Uploads are limited to admins (see firestore.rules):
+// Uploaded media is public to read (posts/ can be fetched by URL but not listed, so
+// images in a draft post aren't discoverable). Uploads are limited to admins (see firestore.rules):
 // images and videos up to 50 MB in any content folder, and PDFs up to 15 MB in site/
 // (the resume).
 service firebase.storage {
@@ -11,7 +12,7 @@ service firebase.storage {
     }
 
     function isMediaFolder(folder) {
-      return folder in ['projects', 'publications', 'pages', 'site'];
+      return folder in ['projects', 'publications', 'pages', 'site', 'posts'];
     }
 
     function isMedia() {
@@ -26,7 +27,8 @@ service firebase.storage {
     }
 
     match /{folder}/{allPaths=**} {
-      allow read: if isMediaFolder(folder);
+      allow get: if isMediaFolder(folder);
+      allow list: if isMediaFolder(folder) && (folder != 'posts' || isAdmin());
       allow create, update: if isMediaFolder(folder) && isAdmin() && (isMedia() || isPdf(folder));
       allow delete: if isMediaFolder(folder) && isAdmin();
     }

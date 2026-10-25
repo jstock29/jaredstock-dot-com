@@ -26,6 +26,8 @@ hero to the footer, can be changed there without a deploy.
 | `/projects` | Every project in orbit | **Projects** |
 | `/projects/:slug` | A project's own page | **Projects** |
 | `/publications/:slug` | A publication's own page, once it has blocks; until then its card links to the article | **Publications** |
+| `/blog` | The blog (not linked from anywhere yet): newest post first, plus an RSS feed at `/blog/feed.xml` | **Blog**, and its name and description under **Site** |
+| `/blog/:slug` | A blog post | **Blog** |
 | `/:slug` | A custom page (e.g. `/uses`, `/now`), optionally linked from the home page menu | **Pages** |
 
 Projects, publications and pages share one editor: basics (title, slug, summary, links, tags),
@@ -33,10 +35,43 @@ a hero image or video, and a body built from blocks (markdown text, image or GIF
 YouTube/Vimeo embed, pull quote). Each can be saved as a draft and previewed at its address with
 `?preview=1` while signed in. Order is set with the arrows in each list.
 
-Drafts are hidden by the site, not by the security rules: anyone who reads Firestore directly can
-see them. Don't put anything in a draft that must stay private.
+Drafts of projects, publications and pages are hidden by the site, not by the security rules:
+anyone who reads Firestore directly can see them. Don't put anything in one of those drafts that
+must stay private. **Blog drafts are different**: the rules refuse to return an unpublished post to
+anyone but the admin, and post media in Storage can't be listed, so a draft stays private.
 
-Uploads go to Storage under `projects/`, `publications/`, `pages/` and `site/`. Images and videos
+## The blog
+
+Posts use the same block editor, set up for long-form writing and for writing on a phone:
+
+- Drafts autosave a couple of seconds after you stop typing. A published post only changes when you
+  press Save (or Cmd/Ctrl+S), so a half-finished edit never goes live.
+- Paste, drop or pick images (or videos) inside a text block and they're uploaded and placed right
+  where the cursor was. Big photos are scaled to 2400px and re-encoded as JPEG in the browser first.
+- **Preview** shows the post with the site's own styles; **Open on site** opens the draft at its real
+  address (signed in only).
+- On a phone, a bar at the bottom adds text, photos (straight from the camera roll) or any other block.
+
+**Link previews.** Bluesky, iMessage, Slack, LinkedIn and the rest read a page's HTML without running
+JavaScript, so `npm run build` runs [`scripts/prerender-blog.js`](scripts/prerender-blog.js) after
+Vite: it writes `dist/blog/<slug>.html` (served at `/blog/<slug>` thanks to `cleanUrls`) with that
+post's title, description and hero image (or the share image set under "Link preview") in its Open
+Graph tags, plus `/blog`, the RSS feed and `/blog/version.txt`. Because posts are published from
+`/admin`, not git, the deploy workflow also runs every 15 minutes: it compares a hash of the published
+posts with the live `version.txt` and only builds and deploys when they differ. To update previews
+right away, run the **Deploy to Firebase Hosting** workflow by hand from the Actions tab or the GitHub
+app. (GitHub pauses scheduled workflows after 60 days without commits; re-enable it in the Actions tab
+if that happens.)
+
+**Comments are Bluesky replies.** Paste the URL of the Bluesky post that shares an article into its
+"Bluesky post URL" setting, and replies to it are shown under the post, read straight from Bluesky's
+public API in the visitor's browser. There's no account, key or server. Moderate on Bluesky: a reply
+you hide there disappears here too, and replies Bluesky labels as adult or graphic are skipped.
+
+**Sharing** is plain links to each network's compose screen (plus the phone's share sheet and copy
+link): no third-party scripts.
+
+Uploads go to Storage under `projects/`, `publications/`, `pages/`, `posts/` and `site/`. Images and videos
 can be up to 50 MB; for a long GIF, an MP4 in a video block (autoplay, muted, looping) is far
 smaller and looks the same.
 

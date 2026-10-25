@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender-blog.js",
     "preview": "vite preview",
     "emulators": "firebase emulators:start --only auth,firestore,storage --project driven-binder-500400-c2",
     "test:rules": "firebase emulators:exec --only firestore,storage --project demo-jaredstock \"node --test --test-concurrency=1 tests/rules/*.test.js\""

@@ -118,10 +118,12 @@ function Reveal({ children }) {
   );
 }
 
-export function BlockRenderer({ blocks = [] }) {
+// reveal={false} skips the scroll-in animation (long-form posts read better without it).
+export function BlockRenderer({ blocks = [], reveal = true }) {
   return blocks.map((block, i) => {
     const Component = BLOCKS[block.type];
     if (!Component) return null;
+    if (!reveal) return <Component key={block.id || i} block={block} />;
     return (
       <Reveal key={block.id || i}>
         <Component block={block} />

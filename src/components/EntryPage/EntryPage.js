@@ -1,12 +1,11 @@
 import "./EntryPage.scss";
 import React, { useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
+import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Chip, CircularProgress } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LaunchIcon from "@mui/icons-material/Launch";
-import { auth } from "../../firebase";
+import { usePreviewMode } from "../../hooks/usePreviewMode";
 import { ENTRY_TYPES, entryPath, getEntryBySlug, isPublished } from "../../data/content";
 import { useSettings } from "../../data/settings";
 import { OrbitField } from "../Scroll/OrbitField";
@@ -17,21 +16,6 @@ const rise = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", delay } },
 });
-
-// Drafts are only fetched for a signed-in admin who asked for ?preview=1.
-function usePreviewMode() {
-  const [searchParams] = useSearchParams();
-  const wantsPreview = searchParams.get("preview") === "1";
-  const [user, setUser] = useState(undefined);
-
-  useEffect(() => {
-    if (!wantsPreview) return;
-    return onAuthStateChanged(auth, setUser);
-  }, [wantsPreview]);
-
-  if (!wantsPreview) return { ready: true, preview: false };
-  return { ready: user !== undefined, preview: Boolean(user) };
-}
 
 // Where the breadcrumb and the pager's centre button lead for each content type.
 function listingFor(type, settings) {

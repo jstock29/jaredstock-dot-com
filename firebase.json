@@ -13,6 +13,27 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "cleanUrls": true,
+    "headers": [
+      {
+        "source": "/blog/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          }
+        ]
+      },
+      {
+        "source": "/blog",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          }
+        ]
+      }
+    ],
     "rewrites": [
       {
         "source": "**",

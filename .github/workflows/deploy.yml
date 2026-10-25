@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - main
+  # Blog posts are published from /admin, not from git, but their link previews and the RSS
+  # feed are static files built at deploy time (scripts/prerender-blog.js). So check every
+  # 15 minutes and redeploy when the published posts changed. "Run workflow" in the Actions
+  # tab (or the GitHub app) deploys right away.
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
 
 jobs:
   build_and_deploy:
@@ -21,7 +32,27 @@ jobs:
         with:
           node-version: 24
 
+      # Scheduled runs only deploy when the blog changed: compare a hash of the published
+      # posts with the one the live site was built from. Needs no install, so it's quick.
+      - name: Check whether the blog changed
+        id: blog
+        if: github.event_name == 'schedule'
+        run: |
+          current=$(node scripts/blog-data.js --version) || {
+            echo "Couldn't read the posts, trying again next time."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+          live=$(curl -fsS "https://jaredstock.com/blog/version.txt?t=$(date +%s)" || true)
+          if [ "$current" = "$live" ]; then
+            echo "Blog unchanged, nothing to deploy."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install and Build
+        if: steps.blog.outputs.changed != 'false'
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -35,6 +66,7 @@ jobs:
 
       - name: Authenticate to Google Cloud
         id: auth
+        if: steps.blog.outputs.changed != 'false'
         uses: google-github-actions/auth@v2
         with:
           project_id: "${{ secrets.GCLOUD_PROJECT_ID }}"
@@ -42,6 +74,7 @@ jobs:
           service_account: "github-deployer@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com"
 
       - name: Deploy to Firebase
+        if: steps.blog.outputs.changed != 'false'
         run: |
           # npx runs the CLI immediately without a slow global installation step
           npx firebase-tools deploy --only hosting --project ${{ secrets.GCLOUD_PROJECT_ID }}

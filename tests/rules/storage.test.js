@@ -8,7 +8,7 @@ import {
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
 import { doc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getBytes } from "firebase/storage";
+import { ref, uploadBytes, getBytes, listAll } from "firebase/storage";
 
 const ADMIN_UID = "jared";
 const MB = 1024 * 1024;
@@ -53,7 +53,17 @@ describe("media uploads", () => {
     await assertFails(upload(stranger(), "projects/demo/a.png", 10, "image/png"));
   });
 
-  for (const folder of ["projects", "publications", "pages", "site"]) {
+  test("post media can be fetched by URL but only the admin can list it", async () => {
+    await env.withSecurityRulesDisabled((ctx) =>
+      uploadBytes(ref(ctx.storage(), "posts/draft/hero.png"), new Uint8Array([1]), { contentType: "image/png" }),
+    );
+    await assertSucceeds(getBytes(ref(visitor(), "posts/draft/hero.png")));
+    await assertFails(listAll(ref(visitor(), "posts")));
+    await assertFails(listAll(ref(stranger(), "posts/draft")));
+    await assertSucceeds(listAll(ref(admin(), "posts")));
+  });
+
+  for (const folder of ["projects", "publications", "pages", "site", "posts"]) {
     test(`the admin can upload images and videos to ${folder}/`, async () => {
       await assertSucceeds(upload(admin(), `${folder}/x/a.gif`, 10, "image/gif"));
       await assertSucceeds(upload(admin(), `${folder}/x/a.mp4`, 10, "video/mp4"));
