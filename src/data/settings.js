@@ -10,6 +10,7 @@ export const DEFAULT_SETTINGS = {
   links: {
     github: "https://github.com/jstock29",
     linkedin: "https://www.linkedin.com/in/jaredstock/",
+    bluesky: "https://bsky.app/profile/jaredstock.com",
     email: "jstock529@gmail.com",
   },
   about: {

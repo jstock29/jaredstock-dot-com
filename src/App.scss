@@ -148,7 +148,14 @@ p {
 }
 
 .resume {
+    display: block;
+    margin: 1.33em 0;
+    padding: 4px 0;
+    font-family: 'Major Mono Display', monospace;
     font-size: 22px;
+    font-weight: bold;
+    text-transform: lowercase;
+    color: colors.$navy;
 }
 
 .category-1 {
@@ -210,4 +217,24 @@ p {
 
 .orbit-cta:hover {
     color: colors.$gold;
+}
+
+// The home footer's name doubles as the snow toggle, so it's a real button that looks like the old heading.
+.footer-snow-toggle {
+    display: inline;
+    margin: 0;
+    padding: 12px 4px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+    font-family: 'Major Mono Display', monospace;
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: lowercase;
+    color: rgba(0, 0, 0, 0.7);
+
+    &:hover {
+        color: colors.$gold;
+    }
 }

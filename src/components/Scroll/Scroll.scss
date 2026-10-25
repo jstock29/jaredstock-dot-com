@@ -54,8 +54,10 @@
 }
 
 .link-icon {
+    display: inline-flex;
+    padding: 9px; // 26px icons + padding = a 44px tap target
     color: colors.$navy;
-    margin: 0 12px;
+    margin: 0 3px;
     transition: color 0.2s ease, transform 0.2s ease;
 }
 

@@ -79,7 +79,7 @@ export default function Home() {
   return (
     <div>
       <HomeNav sections={sections} pages={navPages} />
-      <div className="App">
+      <main className="App">
         <div className="hero">
           <OrbitField
             className="orbits-container"
@@ -180,7 +180,7 @@ export default function Home() {
                     className="link"
                     style={{ position: "relative", zIndex: 1 }}
                   >
-                    <motion.h4 className={"resume"}>Resume</motion.h4>
+                    <motion.span className={"resume"}>Resume</motion.span>
                   </a>
                 </div>
               )}
@@ -245,31 +245,28 @@ export default function Home() {
             isActive={isSnowActive}
           />
         </div>
-        <footer
+        <div
           className="footer"
           style={{ position: "relative", zIndex: 1000, backgroundColor: "transparent" }}
         >
           <Signature />
           <div style={{ textAlign: "center", padding: "0 0 50px 0", width: "100%" }}>
-            <h4
-              style={{
-                display: "inline",
-                margin: 0,
-                cursor: "pointer",
-                textDecoration: "none",
-                color: "rgba(0, 0, 0, 0.55)",
-              }}
+            <button
+              type="button"
+              className="footer-snow-toggle"
+              aria-pressed={isSnowActive}
+              aria-label={`${settings.footer.name}: let it snow`}
               onClick={() => setIsSnowActive(!isSnowActive)}
             >
               {settings.footer.name}
-            </h4>
+            </button>
             <span style={{ display: "inline" }}>
               {" "}
               | {new Date().getFullYear()} | {settings.footer.location}
             </span>
           </div>
-        </footer>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -349,3 +349,21 @@ $wide: 960px;
         transition: none;
     }
 }
+
+// Small links keep their look but get a 44px-tall tap area.
+.project-page-cta {
+    display: inline-block;
+    padding: 12px 0;
+}
+
+.project-page-pager-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.project-page-pager > a {
+    min-height: 44px;
+}

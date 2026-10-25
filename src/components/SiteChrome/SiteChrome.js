@@ -27,14 +27,14 @@ export function SiteNav({ crumbs = [] }) {
   const settings = useSettings();
   return (
     <nav className="site-nav" aria-label="Breadcrumb">
-      <Link to="/">
-        <h5>{settings?.name ?? "\u00a0"}</h5>
+      <Link to="/" className="site-nav-link">
+        {settings?.name ?? "\u00a0"}
       </Link>
       {crumbs.map((c) => (
         <React.Fragment key={c.to}>
           <span className="site-nav-sep">/</span>
-          <Link to={c.to}>
-            <h5>{c.label}</h5>
+          <Link to={c.to} className="site-nav-link">
+            {c.label}
           </Link>
         </React.Fragment>
       ))}
@@ -46,17 +46,17 @@ export function SiteFooter() {
   const settings = useSettings();
   if (!settings) return null;
   return (
-    <footer className="footer site-footer">
+    <div className="footer site-footer">
       <Signature />
       <div className="site-footer-line">
-        <Link to="/">
-          <h4>{settings.footer.name}</h4>
+        <Link to="/" className="site-footer-name">
+          {settings.footer.name}
         </Link>
         <span>
           {" "}| {new Date().getFullYear()} | {settings.footer.location}
         </span>
       </div>
-    </footer>
+    </div>
   );
 }
 

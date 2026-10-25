@@ -109,6 +109,18 @@ $wide: 960px;
     border-top: 1px solid colors.$neutral-light;
 }
 
+.blog-post-footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var.$spacing-xs;
+}
+
+.blog-post-bluesky {
+    margin: 0;
+}
+
 .blog-share {
     display: flex;
     flex-wrap: wrap;
@@ -256,24 +268,41 @@ $wide: 960px;
 
 // ─── The blog's front page ─────────────────────────────────────────────────
 .blog-index-header {
-    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var.$spacing-xs var.$spacing-sm;
     max-width: $wide;
     margin: 0 auto;
     padding: var.$spacing-xxxl 0 var.$spacing-lg;
     text-align: left;
+
+    // The description always gets its own full-width row under the title and feed link.
+    .blog-post-subtitle {
+        order: 3;
+        flex-basis: 100%;
+        margin: 0;
+    }
 }
 
 .blog-index-title {
-    margin: 0 0 var.$spacing-xs;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
     font-size: clamp(2rem, 7vw, 3.6rem);
     letter-spacing: 0.05em;
     color: colors.$navy;
+    overflow-wrap: anywhere;
 }
 
+// Sits beside the title when there's room and drops under it when there isn't, so it
+// can never overlap.
 .blog-index-rss {
-    position: absolute;
-    right: 0;
-    bottom: var.$spacing-lg;
+    flex: 0 0 auto;
+    order: 2;
+    margin: 0 0 var.$spacing-xs;
+    line-height: 0;
 }
 
 .blog-index-status {
@@ -412,4 +441,16 @@ $wide: 960px;
 
 .blog-card a:not(:has(.blog-card-image)) {
     grid-template-columns: 1fr;
+}
+
+.blog-share .MuiIconButton-root,
+.blog-index-rss {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.blog-index-rss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }

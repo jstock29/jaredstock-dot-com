@@ -105,7 +105,7 @@ export default function SiteSettingsForm() {
           backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(8px)',
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>Site</Typography>
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>Site</Typography>
         <Button variant="contained" onClick={handleSave} disabled={saving || !dirty}>
           {saving ? 'Saving…' : 'Save'}
         </Button>
@@ -115,6 +115,7 @@ export default function SiteSettingsForm() {
         <Field label="Name" value={form.name} onChange={(e) => set('name')(e.target.value)} />
         <Field label="GitHub URL" value={form.links.github} onChange={onText('links', 'github')} />
         <Field label="LinkedIn URL" value={form.links.linkedin} onChange={onText('links', 'linkedin')} />
+        <Field label="Bluesky URL" value={form.links.bluesky} onChange={onText('links', 'bluesky')} />
         <Field label="Email" value={form.links.email} onChange={onText('links', 'email')} />
       </Section>
 

@@ -263,7 +263,7 @@ export default function ProjectsOrbit() {
   );
 
   return (
-    <div className="projects-orbit-page">
+    <main className="projects-orbit-page">
       <SiteNav />
 
       <section
@@ -388,6 +388,6 @@ export default function ProjectsOrbit() {
           />
         )}
       </AnimatePresence>
-    </div>
+    </main>
   );
 }
