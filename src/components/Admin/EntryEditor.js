@@ -13,15 +13,18 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotesIcon from '@mui/icons-material/Notes';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { db } from '../../firebase';
 import {
-  ENTRY_TYPES, RESERVED_PAGE_SLUGS, entrySlug, getEntries, hasPage, readingStats, shareDescription, shareImage, slugify,
+  ENTRY_TYPES, RESERVED_PAGE_SLUGS, entrySlug, getEntries, hasPage, readingStats, slugify,
 } from '../../data/content';
 import { BlockRenderer, Media } from '../EntryPage/blocks/Blocks';
 import { PostArticle } from '../Blog/PostPage';
 import MarkdownField from './MarkdownField';
+import PublishDialog from './PublishDialog';
+import ShareCardPreview from './ShareCardPreview';
 import MediaField, { uploadMedia } from './MediaField';
 
 const newId = () => Math.random().toString(36).slice(2, 10);
@@ -87,6 +90,10 @@ const EMPTY_ENTRY = {
   blocks: [],
 };
 
+// A post always has an open text block to type into, so there's no "start" step.
+const withWritingRoom = (entry, isPost) =>
+  isPost && !entry.blocks.length ? { ...entry, blocks: [makeBlock('text')] } : entry;
+
 const EMPTY_POST = {
   title: '', slug: '', tagline: '', excerpt: '', tags: [], published: false, publishedAt: '',
   shareImage: '', blueskyPost: '',
@@ -106,20 +113,6 @@ function Select({ label, value, onChange, options }) {
 
 function Field(props) {
   return <TextField size="small" fullWidth {...props} value={props.value ?? ''} />;
-}
-
-// Big, borderless inputs for a post's title and subtitle, so writing feels like a page.
-function WriterField({ size, ...props }) {
-  return (
-    <TextField
-      variant="standard"
-      fullWidth
-      multiline
-      {...props}
-      value={props.value ?? ''}
-      InputProps={{ disableUnderline: true, sx: { fontSize: size, lineHeight: 1.3, fontWeight: size > 24 ? 700 : 400 } }}
-    />
-  );
 }
 
 const toDateInput = (iso) => (iso ? iso.slice(0, 10) : '');
@@ -186,7 +179,15 @@ function BasicField({ field, entry, set, folder }) {
 function BlockFields({ block, update, folder, onInsertMedia }) {
   switch (block.type) {
     case 'text':
-      return <MarkdownField value={block.md} onChange={(md) => update({ md })} folder={folder} onInsertMedia={onInsertMedia} />;
+      return (
+        <MarkdownField
+          value={block.md}
+          onChange={(md) => update({ md })}
+          folder={folder}
+          onInsertMedia={onInsertMedia}
+          helperText="## makes a section heading. The title and subtitle above are their own fields."
+        />
+      );
     case 'image':
     case 'video':
       return (
@@ -329,37 +330,6 @@ function AddBlockButton({ onAdd, label = 'Add block', size = 'small', fullWidth 
   );
 }
 
-// Roughly what Bluesky, iMessage and Slack show for a shared link.
-function ShareCardPreview({ entry }) {
-  const image = shareImage(entry);
-  return (
-    <Paper variant="outlined" sx={{ maxWidth: 520, borderRadius: 3, overflow: 'hidden' }}>
-      {image ? (
-        <Box
-          role="img"
-          aria-label="Share image"
-          sx={{ aspectRatio: '1.91 / 1', backgroundImage: `url("${image}")`, backgroundSize: 'cover', backgroundPosition: 'center', bgcolor: 'action.hover' }}
-        />
-      ) : (
-        <Box sx={{ aspectRatio: '1.91 / 1', display: 'grid', placeItems: 'center', bgcolor: 'action.hover', color: 'text.secondary', p: 2, textAlign: 'center' }}>
-          <Typography variant="body2">No hero or share image yet, so previews fall back to the site's default image.</Typography>
-        </Box>
-      )}
-      <Box sx={{ p: 1.5 }}>
-        <Typography variant="caption" color="text.secondary">jaredstock.com</Typography>
-        <Typography sx={{ fontWeight: 600, lineHeight: 1.3 }}>{entry.title || 'Untitled'}</Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-        >
-          {shareDescription(entry)}
-        </Typography>
-      </Box>
-    </Paper>
-  );
-}
-
 function Section({ title, summary, defaultExpanded = true, children }) {
   return (
     <Accordion defaultExpanded={defaultExpanded} disableGutters variant="outlined" sx={{ mb: 2, borderRadius: 2, '&:before': { display: 'none' } }}>
@@ -394,6 +364,8 @@ export default function EntryEditor() {
   const [slugTouched, setSlugTouched] = useState(false);
   const [snack, setSnack] = useState(null);
   const [view, setView] = useState('write');
+  const [dialog, setDialog] = useState(null); // 'publish' | 'unpublish'
+  const [menuAnchor, setMenuAnchor] = useState(null);
   // While typing on a phone the keyboard takes half the screen; hide the add bar then.
   const [typing, setTyping] = useState(false);
   // Bumped on every edit, so a save that finishes after more typing doesn't mark it clean.
@@ -406,7 +378,7 @@ export default function EntryEditor() {
   useEffect(() => {
     if (!config) return;
     if (isNew) {
-      setEntry(isPost ? EMPTY_POST : EMPTY_ENTRY);
+      setEntry(withWritingRoom(isPost ? EMPTY_POST : EMPTY_ENTRY, isPost));
       setSlugTouched(false);
       return;
     }
@@ -416,7 +388,7 @@ export default function EntryEditor() {
         if (!snap.exists()) throw new Error(`That ${config.singular} doesn't exist.`);
         const data = snap.data();
         const empty = isPost ? EMPTY_POST : EMPTY_ENTRY;
-        setEntry({
+        setEntry(withWritingRoom({
           ...empty,
           ...data,
           // Older docs have no slug or published flag yet.
@@ -425,7 +397,7 @@ export default function EntryEditor() {
           tags: data.tags || [],
           hero: { ...empty.hero, ...(data.hero || {}) },
           blocks: (data.blocks || []).map((b) => ({ id: b.id || newId(), ...b })),
-        });
+        }, isPost));
         setSlugTouched(true);
       })
       .catch((err) => setSnack({ severity: 'error', message: err.message }));
@@ -495,7 +467,10 @@ export default function EntryEditor() {
     [next[i], next[i + dir]] = [next[i + dir], next[i]];
     set({ blocks: next });
   };
-  const removeBlock = (i) => set({ blocks: blocks.filter((_, j) => j !== i) });
+  const removeBlock = (i) => {
+    const next = blocks.filter((_, j) => j !== i);
+    set({ blocks: next.length || !isPost ? next : [makeBlock('text')] });
+  };
   const insertBlocks = (i, added) => set({ blocks: [...blocks.slice(0, i), ...added, ...blocks.slice(i)] });
 
   // Media dropped or pasted into text block i at character `at`: the text splits there,
@@ -527,7 +502,9 @@ export default function EntryEditor() {
     }
   };
 
-  const save = async ({ quiet = false } = {}) => {
+  // `patch` is applied on top of the entry as part of the save, so publishing and
+  // unpublishing are one write together with the latest edits.
+  const save = async ({ quiet = false, patch = {} } = {}) => {
     if (saving) return;
     const title = entry.title.trim();
     const slug = slugify(entry.slug || title);
@@ -548,9 +525,12 @@ export default function EntryEditor() {
 
       const data = {
         ...entry,
+        ...patch,
         title,
         slug,
         tags: (entry.tags || []).map((t) => t.trim()).filter(Boolean),
+        // Empty text blocks are just the open writing area, not content.
+        blocks: entry.blocks.filter((b) => !(b.type === 'text' && !(b.md || '').trim())),
         updatedAt: new Date().toISOString(),
       };
       delete data.id;
@@ -575,18 +555,17 @@ export default function EntryEditor() {
       }
 
       if (revision.current === startedAt) setDirty(false);
-      setEntry((p) => ({ ...p, slug, ...(firstPublish ? { publishedAt: data.publishedAt } : {}) }));
+      setEntry((p) => ({ ...p, ...patch, slug, ...(firstPublish ? { publishedAt: data.publishedAt } : {}) }));
       setSavedAt(new Date());
       getEntries(type, { fresh: true }); // refresh the public-site cache
       if (!quiet) {
         const live = data.published && hasPage(type, data);
+        const previews = isPost ? ' Link previews catch up within about 15 minutes.' : '';
         setSnack({
           severity: 'success',
           message: !live
-            ? 'Saved as a draft.'
-            : isPost
-              ? "Saved. It's on the site now; link previews catch up within about 15 minutes."
-              : "Saved. It's on the site now.",
+            ? entry.published && !data.published ? "Unpublished. It's a draft again." : 'Saved as a draft.'
+            : !entry.published ? `Published. It's on the site now.${previews}` : `Saved. The changes are on the site now.${previews}`,
         });
       }
       if (savedId !== id) navigate(`/admin/${type}/${savedId}`, { replace: true });
@@ -606,6 +585,7 @@ export default function EntryEditor() {
       : savedAt
         ? `Saved ${timeLabel(savedAt)}`
         : '';
+  const canPublish = Boolean(entry.title.trim() && slugify(entry.slug || entry.title));
 
   const heroFields = (
     <>
@@ -682,35 +662,62 @@ export default function EntryEditor() {
               {isNew && !entry.title ? `New ${config.singular}` : entry.title || 'Untitled'}
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap component="div" aria-live="polite">
-              {[isPost && `${stats.words.toLocaleString()} words · ${stats.minutes} min read`, status].filter(Boolean).join(' · ') || ' '}
+              <Box
+                component="span"
+                sx={{ color: entry.published ? 'success.main' : 'warning.main', fontWeight: 700 }}
+              >
+                {entry.published ? 'Live' : 'Draft'}
+              </Box>
+              {[isPost && `${stats.words.toLocaleString()} words · ${stats.minutes} min`, status]
+                .filter(Boolean)
+                .map((part) => ` · ${part}`)
+                .join('')}
             </Typography>
           </Box>
-          <Button variant="contained" onClick={() => save()} disabled={saving || (!dirty && !isNew)}>
-            {saving ? 'Saving…' : 'Save'}
-          </Button>
+          {entry.published ? (
+            <Button variant="contained" onClick={() => save()} disabled={saving || !dirty}>
+              {saving ? 'Saving…' : 'Save changes'}
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={() => setDialog('publish')} disabled={saving || !canPublish}>
+              Publish
+            </Button>
+          )}
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap', '& .MuiButton-root': { whiteSpace: 'nowrap' } }}>
           <ToggleButtonGroup size="small" exclusive value={view} onChange={(_, v) => v && setView(v)} aria-label="Editor view">
-            <ToggleButton value="write" sx={{ px: 1.5 }}>
+            <ToggleButton value="write" sx={{ px: 1.25 }}>
               <NotesIcon fontSize="small" sx={{ mr: 0.5 }} /> Write
             </ToggleButton>
-            <ToggleButton value="preview" sx={{ px: 1.5 }}>
+            <ToggleButton value="preview" sx={{ px: 1.25 }}>
               <VisibilityIcon fontSize="small" sx={{ mr: 0.5 }} /> Preview
             </ToggleButton>
           </ToggleButtonGroup>
-          <FormControlLabel
-            sx={{ ml: 0.5 }}
-            control={<Switch checked={entry.published} onChange={(e) => set({ published: e.target.checked })} />}
-            label={entry.published ? 'Published' : 'Draft'}
-          />
           <Box sx={{ flex: 1 }} />
-          {!isNew && hasPage(type, entry) && (
-            <Tooltip title={dirty ? 'Save first to see your latest changes' : 'Opens it on the site in a new tab; drafts are visible to you only'}>
-              <Button size="small" component="a" href={`${pagePath}?preview=1`} target="_blank" rel="noreferrer">
-                Open on site
-              </Button>
-            </Tooltip>
+          {entry.published ? (
+            <Button size="small" variant="outlined" color="inherit" onClick={() => setDialog('unpublish')} disabled={saving}>
+              Unpublish
+            </Button>
+          ) : (
+            <Button size="small" variant="outlined" color="inherit" onClick={() => save()} disabled={saving || (!dirty && !isNew) || !canPublish}>
+              Save draft
+            </Button>
           )}
+          <IconButton size="small" aria-label="More actions" onClick={(e) => setMenuAnchor(e.currentTarget)}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
+            <MenuItem
+              component="a"
+              disabled={isNew || !hasPage(type, entry)}
+              href={`${pagePath}?preview=1`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setMenuAnchor(null)}
+            >
+              {dirty ? 'Open on site (saved version)' : 'Open on site'}
+            </MenuItem>
+          </Menu>
         </Box>
       </Box>
 
@@ -742,17 +749,16 @@ export default function EntryEditor() {
         <>
           {isPost ? (
             <>
-              <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <WriterField size={30} placeholder="Title" value={entry.title} onChange={setTitle} inputProps={{ 'aria-label': 'Title' }} />
-                <WriterField
-                  size={19}
-                  placeholder="Subtitle (optional)"
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                <Field label="Title" required value={entry.title} onChange={setTitle} />
+                <Field
+                  label="Subtitle"
                   value={entry.tagline}
                   onChange={(e) => set({ tagline: e.target.value })}
-                  inputProps={{ 'aria-label': 'Subtitle' }}
+                  helperText="Optional. Shown under the title and used in link previews when there's no share description."
                 />
               </Box>
-              <Section title="Hero image" summary={entry.hero.src ? undefined : 'None yet'} defaultExpanded={isNew || !entry.hero.src}>
+              <Section title="Hero image" summary={entry.hero.src ? 'Set' : 'None yet'} defaultExpanded={false}>
                 {heroFields}
               </Section>
             </>
@@ -775,18 +781,11 @@ export default function EntryEditor() {
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
             {blocks.length === 0 && (
-              <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 1.5, alignItems: 'flex-start' }}>
-                <Typography color="text.secondary">
-                  {type === 'publications'
-                    ? 'No blocks yet, so the card links straight to the article. Add blocks to give it its own page.'
-                    : 'Nothing written yet.'}
-                </Typography>
-                {isPost && (
-                  <Button variant="contained" startIcon={<NotesIcon />} onClick={() => insertBlocks(0, [makeBlock('text')])}>
-                    Start writing
-                  </Button>
-                )}
-              </Box>
+              <Typography color="text.secondary" sx={{ py: 2 }}>
+                {type === 'publications'
+                  ? 'No blocks yet, so the card links straight to the article. Add blocks to give it its own page.'
+                  : 'Nothing here yet. Add some text, images, GIFs, videos or embeds.'}
+              </Typography>
             )}
             {blocks.map((block, i) => (
               <Card key={block.id} variant="outlined" sx={{ borderRadius: 2 }}>
@@ -864,6 +863,19 @@ export default function EntryEditor() {
           )}
         </>
       )}
+
+      <PublishDialog
+        mode={dialog}
+        type={type}
+        entry={entry}
+        pagePath={pagePath}
+        stats={stats}
+        onClose={() => setDialog(null)}
+        onConfirm={(published) => {
+          setDialog(null);
+          save({ patch: { published } });
+        }}
+      />
 
       <input
         ref={photoRef}

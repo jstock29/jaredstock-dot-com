@@ -38,7 +38,7 @@ export function PostArticle({ post }) {
       )}
 
       <div className="project-page-body blog-post-body">
-        <BlockRenderer blocks={post.blocks || []} reveal={false} />
+        <BlockRenderer blocks={post.blocks || []} reveal={false} demoteHeadings />
       </div>
     </article>
   );

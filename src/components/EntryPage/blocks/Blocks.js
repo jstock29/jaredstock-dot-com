@@ -25,13 +25,18 @@ function Caption({ children }) {
   return <figcaption>{children}</figcaption>;
 }
 
-function TextBlock({ block }) {
+// A page has one h1, its title, so a post can ask for any "# heading" in its text to be
+// shown as an h2 instead.
+const demoted = { h1: ({ node, ...props }) => <h2 {...props} /> };
+
+function TextBlock({ block, demoteHeadings }) {
   return (
     <div className="block-text">
       <Markdown
         remarkPlugins={[remarkGfm]}
         components={{
           a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer" />,
+          ...(demoteHeadings ? demoted : {}),
         }}
       >
         {block.md || ""}
@@ -119,14 +124,14 @@ function Reveal({ children }) {
 }
 
 // reveal={false} skips the scroll-in animation (long-form posts read better without it).
-export function BlockRenderer({ blocks = [], reveal = true }) {
+export function BlockRenderer({ blocks = [], reveal = true, demoteHeadings = false }) {
   return blocks.map((block, i) => {
     const Component = BLOCKS[block.type];
     if (!Component) return null;
-    if (!reveal) return <Component key={block.id || i} block={block} />;
+    if (!reveal) return <Component key={block.id || i} block={block} demoteHeadings={demoteHeadings} />;
     return (
       <Reveal key={block.id || i}>
-        <Component block={block} />
+        <Component block={block} demoteHeadings={demoteHeadings} />
       </Reveal>
     );
   });

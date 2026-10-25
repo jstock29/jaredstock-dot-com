@@ -34,7 +34,7 @@ const imageFiles = (list) => Array.from(list || []).filter((f) => f.type.startsW
 // The writing surface for a text block: a roomy textarea with a formatting bar. Pasting,
 // dropping or picking an image uploads it and splits the text around it at the cursor,
 // so a photo lands exactly where you were typing as its own image block.
-export default function MarkdownField({ value = '', onChange, folder, onInsertMedia, autoFocus }) {
+export default function MarkdownField({ value = '', onChange, folder, onInsertMedia, autoFocus, helperText }) {
   const ref = useRef(null);
   const fileRef = useRef(null);
   const [progress, setProgress] = useState(null);
@@ -165,6 +165,7 @@ export default function MarkdownField({ value = '', onChange, folder, onInsertMe
         autoFocus={autoFocus}
         value={value}
         placeholder="Write…"
+        helperText={helperText}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         onPaste={(e) => {
