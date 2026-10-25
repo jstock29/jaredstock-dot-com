@@ -109,6 +109,18 @@ $wide: 960px;
     border-top: 1px solid colors.$neutral-light;
 }
 
+.blog-post-footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var.$spacing-xs;
+}
+
+.blog-post-bluesky {
+    margin: 0;
+}
+
 .blog-share {
     display: flex;
     flex-wrap: wrap;
@@ -429,4 +441,16 @@ $wide: 960px;
 
 .blog-card a:not(:has(.blog-card-image)) {
     grid-template-columns: 1fr;
+}
+
+.blog-share .MuiIconButton-root,
+.blog-index-rss {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.blog-index-rss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }

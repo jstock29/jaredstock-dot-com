@@ -14,12 +14,19 @@
     background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(6px);
 
-    a {
+    .site-nav-link {
+        // Same look as the old h5 links, with a taller hit area.
+        padding: 14px 4px;
+        font-family: 'Major Mono Display', monospace;
+        font-size: 0.83em;
+        font-weight: bold;
+        text-transform: lowercase;
         text-decoration: none;
+        color: rgba(0, 0, 0, 0.7); // colors.$neutral is under 4.5:1 on the blue-grey top of the page
     }
 
-    h5 {
-        margin: 0;
+    .site-nav-link:hover {
+        color: colors.$gold;
     }
 }
 
@@ -36,17 +43,17 @@
     padding: 0 0 50px 0;
     color: colors.$neutral;
 
-    a {
+    .site-footer-name {
+        display: inline-block;
+        padding: 12px 4px;
+        font-family: 'Major Mono Display', monospace;
+        font-weight: bold;
+        text-transform: lowercase;
         text-decoration: none;
-    }
-
-    h4 {
-        display: inline;
-        margin: 0;
         color: colors.$neutral;
     }
 
-    h4:hover {
+    .site-footer-name:hover {
         color: colors.$gold;
     }
 }

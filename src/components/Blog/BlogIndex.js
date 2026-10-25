@@ -44,7 +44,7 @@ export default function BlogIndex() {
   useDocumentTitle(title || null);
 
   return (
-    <div className="project-page blog-index">
+    <main className="project-page blog-index">
       <SiteNav />
       <header className="blog-index-header">
         <h1 className="blog-index-title">{title ?? " "}</h1>
@@ -69,6 +69,6 @@ export default function BlogIndex() {
       )}
 
       <SiteFooter />
-    </div>
+    </main>
   );
 }

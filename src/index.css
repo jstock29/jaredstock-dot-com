@@ -74,3 +74,16 @@ a {
 ::-moz-selection {
     background: var(--gold-light); /* Gecko Browsers */
 }
+
+/* Touch screens: small icon buttons (admin tables, editor blocks) get a 44px tap area. */
+@media (pointer: coarse) {
+    .MuiIconButton-sizeSmall {
+        padding: 12px !important;
+    }
+}
+
+@media (pointer: coarse) {
+    .MuiButton-root {
+        min-height: 44px;
+    }
+}

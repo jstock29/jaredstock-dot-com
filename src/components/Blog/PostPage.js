@@ -9,7 +9,7 @@ import { usePreviewMode } from "../../hooks/usePreviewMode";
 import { SiteFooter, SiteNav, useDocumentTitle } from "../SiteChrome/SiteChrome";
 import { BlockRenderer, Media } from "../EntryPage/blocks/Blocks";
 import BlueskyReplies from "./BlueskyReplies";
-import ShareBar from "./ShareBar";
+import ShareBar, { BlueskyIcon } from "./ShareBar";
 
 const SITE = "https://jaredstock.com";
 
@@ -74,7 +74,7 @@ export default function PostPage() {
 
   if (loading || error || !post) {
     return (
-      <div className="project-page project-page-status">
+      <main className="project-page project-page-status">
         <SiteNav crumbs={crumbs} />
         {loading ? (
           <CircularProgress sx={{ color: "var(--navy)" }} />
@@ -87,21 +87,35 @@ export default function PostPage() {
             </Link>
           </>
         )}
-      </div>
+      </main>
     );
   }
 
   const url = `${SITE}${entryPath("posts", post)}`;
 
   return (
-    <div className="project-page blog-post-page">
+    <main className="project-page blog-post-page">
       <SiteNav crumbs={crumbs} />
       <PostArticle post={post} />
 
-      <footer className="blog-post-footer">
-        <ShareBar title={post.title} url={url} />
+      <div className="blog-post-footer">
+        <div className="blog-post-footer-row">
+          <ShareBar title={post.title} url={url} />
+          {settings?.links.bluesky && (
+            <a
+              href={settings.links.bluesky}
+              target="_blank"
+              rel="noreferrer"
+              className="link-icon blog-post-bluesky"
+              aria-label="Bluesky profile"
+              title="Bluesky"
+            >
+              <BlueskyIcon style={{ fontSize: 24 }} />
+            </a>
+          )}
+        </div>
         {post.blueskyPost && <BlueskyReplies url={post.blueskyPost} />}
-      </footer>
+      </div>
 
       {(newer || older) && (
         <nav className="project-page-pager" aria-label="More posts">
@@ -128,6 +142,6 @@ export default function PostPage() {
       )}
 
       <SiteFooter />
-    </div>
+    </main>
   );
 }

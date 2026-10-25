@@ -25,10 +25,10 @@ function AdminHome({ user }) {
   const current = TABS.find((t) => t.key === params.get('tab')) || TABS[0];
 
   return (
-    <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: 8, px: { xs: 1.5, sm: 3 } }}>
+    <Container component="main" maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: 8, px: { xs: 1.5, sm: 3 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, gap: 2, flexWrap: 'wrap' }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>Site admin</Typography>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>Site admin</Typography>
           <Typography variant="body2" color="text.secondary">Signed in as {user.email}</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>

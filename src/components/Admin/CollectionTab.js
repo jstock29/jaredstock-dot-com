@@ -213,7 +213,7 @@ const CollectionTab = ({ collectionName, title }) => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
           {title || collectionName}
           <Chip label={records.length} size="small" sx={{ ml: 1 }} />
         </Typography>

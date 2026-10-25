@@ -19,7 +19,7 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container component="main" maxWidth="xs">
       <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">Admin Login</Typography>
         <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>

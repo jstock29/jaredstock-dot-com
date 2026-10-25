@@ -4,6 +4,7 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { useRef } from "react";
+import { BlueskyIcon } from "../Blog/ShareBar";
 
 const titleVariants = {
   initial: { opacity: 0, y: 20 },
@@ -58,6 +59,11 @@ export const PageTitle = ({ name, links = {} }) => {
         {links.linkedin && (
           <a href={links.linkedin} title="LinkedIn" target="_blank" rel="noreferrer" className="link-icon">
             <LinkedInIcon style={{ fontSize: 26 }} />
+          </a>
+        )}
+        {links.bluesky && (
+          <a href={links.bluesky} title="Bluesky" aria-label="Bluesky" target="_blank" rel="noreferrer" className="link-icon">
+            <BlueskyIcon style={{ fontSize: 24 }} />
           </a>
         )}
         {links.email && (

@@ -51,23 +51,23 @@ export default function EntryPage({ type }) {
 
   if (loading) {
     return (
-      <div className="project-page project-page-status">
+      <main className="project-page project-page-status">
         <SiteNav crumbs={crumbs} />
         <CircularProgress sx={{ color: "var(--navy)" }} />
-      </div>
+      </main>
     );
   }
 
   if (error || !project) {
     return (
-      <div className="project-page project-page-status">
+      <main className="project-page project-page-status">
         <SiteNav crumbs={crumbs} />
         <h1 className="section-title">lost in space</h1>
         <p>{error ? "Couldn't load this page." : "There's nothing here."}</p>
         <Link to={backTo} className="project-page-cta">
           back home →
         </Link>
-      </div>
+      </main>
     );
   }
 
@@ -77,7 +77,7 @@ export default function EntryPage({ type }) {
   const hero = project.hero?.src ? project.hero : project.image ? { src: project.image, type: "image" } : null;
 
   return (
-    <div className="project-page">
+    <main className="project-page">
       <SiteNav crumbs={crumbs} />
 
       <header className="project-page-header">
@@ -163,6 +163,6 @@ export default function EntryPage({ type }) {
       )}
 
       <SiteFooter />
-    </div>
+    </main>
   );
 }

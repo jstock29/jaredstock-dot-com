@@ -83,7 +83,7 @@ export default function EntryList({ type }) {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
           {config.label}
           {entries && <Chip label={entries.length} size="small" sx={{ ml: 1 }} />}
         </Typography>
@@ -163,7 +163,13 @@ export default function EntryList({ type }) {
                       {hasPage(type, entry) ? entryPath(type, entry) : 'links out'}
                     </TableCell>
                     <TableCell>
-                      <Switch size="small" checked={isPublished(entry)} disabled={busy} onChange={() => togglePublished(entry)} />
+                      <Switch
+                        size="small"
+                        checked={isPublished(entry)}
+                        disabled={busy}
+                        onChange={() => togglePublished(entry)}
+                        inputProps={{ 'aria-label': `Published: ${entry.title || entry.name || 'untitled'}` }}
+                      />
                     </TableCell>
                     <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                       <Tooltip title="Edit">

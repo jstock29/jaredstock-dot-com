@@ -638,6 +638,7 @@ export default function EntryEditor() {
 
   return (
     <Container
+      component="main"
       maxWidth="md"
       sx={{ mt: { xs: 0, sm: 2 }, mb: { xs: 14, sm: 12 }, px: { xs: 1.5, sm: 3 } }}
       onFocusCapture={(e) => setTyping(e.target.matches('textarea, input:not([type=checkbox]):not([type=file])'))}
