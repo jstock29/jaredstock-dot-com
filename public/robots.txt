@@ -1,3 +1,29 @@
 # https://www.robotstxt.org/robotstxt.html
+#
+# Search engines and AI crawlers get the professional site (home, projects, publications,
+# pages) but not the blog or the admin. Blog pages also send `X-Robots-Tag: noindex`
+# (firebase.json) for crawlers that ignore this file.
+
+# Link-preview fetchers may read blog pages, so shared posts still show their title and
+# hero image. A crawler that matches a group here ignores the `*` group below.
+User-agent: Cardyb
+User-agent: Bluesky
+User-agent: Twitterbot
+User-agent: facebookexternalhit
+User-agent: LinkedInBot
+User-agent: Slackbot-LinkExpanding
+User-agent: Slackbot
+User-agent: Discordbot
+User-agent: TelegramBot
+User-agent: WhatsApp
+User-agent: Mastodon
+User-agent: Iframely
+User-agent: Embedly
+Allow: /
+Disallow: /admin
+
 User-agent: *
-Disallow:
+Disallow: /blog
+Disallow: /admin
+
+Sitemap: https://jaredstock.com/sitemap.xml

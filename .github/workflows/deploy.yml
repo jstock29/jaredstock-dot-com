@@ -6,7 +6,8 @@ on:
       - main
   # Blog posts are published from /admin, not from git, but their link previews and the RSS
   # feed are static files built at deploy time (scripts/prerender-blog.js). So check every
-  # 15 minutes and redeploy when the published posts changed. "Run workflow" in the Actions
+  # 15 minutes and redeploy when the published posts (or the pages in /sitemap.xml) changed.
+  # "Run workflow" in the Actions
   # tab (or the GitHub app) deploys right away.
   schedule:
     - cron: "*/15 * * * *"

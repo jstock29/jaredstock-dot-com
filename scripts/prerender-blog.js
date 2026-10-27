@@ -9,6 +9,7 @@
 //   dist/blog.html          served at /blog
 //   dist/blog/feed.xml      RSS, full text
 //   dist/blog/version.txt   see scripts/blog-data.js
+//   dist/sitemap.xml        the professional pages only (see public/robots.txt)
 //   dist/.well-known/site.standard.publication/blog   see scripts/atproto-sync.js
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createElement } from "react";
@@ -16,7 +17,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { syncStandardSite } from "./atproto-sync.js";
-import { blogVersion, getPublishedPosts, getSiteSettings } from "./blog-data.js";
+import { blogVersion, getPublishedPosts, getSiteSettings, getSitemapEntries } from "./blog-data.js";
 import { plainText, shareDescription, shareImage } from "../src/data/posts.js";
 
 const SITE = "https://jaredstock.com";
@@ -43,6 +44,8 @@ function headTags({ title, shareTitle = title, description, url, image, imageAlt
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}" />`,
     `<link rel="canonical" href="${esc(url)}" />`,
+    // Kept out of search engines (see public/robots.txt); link previews still read the tags below.
+    `<meta name="robots" content="noindex, nofollow, noarchive, noimageindex" />`,
     `<link rel="alternate" type="application/rss+xml" title="${esc(siteName)}" href="${SITE}/blog/feed.xml" />`,
     `<meta property="og:type" content="${type}" />`,
     `<meta property="og:url" content="${esc(url)}" />`,
@@ -95,6 +98,13 @@ function postHtml(post) {
   return `${post.tagline ? `<p><em>${esc(post.tagline)}</em></p>` : ""}${hero}${body}`;
 }
 
+function sitemapXml(entries) {
+  const urls = entries
+    .map(({ path, lastmod }) => `  <url>\n    <loc>${esc(SITE + path)}</loc>\n${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ""}  </url>`)
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
 const cdata = (s) => `<![CDATA[${s.replace(/]]>/g, "]]]]><![CDATA[>")}]]>`;
 
 function feed(posts, blog, author) {
@@ -129,6 +139,13 @@ ${posts[0] ? `    <lastBuildDate>${new Date(posts[0].updatedAt || posts[0].publi
 
 async function main() {
   const template = await readFile(new URL("index.html", DIST), "utf8");
+  let sitemap = null;
+  try {
+    sitemap = await getSitemapEntries();
+    await writeFile(new URL("sitemap.xml", DIST), sitemapXml(sitemap));
+  } catch (err) {
+    console.warn(`Skipping sitemap: ${err.message}`);
+  }
   let posts;
   let settings;
   try {
@@ -139,7 +156,7 @@ async function main() {
     console.warn(`Skipping blog prerender: ${err.message}`);
     return;
   }
-  const version = blogVersion(posts, settings);
+  const version = blogVersion(posts, settings, sitemap);
   posts = posts.filter((p) => /^[a-z0-9-]+$/.test(p.slug || "") && p.title);
   const blog = { ...DEFAULT_BLOG, ...(settings.blog || {}) };
   const author = settings.footer?.name || DEFAULT_AUTHOR;
