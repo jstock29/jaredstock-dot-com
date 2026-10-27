@@ -20,6 +20,10 @@
           {
             "key": "Cache-Control",
             "value": "public, max-age=300"
+          },
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive, noimageindex"
           }
         ]
       },
@@ -29,6 +33,28 @@
           {
             "key": "Cache-Control",
             "value": "public, max-age=300"
+          },
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive, noimageindex"
+          }
+        ]
+      },
+      {
+        "source": "/admin/**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive, noimageindex"
+          }
+        ]
+      },
+      {
+        "source": "/admin",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive, noimageindex"
           }
         ]
       },

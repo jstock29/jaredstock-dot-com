@@ -79,6 +79,16 @@ Settings → Privacy and security → App passwords) saved as the `BLUESKY_APP_P
 without it the build only reads existing records. After adding the secret, run the deploy workflow
 once by hand to publish existing posts.
 
+**Kept out of search engines.** [`public/robots.txt`](public/robots.txt) lets crawlers (search and
+AI alike) read the professional site but not `/blog` or `/admin`, and those paths also send
+`X-Robots-Tag: noindex` ([`firebase.json`](firebase.json)) plus a `robots` meta tag in the
+prerendered pages, for crawlers that skip robots.txt. Link-preview fetchers (Bluesky, Twitter/X,
+Facebook, LinkedIn, Slack, Discord, Mastodon and others) are named in robots.txt and may read blog
+pages, so shared posts still preview properly. The build also writes `/sitemap.xml` listing the
+home page and the published projects, publications and pages, never the blog; the scheduled deploy
+picks up sitemap changes too. A crawler that ignores all of this can still read the blog, and
+anything in the RSS feed or on the AT Protocol network is public by design.
+
 **Sharing** is plain links to each network's compose screen (plus the phone's share sheet and copy
 link): no third-party scripts.
 

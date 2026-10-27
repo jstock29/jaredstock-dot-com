@@ -1,8 +1,9 @@
-// Reads the published blog posts and the site settings from Firestore's public REST API.
+// Reads the published blog posts, the site settings and the sitemap's pages from Firestore's
+// public REST API.
 // No dependencies and no credentials, so the deploy workflow can run it before `npm ci`
 // to decide whether anything changed (see .github/workflows/deploy.yml).
 //
-//   node scripts/blog-data.js --version   prints a hash of everything the blog's static files are built from
+//   node scripts/blog-data.js --version   prints a hash of everything the static files are built from
 import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 
@@ -60,6 +61,45 @@ export async function getSiteSettings() {
   }
 }
 
+async function listCollection(id) {
+  const docs = [];
+  let pageToken = "";
+  do {
+    const page = await request(`${BASE}/${id}?pageSize=300${pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : ""}`);
+    docs.push(...(page.documents || []).map((d) => decodeFields(d.fields)));
+    pageToken = page.nextPageToken;
+  } while (pageToken);
+  return docs;
+}
+
+// Same as slugify and entrySlug in src/data/content.js (which can't be imported here: it loads Firebase).
+const slugify = (text = "") =>
+  text
+    .toString()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+const RESERVED = ["admin", "projects", "publications", "blog"];
+
+// The professional pages search engines are pointed at, for /sitemap.xml. The blog isn't one:
+// robots.txt keeps crawlers out of it. Neither is /projects, which isn't linked yet.
+export async function getSitemapEntries() {
+  const [projects, publications, pages] = await Promise.all(["projects", "publications", "pages"].map(listCollection));
+  const entry = (base) => (doc) => ({
+    path: `${base}/${doc.slug || slugify(doc.title)}`,
+    lastmod: /^\d{4}-\d{2}-\d{2}/.test(doc.updatedAt || "") ? doc.updatedAt.slice(0, 10) : undefined,
+  });
+  const live = (doc) => doc.published !== false && (doc.slug || doc.title);
+  return [
+    { path: "/" },
+    ...projects.filter(live).map(entry("/projects")),
+    ...publications.filter((d) => live(d) && Array.isArray(d.blocks) && d.blocks.length > 0).map(entry("/publications")),
+    ...pages.filter(live).map(entry("")).filter((e) => !RESERVED.includes(e.path.slice(1))),
+  ];
+}
+
 const stable = (value) =>
   Array.isArray(value)
     ? `[${value.map(stable).join(",")}]`
@@ -67,12 +107,15 @@ const stable = (value) =>
       ? `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${stable(value[k])}`).join(",")}}`
       : JSON.stringify(value);
 
-// Changes whenever a post is published, edited or unpublished, or the blog's settings change.
-export function blogVersion(posts, settings) {
-  return createHash("sha256").update(stable({ posts, blog: settings.blog || null, footer: settings.footer || null })).digest("hex");
+// Changes whenever a post is published, edited or unpublished, the blog's settings change, or
+// a page is added to or dropped from the sitemap.
+export function blogVersion(posts, settings, sitemap = null) {
+  return createHash("sha256")
+    .update(stable({ posts, blog: settings.blog || null, footer: settings.footer || null, sitemap }))
+    .digest("hex");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href && process.argv.includes("--version")) {
-  const [posts, settings] = await Promise.all([getPublishedPosts(), getSiteSettings()]);
-  console.log(blogVersion(posts, settings));
+  const [posts, settings, sitemap] = await Promise.all([getPublishedPosts(), getSiteSettings(), getSitemapEntries()]);
+  console.log(blogVersion(posts, settings, sitemap));
 }
